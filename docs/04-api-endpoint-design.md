@@ -515,19 +515,24 @@ All errors return a consistent JSON structure via the `GlobalExceptionHandler` (
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, Object>> handleValidation(IllegalArgumentException ex) {
-        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
-    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleAllExceptions(Exception ex) {
+        // Security exceptions → 401/403
+        // AuthorizationDeniedException / AccessDeniedException → 403 Forbidden
+        // AuthenticationException → 401 Unauthorized
 
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<Map<String, Object>> handleConflict(IllegalStateException ex) {
-        return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
-    }
+        // ResponseStatusException → uses the status from the exception (400/403/404/409)
 
-    @ExceptionHandler(LeaveRequestNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleNotFound(LeaveRequestNotFoundException ex) {
-        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+        // Not-found exceptions → 404
+        // StaffMemberNotFoundException, LeaveRequestNotFoundException, LeaveAllowanceNotFoundException
+
+        // MethodArgumentNotValidException → 400 (Bean Validation failed, includes field-level errors)
+        // ConstraintViolationException → 400 (JPA validation failed)
+        // DataIntegrityViolationException → 409 (duplicate record)
+        // IllegalArgumentException → 400 (domain validation — DomainAssertions)
+        // IllegalStateException → 409 (state machine violation)
+
+        // Everything else → 500 Internal Server Error (unexpected — logged for investigation)
     }
 }
 ```

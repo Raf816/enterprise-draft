@@ -177,8 +177,8 @@ public class LeaveAllowanceController {
         // Delegate to facade — loads aggregate, amends entitlement, saves
         facade.amendEntitlement(command);
 
-        // Return the updated allowance so the admin sees the new entitlement and derived fields
-        return facade.findMyAllowance(id);
+        // Return the updated allowance — use findAllowanceById (not findMyAllowance which expects staffMemberId)
+        return facade.findAllowanceById(id);
     }
 
     // ─────────────────────────────────────────────────────────────────

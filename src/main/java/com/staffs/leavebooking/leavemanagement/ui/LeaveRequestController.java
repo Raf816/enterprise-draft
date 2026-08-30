@@ -549,7 +549,7 @@ public class LeaveRequestController {
     private void verifyStaffIsActive(String staffMemberId) {
         try {
             // Cross-context call: look up the staff member's details from Staff Management
-            StaffMemberDTO staff = staffFacade.findStaffMemberById(staffMemberId);
+            StaffMemberDTO staff = staffFacade.findStaffMemberByIdInternal(staffMemberId);
             // Check if the staff member is still in the setup phase — not yet activated by admin
             if ("PENDING_SETUP".equals(staff.employmentStatus())) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN,

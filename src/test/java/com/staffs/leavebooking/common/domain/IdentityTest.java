@@ -47,21 +47,26 @@ class IdentityTest {
         }
 
         @Test
-        @DisplayName("Should reject non-UUID format string")
-        void shouldRejectNonUuidFormat() {
-            // Arrange & Act & Assert
-            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                    () -> new Identity<>("not-a-uuid"));
-            assertEquals(Identity.IDENTITY_MUST_BE_UUID, ex.getMessage());
+        @DisplayName("Should accept non-UUID format string (Firebase UID)")
+        void shouldAcceptFirebaseUid() {
+            // Arrange — Firebase UIDs are 28-char alphanumeric, not UUID format
+            String firebaseUid = "D806yr3XxhgN6sbXZRLHDyH12345";
+
+            // Act
+            Identity<?> identity = new Identity<>(firebaseUid);
+
+            // Assert
+            assertEquals(firebaseUid, identity.id());
         }
 
         @Test
-        @DisplayName("Should reject partial UUID format")
-        void shouldRejectPartialUuid() {
-            // Arrange & Act & Assert
-            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                    () -> new Identity<>("550e8400-e29b-41d4"));
-            assertEquals(Identity.IDENTITY_MUST_BE_UUID, ex.getMessage());
+        @DisplayName("Should accept any non-blank string as identity")
+        void shouldAcceptAnyNonBlankString() {
+            // Arrange & Act
+            Identity<?> identity = new Identity<>("some-custom-id-format");
+
+            // Assert
+            assertEquals("some-custom-id-format", identity.id());
         }
 
         @Test

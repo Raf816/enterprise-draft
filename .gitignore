@@ -42,3 +42,6 @@ src/main/resources/serviceAccountKey.json
 *.db
 *.trace.db
 *.lock.db
+
+# H2 file-based database (persists across restarts)
+data/

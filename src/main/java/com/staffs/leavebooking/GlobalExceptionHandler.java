@@ -89,11 +89,29 @@ public class GlobalExceptionHandler {
 
         // ── Determine HTTP status based on exception type ──
 
-        if (ex instanceof ResponseStatusException rse) {
+        if (ex instanceof org.springframework.security.access.AccessDeniedException
+                || ex instanceof org.springframework.security.authorization.AuthorizationDeniedException) {
+            // Spring Security access denied — should be 403 Forbidden
+            // This catches @PreAuthorize failures that bubble up through the controller
+            status = HttpStatus.FORBIDDEN;
+            message = "Access denied. You do not have permission to access this resource.";
+
+        } else if (ex instanceof org.springframework.security.core.AuthenticationException) {
+            // Spring Security authentication failure — should be 401 Unauthorized
+            status = HttpStatus.UNAUTHORIZED;
+            message = "Authentication required. Please provide a valid Bearer token.";
+
+        } else if (ex instanceof ResponseStatusException rse) {
             // ResponseStatusException: controllers throw these explicitly with a specific status
-            // Examples: 400 (bad search), 403 (ownership check), 404 (not found)
             status = HttpStatus.valueOf(rse.getStatusCode().value());
-            message = rse.getReason(); // Use the reason field, not the full message
+            message = rse.getReason();
+
+        } else if (ex instanceof com.staffs.leavebooking.staffmanagement.ui.exceptions.StaffMemberNotFoundException
+                || ex instanceof com.staffs.leavebooking.leavemanagement.ui.exceptions.LeaveRequestNotFoundException
+                || ex instanceof com.staffs.leavebooking.leavemanagement.ui.exceptions.LeaveAllowanceNotFoundException) {
+            // Not-found exceptions from our domain — 404
+            status = HttpStatus.NOT_FOUND;
+            message = ex.getMessage();
 
         } else if (ex instanceof MethodArgumentNotValidException manve) {
             // MethodArgumentNotValidException: Bean Validation (@Valid) failed on request body

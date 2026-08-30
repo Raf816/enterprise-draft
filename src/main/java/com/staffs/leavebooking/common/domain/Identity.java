@@ -34,27 +34,23 @@ public record Identity<T>(String id) implements ValueObject {
 
     // Error message constants — public so tests can assert on them
     public static final String IDENTITY_CANNOT_BE_NULL = "Identity cannot be null or blank";
-    public static final String IDENTITY_MUST_BE_UUID = "Identity must be a valid UUID format";
 
     /**
      * Compact constructor — runs automatically when any Identity is created.
-     * Validates that the id is not null/blank and is a valid UUID format.
+     * Validates that the id is not null or blank.
+     * Accepts both UUID format (for internally-generated IDs) and Firebase UID format
+     * (28-char alphanumeric strings like "D806yr3XxhgN6sbXZRLHDyH").
      * This is the "self-validating" pattern: an Identity object cannot exist
      * in an invalid state.
      */
     public Identity {
-        // Guard 1: reject null or blank strings
+        // Guard: reject null or blank strings
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException(IDENTITY_CANNOT_BE_NULL);
         }
-        // Guard 2: verify UUID format by attempting to parse it
-        // UUID.fromString() throws IllegalArgumentException if the format is wrong
-        try {
-            UUID.fromString(id);
-        } catch (IllegalArgumentException e) {
-            // Re-throw with our own message for cleaner error reporting
-            throw new IllegalArgumentException(IDENTITY_MUST_BE_UUID);
-        }
+        // Note: UUID format validation removed to support Firebase UIDs
+        // Firebase generates its own alphanumeric IDs (not UUID format)
+        // which are used as staff record IDs for cross-context consistency
     }
 
     /**

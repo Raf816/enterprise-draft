@@ -142,7 +142,7 @@ class LeaveAllowanceControllerTest {
             var updated = new LeaveAllowanceDTO(
                     "allow-1", "staff-1", "James Wilson", "mgr-1",
                     "Engineering", "2026-2027", 30, 5, 3, 25, 22);
-            when(facade.findMyAllowance("allow-1")).thenReturn(updated);
+            when(facade.findAllowanceById("allow-1")).thenReturn(updated);
 
             // Act & Assert
             mockMvc.perform(patch("/leave-allowances/allow-1")

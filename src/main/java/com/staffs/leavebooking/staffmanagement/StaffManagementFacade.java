@@ -296,6 +296,16 @@ public class StaffManagementFacade {
     }
 
     /**
+     * Internal method for checking a staff member's status without RBAC.
+     * Called by LeaveRequestController.verifyStaffIsActive() to check if a staff member
+     * is ACTIVE before allowing leave submission. No @PreAuthorize because the caller
+     * is already authenticated — we just need the employment status, not admin privileges.
+     */
+    public StaffMemberDTO findStaffMemberByIdInternal(String staffMemberId) {
+        return staffQueryHandler.findStaffMemberById(staffMemberId);
+    }
+
+    /**
      * Updates a staff member's department and/or line manager.
      *
      * <p><strong>Access:</strong> ADMIN only — department reassignment is an administrative action.

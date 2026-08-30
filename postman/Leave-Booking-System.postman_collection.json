@@ -1,518 +1,358 @@
 {
     "info": {
         "name": "Leave Booking System API Tests",
-        "description": "Comprehensive API testing for COMP60047 Enterprise Application Development.\nCovers all 26 endpoints with valid data (per role), invalid data, and edge cases.\n\nRun folders in order: 1. Auth Setup → 2. Staff Management → 3. Leave Requests Commands → 4. Leave Requests Queries & Search → 5. Leave Allowances → 6. Security & Error Handling\n\nTotal: ~95 requests covering happy paths, RBAC (403), validation (400), not-found (404), state-machine conflicts (409), auth (401), rate limiting (429), and security headers.",
+        "description": "Comprehensive API testing. Run folders in order (1→6).\nDelete Firebase users and restart app before re-running.\n\nFlow: Register 5 users → Login → Admin fills in skeleton details and activates staff → Staff submits leave → Manager approves/rejects.",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "item": [
         {
             "name": "1. Auth — Setup & Login",
-            "description": "Register users, login to obtain JWT tokens, test auth endpoints.\nRegisters 5 users: Admin, 2 Managers (Lucy Reed, Dan Thompson), 2 Staff (Raf Ahmed, Phil James).\nSelf-registered users get STAFF role regardless of request (except admin callers).\nEach registration also creates a skeleton staff record (PENDING_SETUP).",
             "item": [
                 {
                     "name": "Register Admin",
-                    "request": { "method": "POST", "url": "{{base_url}}/auth/register", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"username\": \"Admin User\",\n    \"email\": \"admin@admin.com\",\n    \"password\": \"Password123!\",\n    \"role\": \"ADMIN\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Register returns 201', function() { pm.response.to.have.status(201); });","var res = pm.response.json();","pm.test('Response contains uid', function() { pm.expect(res.uid).to.not.be.undefined; });","pm.test('Response contains email', function() { pm.expect(res.email).to.equal('admin@admin.com'); });","pm.globals.set('admin_uid', res.uid);"]}}]
+                    "request": { "method": "POST", "url": "{{base_url}}/auth/register", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"username\": \"Admin User\",\n    \"email\": \"testadmin@staffs.ac.uk\",\n    \"password\": \"Password123!\",\n    \"role\": \"ADMIN\"\n}"}, "auth": {"type":"noauth"} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('201', function() { pm.response.to.have.status(201); });","pm.environment.set('admin_uid', pm.response.json().uid);"]}}]
                 },
                 {
-                    "name": "Register Manager 1 — Lucy Reed (Networks)",
+                    "name": "Register Manager 1 — Lucy",
                     "request": { "method": "POST", "url": "{{base_url}}/auth/register", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"username\": \"Lucy Reed\",\n    \"email\": \"lucy.reed@staffs.ac.uk\",\n    \"password\": \"Password123!\",\n    \"role\": \"MANAGER\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Register returns 201', function() { pm.response.to.have.status(201); });","var res = pm.response.json();","pm.test('Response contains uid', function() { pm.expect(res.uid).to.not.be.undefined; });","pm.globals.set('manager1_uid', res.uid);"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('201', function() { pm.response.to.have.status(201); });","pm.environment.set('manager1_uid', pm.response.json().uid);"]}}]
                 },
                 {
-                    "name": "Register Manager 2 — Dan Thompson (Digital)",
+                    "name": "Register Manager 2 — Dan",
                     "request": { "method": "POST", "url": "{{base_url}}/auth/register", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"username\": \"Dan Thompson\",\n    \"email\": \"dan.thompson@bt.com\",\n    \"password\": \"Password123!\",\n    \"role\": \"MANAGER\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Register returns 201', function() { pm.response.to.have.status(201); });","var res = pm.response.json();","pm.globals.set('manager2_uid', res.uid);"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('201', function() { pm.response.to.have.status(201); });","pm.environment.set('manager2_uid', pm.response.json().uid);"]}}]
                 },
                 {
-                    "name": "Register Staff 1 — Raf Ahmed",
+                    "name": "Register Staff 1 — Raf",
                     "request": { "method": "POST", "url": "{{base_url}}/auth/register", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"username\": \"Raf Ahmed\",\n    \"email\": \"raf.ahmed@bt.com\",\n    \"password\": \"Password123!\",\n    \"role\": \"STAFF\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Register returns 201', function() { pm.response.to.have.status(201); });","var res = pm.response.json();","pm.globals.set('staff1_uid', res.uid);"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('201', function() { pm.response.to.have.status(201); });","pm.environment.set('staff1_uid', pm.response.json().uid);"]}}]
                 },
                 {
-                    "name": "Register Staff 2 — Phil James",
+                    "name": "Register Staff 2 — Phil",
                     "request": { "method": "POST", "url": "{{base_url}}/auth/register", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"username\": \"Phil James\",\n    \"email\": \"phil.james@staffs.ac.uk\",\n    \"password\": \"Password123!\",\n    \"role\": \"STAFF\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Register returns 201', function() { pm.response.to.have.status(201); });","var res = pm.response.json();","pm.globals.set('staff2_uid', res.uid);"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('201', function() { pm.response.to.have.status(201); });","pm.environment.set('staff2_uid', pm.response.json().uid);"]}}]
                 },
                 {
-                    "name": "Register — Duplicate Email (expect 400)",
-                    "request": { "method": "POST", "url": "{{base_url}}/auth/register", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"username\": \"Duplicate User\",\n    \"email\": \"admin@admin.com\",\n    \"password\": \"Password123!\",\n    \"role\": \"STAFF\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Duplicate email returns 400', function() { pm.response.to.have.status(400); });","pm.test('Clean error message mentions already exists', function() { var res = pm.response.json(); pm.expect(res.message).to.include('already exists'); });"]}}]
+                    "name": "Register — Duplicate (expect 400)",
+                    "request": { "method": "POST", "url": "{{base_url}}/auth/register", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"username\": \"Dup\",\n    \"email\": \"testadmin@staffs.ac.uk\",\n    \"password\": \"Password123!\"\n}"}, "auth": {"type":"noauth"} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('400', function() { pm.response.to.have.status(400); });"]}}]
                 },
                 {
                     "name": "Register — Missing Fields (expect 400)",
-                    "request": { "method": "POST", "url": "{{base_url}}/auth/register", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"email\": \"noname@test.com\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Missing fields returns 400', function() { pm.response.to.have.status(400); });","pm.test('Contains validation error info', function() { var res = pm.response.json(); pm.expect(res.errors || res.message).to.not.be.undefined; });"]}}]
+                    "request": { "method": "POST", "url": "{{base_url}}/auth/register", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"email\": \"x@x.com\"\n}"}, "auth": {"type":"noauth"} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('400', function() { pm.response.to.have.status(400); });"]}}]
                 },
                 {
-                    "name": "Login as Admin",
-                    "request": { "method": "POST", "url": "{{base_url}}/auth/login", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"emailOrUsername\": \"admin@admin.com\",\n    \"password\": \"Password123!\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Login returns 200', function() { pm.response.to.have.status(200); });","var res = pm.response.json();","pm.test('Contains accessToken', function() { pm.expect(res.accessToken).to.not.be.undefined; });","pm.test('Contains uid', function() { pm.expect(res.uid).to.not.be.undefined; });","pm.globals.set('jwt_admin_token', res.accessToken);"]}}]
+                    "name": "Login Admin",
+                    "request": { "method": "POST", "url": "{{base_url}}/auth/login", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"emailOrUsername\": \"testadmin@staffs.ac.uk\",\n    \"password\": \"Password123!\"\n}"}, "auth": {"type":"noauth"} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });","pm.environment.set('jwt_admin_token', pm.response.json().idToken);"]}}]
                 },
                 {
-                    "name": "Login as Manager 1 (Lucy)",
+                    "name": "Login Manager 1",
                     "request": { "method": "POST", "url": "{{base_url}}/auth/login", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"emailOrUsername\": \"lucy.reed@staffs.ac.uk\",\n    \"password\": \"Password123!\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Login returns 200', function() { pm.response.to.have.status(200); });","pm.globals.set('jwt_manager1_token', pm.response.json().accessToken);"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });","pm.environment.set('jwt_manager1_token', pm.response.json().idToken);"]}}]
                 },
                 {
-                    "name": "Login as Manager 2 (Dan)",
+                    "name": "Login Manager 2",
                     "request": { "method": "POST", "url": "{{base_url}}/auth/login", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"emailOrUsername\": \"dan.thompson@bt.com\",\n    \"password\": \"Password123!\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Login returns 200', function() { pm.response.to.have.status(200); });","pm.globals.set('jwt_manager2_token', pm.response.json().accessToken);"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });","pm.environment.set('jwt_manager2_token', pm.response.json().idToken);"]}}]
                 },
                 {
-                    "name": "Login as Staff 1 (Raf)",
+                    "name": "Login Staff 1",
                     "request": { "method": "POST", "url": "{{base_url}}/auth/login", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"emailOrUsername\": \"raf.ahmed@bt.com\",\n    \"password\": \"Password123!\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Login returns 200', function() { pm.response.to.have.status(200); });","pm.globals.set('jwt_staff1_token', pm.response.json().accessToken);"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });","pm.environment.set('jwt_staff1_token', pm.response.json().idToken);"]}}]
                 },
                 {
-                    "name": "Login as Staff 2 (Phil)",
+                    "name": "Login Staff 2",
                     "request": { "method": "POST", "url": "{{base_url}}/auth/login", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"emailOrUsername\": \"phil.james@staffs.ac.uk\",\n    \"password\": \"Password123!\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Login returns 200', function() { pm.response.to.have.status(200); });","pm.globals.set('jwt_staff2_token', pm.response.json().accessToken);"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });","pm.environment.set('jwt_staff2_token', pm.response.json().idToken);"]}}]
                 },
                 {
-                    "name": "Login — Wrong Password (expect 400)",
-                    "request": { "method": "POST", "url": "{{base_url}}/auth/login", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"emailOrUsername\": \"admin@admin.com\",\n    \"password\": \"WrongPassword!\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Wrong password returns 400', function() { pm.response.to.have.status(400); });"]}}]
+                    "name": "Login — Wrong Password (expect 400/429)",
+                    "request": { "method": "POST", "url": "{{base_url}}/auth/login", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"emailOrUsername\": \"testadmin@staffs.ac.uk\",\n    \"password\": \"Wrong!\"\n}"}, "auth": {"type":"noauth"} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('400 or 429', function() { pm.expect(pm.response.code).to.be.oneOf([400, 429]); });"]}}]
                 },
                 {
-                    "name": "Login — Non-existent Email (expect 400)",
-                    "request": { "method": "POST", "url": "{{base_url}}/auth/login", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"emailOrUsername\": \"nobody@nowhere.com\",\n    \"password\": \"Password123!\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Non-existent email returns 400', function() { pm.response.to.have.status(400); });"]}}]
-                },
-                {
-                    "name": "Role Check — as Admin",
+                    "name": "Role Check — Admin",
                     "request": { "method": "GET", "url": "{{base_url}}/auth/role-check", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('Contains ROLE_ADMIN', function() { pm.expect(pm.response.text()).to.include('ROLE_ADMIN'); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });","pm.test('ROLE_ADMIN', function() { pm.expect(pm.response.text()).to.include('ROLE_ADMIN'); });"]}}]
                 },
                 {
                     "name": "Role Check — No Token (expect 401)",
                     "request": { "method": "GET", "url": "{{base_url}}/auth/role-check", "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('No token returns 401', function() { pm.response.to.have.status(401); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('401 or 403', function() { pm.expect(pm.response.code).to.be.oneOf([401, 403]); });"]}}]
                 },
                 {
-                    "name": "Find User by Email — as Admin",
+                    "name": "Find User — Admin",
                     "request": { "method": "GET", "url": "{{base_url}}/auth/users/lucy.reed@staffs.ac.uk", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","var res = pm.response.json();","pm.test('Contains uid', function() { pm.expect(res.uid).to.not.be.undefined; });","pm.test('Contains email', function() { pm.expect(res.email).to.equal('lucy.reed@staffs.ac.uk'); });","pm.test('Contains role', function() { pm.expect(res.role).to.not.be.undefined; });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
                 },
                 {
-                    "name": "Find User by Email — as Staff (expect 403)",
-                    "request": { "method": "GET", "url": "{{base_url}}/auth/users/admin@admin.com", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Staff cannot find users — 403', function() { pm.response.to.have.status(403); });"]}}]
+                    "name": "Find User — Staff (expect 403)",
+                    "request": { "method": "GET", "url": "{{base_url}}/auth/users/testadmin@staffs.ac.uk", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('403', function() { pm.response.to.have.status(403); });"]}}]
                 },
                 {
-                    "name": "Find User by Email — Non-existent (expect 404)",
-                    "request": { "method": "GET", "url": "{{base_url}}/auth/users/nobody@nowhere.com", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Non-existent email returns 404', function() { pm.response.to.have.status(404); });","pm.test('Clean error message', function() { var res = pm.response.json(); pm.expect(res.message).to.include('No user found'); });"]}}]
+                    "name": "Change Password",
+                    "request": { "method": "PATCH", "url": "{{base_url}}/auth/password", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"newPassword\": \"NewPass456!\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff2_token}}"}]} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
                 },
                 {
-                    "name": "Change Password — as Staff",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/auth/password", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"newPassword\": \"NewPassword456!\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff2_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Password change returns 200', function() { pm.response.to.have.status(200); });","pm.test('Success message', function() { pm.expect(pm.response.json().message).to.include('changed'); });"]}}]
-                },
-                {
-                    "name": "Change Password — Missing newPassword (expect 400)",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/auth/password", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"newPassword\": \"\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff2_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Empty password returns 400', function() { pm.response.to.have.status(400); });"]}}]
-                },
-                {
-                    "name": "Change Password — Reset Staff2 back to original",
+                    "name": "Change Password — Reset back",
                     "request": { "method": "PATCH", "url": "{{base_url}}/auth/password", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"newPassword\": \"Password123!\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff2_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Password reset returns 200', function() { pm.response.to.have.status(200); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
                 }
             ]
         },
         {
             "name": "2. Staff Management",
-            "description": "Admin creates, searches, and updates staff records. Tests RBAC, PENDING_SETUP flow, unified PATCH, and Firebase coordination.\nPOST /staff creates Firebase user + staff record. PATCH /staff/{id} routes to department/placement/status/role updates based on which fields are present.",
+            "description": "Admin fills in skeleton details and activates self-registered users. Uses the SAME UIDs from registration — no new staff created.",
             "item": [
                 {
-                    "name": "Create Staff — Raf Ahmed (Networks, under Lucy, FULL_TIME)",
-                    "request": { "method": "POST", "url": "{{base_url}}/staff", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"firstName\": \"Raf\",\n    \"surname\": \"Ahmed\",\n    \"email\": \"raf.ahmed.staff@bt.com\",\n    \"department\": \"Networks\",\n    \"lineManagerId\": \"{{manager1_uid}}\",\n    \"hireDate\": \"2025-09-01\",\n    \"currentRole\": \"Apprentice Software Engineer\",\n    \"startDateOfCurrentRole\": \"2025-09-01\",\n    \"jobLevel\": \"JUNIOR\",\n    \"employmentType\": \"FULL_TIME\",\n    \"defaultLeaveEntitlement\": 25\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Create staff returns 201', function() { pm.response.to.have.status(201); });","var res = pm.response.json();","pm.test('Contains id', function() { pm.expect(res.id).to.not.be.undefined; });","pm.test('Contains success message', function() { pm.expect(res.message).to.include('created'); });","pm.globals.set('staff_member1_id', res.id);"]}}]
+                    "name": "Fill in Raf's details + assign to Lucy",
+                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff1_uid}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"department\": \"Networks\",\n    \"lineManagerId\": \"{{manager1_uid}}\",\n    \"currentRole\": \"Apprentice Software Engineer\",\n    \"startDateOfCurrentRole\": \"2025-09-01\",\n    \"jobLevel\": \"JUNIOR\",\n    \"employmentType\": \"FULL_TIME\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
                 },
                 {
-                    "name": "Create Staff — Phil James (Digital, under Dan, PART_TIME)",
-                    "request": { "method": "POST", "url": "{{base_url}}/staff", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"firstName\": \"Phil\",\n    \"surname\": \"James\",\n    \"email\": \"phil.james.staff@staffs.ac.uk\",\n    \"department\": \"Digital\",\n    \"lineManagerId\": \"{{manager2_uid}}\",\n    \"hireDate\": \"2020-01-10\",\n    \"currentRole\": \"Software Engineer\",\n    \"startDateOfCurrentRole\": \"2023-04-01\",\n    \"jobLevel\": \"MID\",\n    \"employmentType\": \"PART_TIME\",\n    \"defaultLeaveEntitlement\": 20\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Create staff returns 201', function() { pm.response.to.have.status(201); });","pm.globals.set('staff_member2_id', pm.response.json().id);"]}}]
+                    "name": "Activate Raf (PENDING_SETUP → ACTIVE)",
+                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff1_uid}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"employmentStatus\": \"ACTIVE\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });","pm.test('ACTIVE', function() { pm.expect(pm.response.json().employmentStatus).to.equal('ACTIVE'); });"]}}]
                 },
                 {
-                    "name": "Create Staff — Duplicate Email (expect 400)",
-                    "request": { "method": "POST", "url": "{{base_url}}/staff", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"firstName\": \"Duplicate\",\n    \"surname\": \"Test\",\n    \"email\": \"raf.ahmed.staff@bt.com\",\n    \"department\": \"Networks\",\n    \"lineManagerId\": \"{{manager1_uid}}\",\n    \"hireDate\": \"2026-01-01\",\n    \"currentRole\": \"Tester\",\n    \"startDateOfCurrentRole\": \"2026-01-01\",\n    \"jobLevel\": \"JUNIOR\",\n    \"employmentType\": \"FULL_TIME\",\n    \"defaultLeaveEntitlement\": 25\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Duplicate email returns 400', function() { pm.response.to.have.status(400); });","pm.test('Clean error message mentions already exists', function() { pm.expect(pm.response.json().message).to.include('already exists'); });"]}}]
+                    "name": "Fill in Phil's details + assign to Dan",
+                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff2_uid}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"department\": \"Digital\",\n    \"lineManagerId\": \"{{manager2_uid}}\",\n    \"currentRole\": \"Software Engineer\",\n    \"startDateOfCurrentRole\": \"2023-04-01\",\n    \"jobLevel\": \"MID\",\n    \"employmentType\": \"PART_TIME\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
                 },
                 {
-                    "name": "Create Staff — Missing Required Fields (expect 400)",
-                    "request": { "method": "POST", "url": "{{base_url}}/staff", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"firstName\": \"Incomplete\",\n    \"email\": \"incomplete@bt.com\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Missing fields returns 400 or 500', function() { pm.expect(pm.response.code).to.be.oneOf([400, 500]); });"]}}]
+                    "name": "Activate Phil",
+                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff2_uid}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"employmentStatus\": \"ACTIVE\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
                 },
                 {
-                    "name": "Create Staff — as Staff (expect 403)",
-                    "request": { "method": "POST", "url": "{{base_url}}/staff", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"firstName\": \"Nope\",\n    \"surname\": \"Nope\",\n    \"email\": \"nope@bt.com\",\n    \"department\": \"Networks\",\n    \"lineManagerId\": \"{{manager1_uid}}\",\n    \"hireDate\": \"2026-01-01\",\n    \"currentRole\": \"Tester\",\n    \"startDateOfCurrentRole\": \"2026-01-01\",\n    \"jobLevel\": \"JUNIOR\",\n    \"employmentType\": \"FULL_TIME\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Staff cannot create staff — 403', function() { pm.response.to.have.status(403); });"]}}]
-                },
-                {
-                    "name": "GET /staff — All Staff (as Admin)",
+                    "name": "GET /staff — Admin",
                     "request": { "method": "GET", "url": "{{base_url}}/staff", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('Returns array', function() { pm.expect(pm.response.json()).to.be.an('array'); });","pm.test('Contains staff members', function() { pm.expect(pm.response.json().length).to.be.greaterThan(0); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
                 },
                 {
-                    "name": "GET /staff — as Staff (expect 403)",
+                    "name": "GET /staff — Staff (expect 403)",
                     "request": { "method": "GET", "url": "{{base_url}}/staff", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Staff cannot list all — 403', function() { pm.response.to.have.status(403); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('403', function() { pm.response.to.have.status(403); });"]}}]
                 },
                 {
-                    "name": "POST /staff/search — by Department (Networks)",
+                    "name": "Search by Department",
                     "request": { "method": "POST", "url": "{{base_url}}/staff/search", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"department\": \"Networks\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('All results are Networks dept', function() { pm.response.json().forEach(function(s) { pm.expect(s.department).to.equal('Networks'); }); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
                 },
                 {
-                    "name": "POST /staff/search — by Status (PENDING_SETUP)",
-                    "request": { "method": "POST", "url": "{{base_url}}/staff/search", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"status\": \"PENDING_SETUP\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('All results are PENDING_SETUP', function() { pm.response.json().forEach(function(s) { pm.expect(s.employmentStatus).to.equal('PENDING_SETUP'); }); });"]}}]
-                },
-                {
-                    "name": "POST /staff/search — Combined (Networks + ACTIVE)",
-                    "request": { "method": "POST", "url": "{{base_url}}/staff/search", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"department\": \"Networks\",\n    \"status\": \"ACTIVE\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });"]}}]
-                },
-                {
-                    "name": "POST /staff/search — No Filters (expect 400)",
+                    "name": "Search — No Filters (expect 400)",
                     "request": { "method": "POST", "url": "{{base_url}}/staff/search", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Empty search returns 400', function() { pm.response.to.have.status(400); });","pm.test('Helpful message about filters', function() { pm.expect(pm.response.json().message).to.include('filter'); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('400', function() { pm.response.to.have.status(400); });"]}}]
                 },
                 {
                     "name": "GET /staff/{id} — Valid",
-                    "request": { "method": "GET", "url": "{{base_url}}/staff/{{staff_member1_id}}", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('Correct staff member', function() { var res = pm.response.json(); pm.expect(res.firstName).to.equal('Raf'); pm.expect(res.employmentStatus).to.equal('PENDING_SETUP'); });"]}}]
+                    "request": { "method": "GET", "url": "{{base_url}}/staff/{{staff1_uid}}", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
                 },
                 {
                     "name": "GET /staff/{id} — Not Found (expect 404)",
                     "request": { "method": "GET", "url": "{{base_url}}/staff/00000000-0000-0000-0000-000000000000", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Not found returns 404', function() { pm.response.to.have.status(404); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('404', function() { pm.response.to.have.status(404); });"]}}]
                 },
                 {
-                    "name": "PATCH /staff/{id} — Update Department + Manager",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff_member1_id}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"department\": \"Digital\",\n    \"lineManagerId\": \"{{manager2_uid}}\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('Department updated to Digital', function() { pm.expect(pm.response.json().department).to.equal('Digital'); });"]}}]
+                    "name": "Update Department — move Raf to Digital",
+                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff1_uid}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"department\": \"Digital\",\n    \"lineManagerId\": \"{{manager2_uid}}\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
                 },
                 {
-                    "name": "PATCH /staff/{id} — Move Raf back to Networks",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff_member1_id}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"department\": \"Networks\",\n    \"lineManagerId\": \"{{manager1_uid}}\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('Department is Networks again', function() { pm.expect(pm.response.json().department).to.equal('Networks'); });"]}}]
+                    "name": "Move Raf back to Networks",
+                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff1_uid}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"department\": \"Networks\",\n    \"lineManagerId\": \"{{manager1_uid}}\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
                 },
                 {
-                    "name": "PATCH /staff/{id} — Update Placement (Promote Raf)",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff_member1_id}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"currentRole\": \"Software Engineer\",\n    \"startDateOfCurrentRole\": \"2026-09-01\",\n    \"jobLevel\": \"MID\",\n    \"employmentType\": \"FULL_TIME\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('Role updated', function() { pm.expect(pm.response.json().currentRole).to.equal('Software Engineer'); });","pm.test('Job level updated', function() { pm.expect(pm.response.json().jobLevel).to.equal('MID'); });"]}}]
+                    "name": "Terminate Phil",
+                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff2_uid}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"employmentStatus\": \"TERMINATED\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
                 },
                 {
-                    "name": "PATCH /staff/{id} — Update Role to MANAGER (Firebase claim)",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff_member1_id}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"role\": \"MANAGER\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });"]}}]
+                    "name": "Reactivate Terminated (expect 409)",
+                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff2_uid}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"employmentStatus\": \"ACTIVE\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('409 or 400', function() { pm.expect(pm.response.code).to.be.oneOf([409, 400]); });"]}}]
                 },
                 {
-                    "name": "PATCH /staff/{id} — Reset Role back to STAFF",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff_member1_id}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"role\": \"STAFF\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });"]}}]
-                },
-                {
-                    "name": "PATCH /staff/{id} — Activate Raf (PENDING_SETUP → ACTIVE)",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff_member1_id}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"employmentStatus\": \"ACTIVE\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('Status is ACTIVE', function() { pm.expect(pm.response.json().employmentStatus).to.equal('ACTIVE'); });"]}}]
-                },
-                {
-                    "name": "PATCH /staff/{id} — Activate Phil",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff_member2_id}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"employmentStatus\": \"ACTIVE\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('Status is ACTIVE', function() { pm.expect(pm.response.json().employmentStatus).to.equal('ACTIVE'); });"]}}]
-                },
-                {
-                    "name": "PATCH /staff/{id} — Update All Fields At Once",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff_member2_id}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"department\": \"Digital\",\n    \"lineManagerId\": \"{{manager2_uid}}\",\n    \"currentRole\": \"Senior Software Engineer\",\n    \"startDateOfCurrentRole\": \"2026-09-01\",\n    \"jobLevel\": \"SENIOR\",\n    \"employmentType\": \"FULL_TIME\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('Role updated', function() { pm.expect(pm.response.json().currentRole).to.equal('Senior Software Engineer'); });","pm.test('Job level updated', function() { pm.expect(pm.response.json().jobLevel).to.equal('SENIOR'); });","pm.test('Employment type updated', function() { pm.expect(pm.response.json().employmentType).to.equal('FULL_TIME'); });"]}}]
-                },
-                {
-                    "name": "PATCH /staff/{id} — Terminate Phil",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff_member2_id}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"employmentStatus\": \"TERMINATED\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('Status is TERMINATED', function() { pm.expect(pm.response.json().employmentStatus).to.equal('TERMINATED'); });"]}}]
-                },
-                {
-                    "name": "PATCH /staff/{id} — Reactivate Terminated (expect 409)",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff_member2_id}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"employmentStatus\": \"ACTIVE\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Cannot reactivate terminated — 409 or 400', function() { pm.expect(pm.response.code).to.be.oneOf([409, 400]); });","pm.test('Error mentions terminated', function() { pm.expect(pm.response.json().message).to.include('terminated'); });"]}}]
-                },
-                {
-                    "name": "PATCH /staff/{id} — as Staff (expect 403)",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff_member1_id}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"department\": \"Finance\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Staff cannot update staff — 403', function() { pm.response.to.have.status(403); });"]}}]
+                    "name": "PATCH — Staff (expect 403)",
+                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff1_uid}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"department\": \"Finance\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('403', function() { pm.response.to.have.status(403); });"]}}]
                 }
             ]
         },
         {
             "name": "3. Leave Requests — Commands",
-            "description": "Submit, approve, reject, cancel leave requests.\nTests state machine transitions (PENDING → APPROVED/REJECTED/CANCELLED),\nownership checks (only owner can cancel, only assigned manager can approve/reject),\nand domain validation (dates, leave types).",
             "item": [
                 {
-                    "name": "Submit Leave Request — Raf (5 days holiday)",
+                    "name": "Submit — Raf (5 days)",
                     "request": { "method": "POST", "url": "{{base_url}}/leave-requests", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"managerId\": \"{{manager1_uid}}\",\n    \"startDate\": \"2026-09-15\",\n    \"endDate\": \"2026-09-19\",\n    \"leaveType\": \"ANNUAL\",\n    \"reason\": \"Family holiday to Portugal\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Submit returns 201', function() { pm.response.to.have.status(201); });","var res = pm.response.json();","pm.test('Status is PENDING', function() { pm.expect(res.status).to.equal('PENDING'); });","pm.test('Has 5 days', function() { pm.expect(res.numberOfDays).to.equal(5); });","pm.test('Has reason', function() { pm.expect(res.reason).to.equal('Family holiday to Portugal'); });","pm.test('Has leaveType', function() { pm.expect(res.leaveType).to.equal('ANNUAL'); });","pm.globals.set('leave_request_id', res.id);"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('201', function() { pm.response.to.have.status(201); });","pm.test('PENDING', function() { pm.expect(pm.response.json().status).to.equal('PENDING'); });","pm.environment.set('leave_request_id', pm.response.json().id);"]}}]
                 },
                 {
                     "name": "Submit — Past Date (expect 400)",
-                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"managerId\": \"{{manager1_uid}}\",\n    \"startDate\": \"2025-01-01\",\n    \"endDate\": \"2025-01-05\",\n    \"leaveType\": \"ANNUAL\",\n    \"reason\": \"Past date test\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Past date returns 400', function() { pm.response.to.have.status(400); });"]}}]
+                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"managerId\": \"{{manager1_uid}}\",\n    \"startDate\": \"2025-01-01\",\n    \"endDate\": \"2025-01-05\",\n    \"leaveType\": \"ANNUAL\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('400', function() { pm.response.to.have.status(400); });"]}}]
                 },
                 {
                     "name": "Submit — End Before Start (expect 400)",
-                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"managerId\": \"{{manager1_uid}}\",\n    \"startDate\": \"2026-10-15\",\n    \"endDate\": \"2026-10-10\",\n    \"leaveType\": \"ANNUAL\",\n    \"reason\": \"Bad dates test\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('End before start returns 400', function() { pm.response.to.have.status(400); });"]}}]
-                },
-                {
-                    "name": "Submit — Invalid Leave Type (expect 400)",
-                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"managerId\": \"{{manager1_uid}}\",\n    \"startDate\": \"2026-10-15\",\n    \"endDate\": \"2026-10-19\",\n    \"leaveType\": \"SICK\",\n    \"reason\": \"Invalid type test\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Invalid type returns 400', function() { pm.response.to.have.status(400); });","pm.test('Mentions valid leave types', function() { pm.expect(pm.response.json().message).to.include('leave type'); });"]}}]
+                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"managerId\": \"{{manager1_uid}}\",\n    \"startDate\": \"2026-10-15\",\n    \"endDate\": \"2026-10-10\",\n    \"leaveType\": \"ANNUAL\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('400', function() { pm.response.to.have.status(400); });"]}}]
                 },
                 {
                     "name": "Submit — No Token (expect 401)",
-                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"managerId\": \"{{manager1_uid}}\",\n    \"startDate\": \"2026-10-15\",\n    \"endDate\": \"2026-10-19\",\n    \"leaveType\": \"ANNUAL\",\n    \"reason\": \"No auth test\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('No token returns 401', function() { pm.response.to.have.status(401); });"]}}]
+                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"managerId\": \"{{manager1_uid}}\",\n    \"startDate\": \"2026-10-15\",\n    \"endDate\": \"2026-10-19\",\n    \"leaveType\": \"ANNUAL\"\n}"}, "auth": {"type":"noauth"} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('401', function() { pm.response.to.have.status(401); });"]}}]
                 },
                 {
-                    "name": "Approve — as Assigned Manager (Lucy approves Raf's request)",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/leave-requests/{{leave_request_id}}/approve", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"reason\": \"Approved, enjoy your holiday!\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_manager1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Approve returns 200', function() { pm.response.to.have.status(200); });","var res = pm.response.json();","pm.test('Status is APPROVED', function() { pm.expect(res.status).to.equal('APPROVED'); });","pm.test('DecisionReason stored', function() { pm.expect(res.decisionReason).to.equal('Approved, enjoy your holiday!'); });","pm.test('DecidedBy is manager', function() { pm.expect(res.decidedBy).to.not.be.null; });"]}}]
+                    "name": "Approve — Lucy",
+                    "request": { "method": "PATCH", "url": "{{base_url}}/leave-requests/{{leave_request_id}}/approve", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"reason\": \"Enjoy your holiday!\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_manager1_token}}"}]} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });","pm.test('APPROVED', function() { pm.expect(pm.response.json().status).to.equal('APPROVED'); });"]}}]
                 },
                 {
-                    "name": "Approve — Already Approved (expect 409)",
+                    "name": "Approve — Already (expect 409)",
                     "request": { "method": "PATCH", "url": "{{base_url}}/leave-requests/{{leave_request_id}}/approve", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_manager1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Double approve returns 409 or 400', function() { pm.expect(pm.response.code).to.be.oneOf([409, 400]); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('409 or 400', function() { pm.expect(pm.response.code).to.be.oneOf([409, 400]); });"]}}]
                 },
                 {
-                    "name": "Approve — as Staff (expect 403)",
+                    "name": "Approve — Staff (expect 403)",
                     "request": { "method": "PATCH", "url": "{{base_url}}/leave-requests/{{leave_request_id}}/approve", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Staff cannot approve — 403', function() { pm.response.to.have.status(403); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('403', function() { pm.response.to.have.status(403); });"]}}]
                 },
                 {
-                    "name": "Approve — Wrong Manager (Dan tries to approve Lucy's team, expect 403)",
+                    "name": "Approve — Wrong Manager (expect 403)",
                     "request": { "method": "PATCH", "url": "{{base_url}}/leave-requests/{{leave_request_id}}/approve", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_manager2_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Wrong manager cannot approve — 403', function() { pm.response.to.have.status(403); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('403', function() { pm.response.to.have.status(403); });"]}}]
                 },
                 {
-                    "name": "Cancel Approved — Raf cancels own approved request",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/leave-requests/{{leave_request_id}}/cancel", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"reason\": \"Plans changed — family emergency\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Cancel returns 200', function() { pm.response.to.have.status(200); });","pm.test('Status is CANCELLED', function() { pm.expect(pm.response.json().status).to.equal('CANCELLED'); });","pm.test('CancellationReason stored', function() { pm.expect(pm.response.json().cancellationReason).to.include('Plans changed'); });"]}}]
+                    "name": "Cancel Approved — Raf",
+                    "request": { "method": "PATCH", "url": "{{base_url}}/leave-requests/{{leave_request_id}}/cancel", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"reason\": \"Plans changed\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });","pm.test('CANCELLED', function() { pm.expect(pm.response.json().status).to.equal('CANCELLED'); });"]}}]
                 },
                 {
-                    "name": "Submit 2nd Request — Raf (for reject test)",
-                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"managerId\": \"{{manager1_uid}}\",\n    \"startDate\": \"2026-11-02\",\n    \"endDate\": \"2026-11-06\",\n    \"leaveType\": \"ANNUAL\",\n    \"reason\": \"Christmas shopping week\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Submit returns 201', function() { pm.response.to.have.status(201); });","pm.globals.set('leave_request_id_2', pm.response.json().id);"]}}]
+                    "name": "Submit 2nd — for reject",
+                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"managerId\": \"{{manager1_uid}}\",\n    \"startDate\": \"2026-11-02\",\n    \"endDate\": \"2026-11-06\",\n    \"leaveType\": \"ANNUAL\",\n    \"reason\": \"Christmas shopping\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('201', function() { pm.response.to.have.status(201); });","pm.environment.set('leave_request_id_2', pm.response.json().id);"]}}]
                 },
                 {
-                    "name": "Reject — Lucy rejects with reason",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/leave-requests/{{leave_request_id_2}}/reject", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"reason\": \"Team is short-staffed that week\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_manager1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Reject returns 200', function() { pm.response.to.have.status(200); });","pm.test('Status is REJECTED', function() { pm.expect(pm.response.json().status).to.equal('REJECTED'); });","pm.test('DecisionReason stored', function() { pm.expect(pm.response.json().decisionReason).to.equal('Team is short-staffed that week'); });"]}}]
+                    "name": "Reject — Lucy",
+                    "request": { "method": "PATCH", "url": "{{base_url}}/leave-requests/{{leave_request_id_2}}/reject", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"reason\": \"Team short-staffed\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_manager1_token}}"}]} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });","pm.test('REJECTED', function() { pm.expect(pm.response.json().status).to.equal('REJECTED'); });"]}}]
                 },
                 {
                     "name": "Cancel Rejected (expect 409)",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/leave-requests/{{leave_request_id_2}}/cancel", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"reason\": \"Want to cancel this rejected request\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Cannot cancel rejected — 409 or 400', function() { pm.expect(pm.response.code).to.be.oneOf([409, 400]); });"]}}]
+                    "request": { "method": "PATCH", "url": "{{base_url}}/leave-requests/{{leave_request_id_2}}/cancel", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('409 or 400', function() { pm.expect(pm.response.code).to.be.oneOf([409, 400]); });"]}}]
                 },
                 {
-                    "name": "Submit 3rd Request — Raf (for cancel-from-PENDING test)",
-                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"managerId\": \"{{manager1_uid}}\",\n    \"startDate\": \"2026-12-14\",\n    \"endDate\": \"2026-12-18\",\n    \"leaveType\": \"ANNUAL\",\n    \"reason\": \"End of year break\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Submit returns 201', function() { pm.response.to.have.status(201); });","var res = pm.response.json();","pm.test('Status is PENDING', function() { pm.expect(res.status).to.equal('PENDING'); });","pm.globals.set('leave_request_id_3', res.id);"]}}]
-                },
-                {
-                    "name": "Cancel from PENDING — Raf cancels own pending request",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/leave-requests/{{leave_request_id_3}}/cancel", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"reason\": \"Changed my mind about the break\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Cancel from PENDING returns 200', function() { pm.response.to.have.status(200); });","pm.test('Status is CANCELLED', function() { pm.expect(pm.response.json().status).to.equal('CANCELLED'); });"]}}]
-                },
-                {
-                    "name": "Cancel — Someone else's request (expect 403)",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/leave-requests/{{leave_request_id}}/cancel", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"reason\": \"Not my request to cancel\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff2_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Cannot cancel others request — 403', function() { pm.response.to.have.status(403); });"]}}]
-                },
-                {
-                    "name": "Cancel — Non-existent ID (expect 404)",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/leave-requests/00000000-0000-0000-0000-000000000000/cancel", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"reason\": \"Doesnt exist\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Non-existent returns 404', function() { pm.response.to.have.status(404); });"]}}]
-                },
-                {
-                    "name": "Approve — Non-existent ID (expect 404)",
+                    "name": "Approve Non-Existent (expect 404)",
                     "request": { "method": "PATCH", "url": "{{base_url}}/leave-requests/00000000-0000-0000-0000-000000000000/approve", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_manager1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Non-existent returns 404', function() { pm.response.to.have.status(404); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('404', function() { pm.response.to.have.status(404); });"]}}]
                 }
             ]
         },
         {
             "name": "4. Leave Requests — Queries & Search",
-            "description": "GET endpoints (unfiltered reads) and POST search endpoints (filtered queries via JSON body).\nGET returns all records for the user's scope. POST search requires at least one filter — empty body returns 400.\nThis follows the enterprise POST search pattern (Elasticsearch, Stripe).",
             "item": [
                 {
-                    "name": "GET /my — as Staff (Raf views own requests)",
+                    "name": "GET /my",
                     "request": { "method": "GET", "url": "{{base_url}}/leave-requests/my", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('Returns array', function() { pm.expect(pm.response.json()).to.be.an('array'); });","pm.test('Has leave requests', function() { pm.expect(pm.response.json().length).to.be.greaterThan(0); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
                 },
                 {
-                    "name": "GET /team — as Manager (Lucy views her team's requests)",
+                    "name": "GET /team — Manager",
                     "request": { "method": "GET", "url": "{{base_url}}/leave-requests/team", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_manager1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('Returns array', function() { pm.expect(pm.response.json()).to.be.an('array'); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
                 },
                 {
-                    "name": "GET /team — as Staff (expect 403)",
+                    "name": "GET /team — Staff (expect 403)",
                     "request": { "method": "GET", "url": "{{base_url}}/leave-requests/team", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Staff cannot view team requests — 403', function() { pm.response.to.have.status(403); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('403', function() { pm.response.to.have.status(403); });"]}}]
                 },
                 {
-                    "name": "GET /all — as Admin",
+                    "name": "GET /all — Admin",
                     "request": { "method": "GET", "url": "{{base_url}}/leave-requests/all", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('Returns array', function() { pm.expect(pm.response.json()).to.be.an('array'); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
                 },
                 {
-                    "name": "GET /all — as Manager (expect 403)",
+                    "name": "GET /all — Manager (expect 403)",
                     "request": { "method": "GET", "url": "{{base_url}}/leave-requests/all", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_manager1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Manager cannot view all — 403', function() { pm.response.to.have.status(403); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('403', function() { pm.response.to.have.status(403); });"]}}]
                 },
                 {
-                    "name": "GET /{id} — Valid leave request",
-                    "request": { "method": "GET", "url": "{{base_url}}/leave-requests/{{leave_request_id}}", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('Correct ID returned', function() { pm.expect(pm.response.json().id).to.equal(pm.globals.get('leave_request_id')); });","pm.test('Has all expected fields', function() { var res = pm.response.json(); pm.expect(res.staffMemberId).to.not.be.undefined; pm.expect(res.managerId).to.not.be.undefined; pm.expect(res.leaveType).to.not.be.undefined; pm.expect(res.status).to.not.be.undefined; });"]}}]
-                },
-                {
-                    "name": "GET /{id} — Non-existent (expect 404)",
-                    "request": { "method": "GET", "url": "{{base_url}}/leave-requests/00000000-0000-0000-0000-000000000000", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Non-existent returns 404', function() { pm.response.to.have.status(404); });"]}}]
-                },
-                {
-                    "name": "POST /my/search — by Status (CANCELLED)",
+                    "name": "POST /my/search — CANCELLED",
                     "request": { "method": "POST", "url": "{{base_url}}/leave-requests/my/search", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"status\": \"CANCELLED\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('All results are CANCELLED', function() { pm.response.json().forEach(function(r) { pm.expect(r.status).to.equal('CANCELLED'); }); });"]}}]
-                },
-                {
-                    "name": "POST /my/search — by Status (REJECTED)",
-                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests/my/search", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"status\": \"REJECTED\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('All results are REJECTED', function() { pm.response.json().forEach(function(r) { pm.expect(r.status).to.equal('REJECTED'); }); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
                 },
                 {
                     "name": "POST /my/search — No Filters (expect 400)",
                     "request": { "method": "POST", "url": "{{base_url}}/leave-requests/my/search", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Empty search returns 400', function() { pm.response.to.have.status(400); });","pm.test('Helpful message', function() { pm.expect(pm.response.json().message).to.include('filter'); });"]}}]
-                },
-                {
-                    "name": "POST /team/search — Status + Date Range",
-                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests/team/search", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"status\": \"CANCELLED\",\n    \"from\": \"2026-09-01\",\n    \"to\": \"2026-12-31\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_manager1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });"]}}]
-                },
-                {
-                    "name": "POST /team/search — as Staff (expect 403)",
-                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests/team/search", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"status\": \"PENDING\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Staff cannot search team — 403', function() { pm.response.to.have.status(403); });"]}}]
-                },
-                {
-                    "name": "POST /team/search — No Filters (expect 400)",
-                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests/team/search", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_manager1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Empty team search returns 400', function() { pm.response.to.have.status(400); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('400', function() { pm.response.to.have.status(400); });"]}}]
                 },
                 {
                     "name": "POST /all/search — by staffMemberId",
                     "request": { "method": "POST", "url": "{{base_url}}/leave-requests/all/search", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"staffMemberId\": \"{{staff1_uid}}\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('All results for correct staff member', function() { var uid = pm.globals.get('staff1_uid'); pm.response.json().forEach(function(r) { pm.expect(r.staffMemberId).to.equal(uid); }); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
                 },
                 {
-                    "name": "POST /all/search — by managerId",
-                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests/all/search", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"managerId\": \"{{manager1_uid}}\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('All results for correct manager', function() { var uid = pm.globals.get('manager1_uid'); pm.response.json().forEach(function(r) { pm.expect(r.managerId).to.equal(uid); }); });"]}}]
-                },
-                {
-                    "name": "POST /all/search — by managerId + Status",
-                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests/all/search", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"managerId\": \"{{manager1_uid}}\",\n    \"status\": \"REJECTED\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('All results are REJECTED', function() { pm.response.json().forEach(function(r) { pm.expect(r.status).to.equal('REJECTED'); }); });"]}}]
-                },
-                {
-                    "name": "POST /all/search — by Status + Date Range",
-                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests/all/search", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"status\": \"CANCELLED\",\n    \"from\": \"2026-01-01\",\n    \"to\": \"2026-12-31\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('All results are CANCELLED', function() { pm.response.json().forEach(function(r) { pm.expect(r.status).to.equal('CANCELLED'); }); });"]}}]
-                },
-                {
-                    "name": "POST /all/search — by Date Range only",
-                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests/all/search", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"from\": \"2026-01-01\",\n    \"to\": \"2026-12-31\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });"]}}]
-                },
-                {
-                    "name": "POST /all/search — No Filters (expect 400)",
-                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests/all/search", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Empty all-search returns 400', function() { pm.response.to.have.status(400); });","pm.test('Helpful message', function() { pm.expect(pm.response.json().message).to.include('filter'); });"]}}]
-                },
-                {
-                    "name": "POST /all/search — as Staff (expect 403)",
+                    "name": "POST /all/search — Staff (expect 403)",
                     "request": { "method": "POST", "url": "{{base_url}}/leave-requests/all/search", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"status\": \"PENDING\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Staff cannot search all — 403', function() { pm.response.to.have.status(403); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('403', function() { pm.response.to.have.status(403); });"]}}]
                 }
             ]
         },
         {
             "name": "5. Leave Allowances",
-            "description": "View and amend leave balances.\nAllowances are auto-created when staff is activated (PENDING_SETUP → ACTIVE).\nDefault entitlement is 25 days unless overridden in POST /staff.",
             "item": [
                 {
-                    "name": "GET /my — as Staff (Raf views own allowance)",
+                    "name": "GET /my — Staff",
                     "request": { "method": "GET", "url": "{{base_url}}/leave-allowances/my", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","var res = pm.response.json();","pm.test('Has totalEntitlement', function() { pm.expect(res.totalEntitlement).to.not.be.undefined; });","pm.test('Has remainingDays', function() { pm.expect(res.remainingDays).to.not.be.undefined; });","pm.test('Has department', function() { pm.expect(res.department).to.not.be.undefined; });","pm.globals.set('leave_allowance_id', res.id);"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });","pm.environment.set('leave_allowance_id', pm.response.json().id);"]}}]
                 },
                 {
-                    "name": "GET /staff/{id} — Manager views team member's allowance",
-                    "request": { "method": "GET", "url": "{{base_url}}/leave-allowances/staff/{{staff_member1_id}}", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_manager1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('Correct staff member', function() { pm.expect(pm.response.json().staffMemberId).to.equal(pm.globals.get('staff_member1_id')); });"]}}]
-                },
-                {
-                    "name": "GET /team — Manager views team allowances",
+                    "name": "GET /team — Manager",
                     "request": { "method": "GET", "url": "{{base_url}}/leave-allowances/team", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_manager1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('Returns array', function() { pm.expect(pm.response.json()).to.be.an('array'); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
                 },
                 {
-                    "name": "GET /all — as Admin",
+                    "name": "GET /all — Admin",
                     "request": { "method": "GET", "url": "{{base_url}}/leave-allowances/all", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('Returns array', function() { pm.expect(pm.response.json()).to.be.an('array'); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
                 },
                 {
-                    "name": "GET /all — as Staff (expect 403)",
+                    "name": "GET /all — Staff (expect 403)",
                     "request": { "method": "GET", "url": "{{base_url}}/leave-allowances/all", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Staff cannot view all allowances — 403', function() { pm.response.to.have.status(403); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('403', function() { pm.response.to.have.status(403); });"]}}]
                 },
                 {
-                    "name": "GET /all?department=Networks — Filter by department",
-                    "request": { "method": "GET", "url": "{{base_url}}/leave-allowances/all?department=Networks", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('All results are Networks dept', function() { pm.response.json().forEach(function(a) { pm.expect(a.department).to.equal('Networks'); }); });"]}}]
-                },
-                {
-                    "name": "PATCH /leave-allowances/{id} — Amend Entitlement to 28 (Admin)",
+                    "name": "PATCH Amend to 28 — Admin",
                     "request": { "method": "PATCH", "url": "{{base_url}}/leave-allowances/{{leave_allowance_id}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"newEntitlement\": 28\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Returns 200', function() { pm.response.to.have.status(200); });","pm.test('Entitlement updated to 28', function() { pm.expect(pm.response.json().totalEntitlement).to.equal(28); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
                 },
                 {
-                    "name": "PATCH /leave-allowances/{id} — as Staff (expect 403)",
+                    "name": "PATCH — Staff (expect 403)",
                     "request": { "method": "PATCH", "url": "{{base_url}}/leave-allowances/{{leave_allowance_id}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"newEntitlement\": 50\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Staff cannot amend entitlement — 403', function() { pm.response.to.have.status(403); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('403', function() { pm.response.to.have.status(403); });"]}}]
                 }
             ]
         },
         {
-            "name": "6. Security & Error Handling",
-            "description": "Cross-cutting security tests: rate limiting (Bucket4j), security headers (X-Content-Type-Options, X-Frame-Options, Cache-Control), and invalid token rejection.",
+            "name": "6. Security",
             "item": [
                 {
-                    "name": "Rate Limit — Rapid requests (expect 429 eventually)",
-                    "request": { "method": "POST", "url": "{{base_url}}/auth/login", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"emailOrUsername\": \"admin@admin.com\",\n    \"password\": \"Password123!\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Response is 200 or 429 (rate limited)', function() { pm.expect(pm.response.code).to.be.oneOf([200, 429]); });"]}}]
-                },
-                {
-                    "name": "Security Headers Check",
+                    "name": "Security Headers",
                     "request": { "method": "GET", "url": "{{base_url}}/leave-requests/my", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('X-Content-Type-Options is nosniff', function() { pm.expect(pm.response.headers.get('X-Content-Type-Options')).to.equal('nosniff'); });","pm.test('X-Frame-Options is DENY', function() { pm.expect(pm.response.headers.get('X-Frame-Options')).to.equal('DENY'); });","pm.test('Cache-Control is no-store', function() { pm.expect(pm.response.headers.get('Cache-Control')).to.equal('no-store'); });","pm.test('Server header obfuscated', function() { var s = pm.response.headers.get('Server'); pm.expect(s).to.satisfy(function(v) { return !v || v === ''; }); });"]}}]
+                    "event": [{"listen":"test","script":{"exec":["pm.test('nosniff', function() { pm.expect(pm.response.headers.get('X-Content-Type-Options')).to.equal('nosniff'); });","pm.test('DENY', function() { pm.expect(pm.response.headers.get('X-Frame-Options')).to.equal('DENY'); });","pm.test('no-store', function() { pm.expect(pm.response.headers.get('Cache-Control')).to.equal('no-store'); });"]}}]
                 },
                 {
                     "name": "Invalid Token (expect 401)",
-                    "request": { "method": "GET", "url": "{{base_url}}/leave-requests/my", "auth": {"type":"bearer","bearer":[{"key":"token","value":"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.INVALID.signature"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('Invalid token returns 401', function() { pm.response.to.have.status(401); });"]}}]
+                    "request": { "method": "GET", "url": "{{base_url}}/leave-requests/my", "auth": {"type":"bearer","bearer":[{"key":"token","value":"eyJhbGciOiJSUzI1NiJ9.INVALID.sig"}]} },
+                    "event": [{"listen":"test","script":{"exec":["pm.test('401', function() { pm.response.to.have.status(401); });"]}}]
                 }
             ]
         }

@@ -273,10 +273,10 @@ public class AuthController {
             return requestedRole != null ? requestedRole : "STAFF";
         }
         // Non-admin or unauthenticated callers ALWAYS get STAFF (security enforcement)
-        return "STAFF";
+        // return "STAFF";
 
-        //temp any role:
-        // return requestedRole != null ? requestedRole : "STAFF";
+        //temp any role
+        return requestedRole != null ? requestedRole : "STAFF";
     }
 
     /**

@@ -1,0 +1,545 @@
+{
+    "info": {
+        "name": "Leave Booking System — MANUAL Testing",
+        "description": "Manual testing — NO environment variables.\n\nFlow:\n1. Register 5 users → copy uid from each response\n2. Login each user → copy idToken from each response\n3. Admin fills in skeleton staff details via PATCH (paste uid into URL)\n4. Admin activates staff (PENDING_SETUP → ACTIVE)\n5. Staff submits leave (paste manager uid into body)\n6. Manager approves/rejects (paste leave request id into URL)\n\nPaste tokens into Bearer Token field. Paste UIDs into URLs and bodies where indicated.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "1. Register & Login",
+            "item": [
+                {
+                    "name": "Register Admin",
+                    "request": {
+                        "method": "POST",
+                        "url": "http://localhost:8900/auth/register",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"username\": \"Admin User\",\n    \"email\": \"testadmin@staffs.ac.uk\",\n    \"password\": \"Password123!\",\n    \"role\": \"ADMIN\"\n}"},
+                        "auth": {"type": "noauth"},
+                        "description": "Copy uid from response → ADMIN_UID"
+                    }
+                },
+                {
+                    "name": "Register Manager 1 — Lucy Reed",
+                    "request": {
+                        "method": "POST",
+                        "url": "http://localhost:8900/auth/register",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"username\": \"Lucy Reed\",\n    \"email\": \"lucy.reed@staffs.ac.uk\",\n    \"password\": \"Password123!\",\n    \"role\": \"MANAGER\"\n}"},
+                        "auth": {"type": "noauth"},
+                        "description": "Copy uid → MANAGER1_UID (needed as lineManagerId for Raf)"
+                    }
+                },
+                {
+                    "name": "Register Manager 2 — Dan Thompson",
+                    "request": {
+                        "method": "POST",
+                        "url": "http://localhost:8900/auth/register",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"username\": \"Dan Thompson\",\n    \"email\": \"dan.thompson@bt.com\",\n    \"password\": \"Password123!\",\n    \"role\": \"MANAGER\"\n}"},
+                        "auth": {"type": "noauth"},
+                        "description": "Copy uid → MANAGER2_UID (needed as lineManagerId for Phil)"
+                    }
+                },
+                {
+                    "name": "Register Staff 1 — Raf Ahmed",
+                    "request": {
+                        "method": "POST",
+                        "url": "http://localhost:8900/auth/register",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"username\": \"Raf Ahmed\",\n    \"email\": \"raf.ahmed@bt.com\",\n    \"password\": \"Password123!\",\n    \"role\": \"STAFF\"\n}"},
+                        "auth": {"type": "noauth"},
+                        "description": "Copy uid → STAFF1_UID (this is also the staff record ID in H2)"
+                    }
+                },
+                {
+                    "name": "Register Staff 2 — Phil James",
+                    "request": {
+                        "method": "POST",
+                        "url": "http://localhost:8900/auth/register",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"username\": \"Phil James\",\n    \"email\": \"phil.james@staffs.ac.uk\",\n    \"password\": \"Password123!\",\n    \"role\": \"STAFF\"\n}"},
+                        "auth": {"type": "noauth"},
+                        "description": "Copy uid → STAFF2_UID"
+                    }
+                },
+                {
+                    "name": "Login Admin — COPY idToken",
+                    "request": {
+                        "method": "POST",
+                        "url": "http://localhost:8900/auth/login",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"emailOrUsername\": \"testadmin@staffs.ac.uk\",\n    \"password\": \"Password123!\"\n}"},
+                        "auth": {"type": "noauth"},
+                        "description": "Copy idToken → ADMIN_TOKEN. Paste into jwt.io to verify role=ADMIN."
+                    }
+                },
+                {
+                    "name": "Login Manager 1 (Lucy) — COPY idToken",
+                    "request": {
+                        "method": "POST",
+                        "url": "http://localhost:8900/auth/login",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"emailOrUsername\": \"lucy.reed@staffs.ac.uk\",\n    \"password\": \"Password123!\"\n}"},
+                        "auth": {"type": "noauth"},
+                        "description": "Copy idToken → MANAGER1_TOKEN"
+                    }
+                },
+                {
+                    "name": "Login Manager 2 (Dan) — COPY idToken",
+                    "request": {
+                        "method": "POST",
+                        "url": "http://localhost:8900/auth/login",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"emailOrUsername\": \"dan.thompson@bt.com\",\n    \"password\": \"Password123!\"\n}"},
+                        "auth": {"type": "noauth"},
+                        "description": "Copy idToken → MANAGER2_TOKEN"
+                    }
+                },
+                {
+                    "name": "Login Staff 1 (Raf) — COPY idToken",
+                    "request": {
+                        "method": "POST",
+                        "url": "http://localhost:8900/auth/login",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"emailOrUsername\": \"raf.ahmed@bt.com\",\n    \"password\": \"Password123!\"\n}"},
+                        "auth": {"type": "noauth"},
+                        "description": "Copy idToken → STAFF1_TOKEN"
+                    }
+                },
+                {
+                    "name": "Login Staff 2 (Phil) — COPY idToken",
+                    "request": {
+                        "method": "POST",
+                        "url": "http://localhost:8900/auth/login",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"emailOrUsername\": \"phil.james@staffs.ac.uk\",\n    \"password\": \"Password123!\"\n}"},
+                        "auth": {"type": "noauth"},
+                        "description": "Copy idToken → STAFF2_TOKEN"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "2. Auth — Authenticated Endpoints",
+            "item": [
+                {
+                    "name": "Role Check — Admin (paste ADMIN_TOKEN)",
+                    "request": {
+                        "method": "GET",
+                        "url": "http://localhost:8900/auth/role-check",
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_ADMIN_TOKEN_HERE"}]},
+                        "description": "Should return 200 'ROLE_ADMIN access granted'"
+                    }
+                },
+                {
+                    "name": "Role Check — No Token (expect 401/403)",
+                    "request": {
+                        "method": "GET",
+                        "url": "http://localhost:8900/auth/role-check",
+                        "auth": {"type": "noauth"}
+                    }
+                },
+                {
+                    "name": "Register — Duplicate (expect 400)",
+                    "request": {
+                        "method": "POST",
+                        "url": "http://localhost:8900/auth/register",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"username\": \"Dup\",\n    \"email\": \"testadmin@staffs.ac.uk\",\n    \"password\": \"Password123!\"\n}"},
+                        "auth": {"type": "noauth"}
+                    }
+                },
+                {
+                    "name": "Register — Missing Fields (expect 400)",
+                    "request": {
+                        "method": "POST",
+                        "url": "http://localhost:8900/auth/register",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"email\": \"x@x.com\"\n}"},
+                        "auth": {"type": "noauth"}
+                    }
+                },
+                {
+                    "name": "Login — Wrong Password (expect 400)",
+                    "request": {
+                        "method": "POST",
+                        "url": "http://localhost:8900/auth/login",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"emailOrUsername\": \"testadmin@staffs.ac.uk\",\n    \"password\": \"WrongPassword!\"\n}"},
+                        "auth": {"type": "noauth"}
+                    }
+                },
+                {
+                    "name": "Find User — Admin (paste ADMIN_TOKEN)",
+                    "request": {
+                        "method": "GET",
+                        "url": "http://localhost:8900/auth/users/lucy.reed@staffs.ac.uk",
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_ADMIN_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "Find User — Staff (expect 403, paste STAFF1_TOKEN)",
+                    "request": {
+                        "method": "GET",
+                        "url": "http://localhost:8900/auth/users/testadmin@staffs.ac.uk",
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_STAFF1_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "Find User — Non-existent (expect 404, paste ADMIN_TOKEN)",
+                    "request": {
+                        "method": "GET",
+                        "url": "http://localhost:8900/auth/users/nobody@nowhere.com",
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_ADMIN_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "Change Password (paste STAFF2_TOKEN)",
+                    "request": {
+                        "method": "PATCH",
+                        "url": "http://localhost:8900/auth/password",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"newPassword\": \"NewPassword456!\"\n}"},
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_STAFF2_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "Change Password — Reset back (paste STAFF2_TOKEN)",
+                    "request": {
+                        "method": "PATCH",
+                        "url": "http://localhost:8900/auth/password",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"newPassword\": \"Password123!\"\n}"},
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_STAFF2_TOKEN_HERE"}]}
+                    }
+                }
+            ]
+        },
+        {
+            "name": "3. Staff — Setup & Activate",
+            "description": "Admin fills in skeleton details then activates. Paste ADMIN_TOKEN, STAFF1_UID, STAFF2_UID, MANAGER1_UID, MANAGER2_UID.",
+            "item": [
+                {
+                    "name": "Fill in Raf details (paste ADMIN_TOKEN, replace STAFF1_UID + MANAGER1_UID)",
+                    "request": {
+                        "method": "PATCH",
+                        "url": "http://localhost:8900/staff/PASTE_STAFF1_UID_HERE",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"department\": \"Networks\",\n    \"lineManagerId\": \"PASTE_MANAGER1_UID_HERE\",\n    \"currentRole\": \"Apprentice Software Engineer\",\n    \"startDateOfCurrentRole\": \"2025-09-01\",\n    \"jobLevel\": \"JUNIOR\",\n    \"employmentType\": \"FULL_TIME\"\n}"},
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_ADMIN_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "Activate Raf (replace STAFF1_UID)",
+                    "request": {
+                        "method": "PATCH",
+                        "url": "http://localhost:8900/staff/PASTE_STAFF1_UID_HERE",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"employmentStatus\": \"ACTIVE\"\n}"},
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_ADMIN_TOKEN_HERE"}]},
+                        "description": "Check IntelliJ console for: StaffMemberAddedEvent received → LeaveAllowance created"
+                    }
+                },
+                {
+                    "name": "Fill in Phil details (replace STAFF2_UID + MANAGER2_UID)",
+                    "request": {
+                        "method": "PATCH",
+                        "url": "http://localhost:8900/staff/PASTE_STAFF2_UID_HERE",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"department\": \"Digital\",\n    \"lineManagerId\": \"PASTE_MANAGER2_UID_HERE\",\n    \"currentRole\": \"Software Engineer\",\n    \"startDateOfCurrentRole\": \"2023-04-01\",\n    \"jobLevel\": \"MID\",\n    \"employmentType\": \"PART_TIME\"\n}"},
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_ADMIN_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "Activate Phil (replace STAFF2_UID)",
+                    "request": {
+                        "method": "PATCH",
+                        "url": "http://localhost:8900/staff/PASTE_STAFF2_UID_HERE",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"employmentStatus\": \"ACTIVE\"\n}"},
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_ADMIN_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "GET /staff — Admin",
+                    "request": {
+                        "method": "GET",
+                        "url": "http://localhost:8900/staff",
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_ADMIN_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "GET /staff — Staff (expect 403)",
+                    "request": {
+                        "method": "GET",
+                        "url": "http://localhost:8900/staff",
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_STAFF1_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "Search by Department (paste ADMIN_TOKEN)",
+                    "request": {
+                        "method": "POST",
+                        "url": "http://localhost:8900/staff/search",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"department\": \"Networks\"\n}"},
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_ADMIN_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "Search — No Filters (expect 400)",
+                    "request": {
+                        "method": "POST",
+                        "url": "http://localhost:8900/staff/search",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{}"},
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_ADMIN_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "Update Dept — Raf to Digital (replace STAFF1_UID + MANAGER2_UID)",
+                    "request": {
+                        "method": "PATCH",
+                        "url": "http://localhost:8900/staff/PASTE_STAFF1_UID_HERE",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"department\": \"Digital\",\n    \"lineManagerId\": \"PASTE_MANAGER2_UID_HERE\"\n}"},
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_ADMIN_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "Move Raf back to Networks (replace STAFF1_UID + MANAGER1_UID)",
+                    "request": {
+                        "method": "PATCH",
+                        "url": "http://localhost:8900/staff/PASTE_STAFF1_UID_HERE",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"department\": \"Networks\",\n    \"lineManagerId\": \"PASTE_MANAGER1_UID_HERE\"\n}"},
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_ADMIN_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "Terminate Phil (replace STAFF2_UID)",
+                    "request": {
+                        "method": "PATCH",
+                        "url": "http://localhost:8900/staff/PASTE_STAFF2_UID_HERE",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"employmentStatus\": \"TERMINATED\"\n}"},
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_ADMIN_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "Reactivate Terminated (expect 409, replace STAFF2_UID)",
+                    "request": {
+                        "method": "PATCH",
+                        "url": "http://localhost:8900/staff/PASTE_STAFF2_UID_HERE",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"employmentStatus\": \"ACTIVE\"\n}"},
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_ADMIN_TOKEN_HERE"}]}
+                    }
+                }
+            ]
+        },
+        {
+            "name": "4. Leave Requests",
+            "description": "Staff submits, manager approves/rejects. Paste tokens, MANAGER1_UID in body, leave request IDs in URLs.",
+            "item": [
+                {
+                    "name": "Submit — Raf 5 days (paste STAFF1_TOKEN, replace MANAGER1_UID)",
+                    "request": {
+                        "method": "POST",
+                        "url": "http://localhost:8900/leave-requests",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"managerId\": \"PASTE_MANAGER1_UID_HERE\",\n    \"startDate\": \"2026-09-15\",\n    \"endDate\": \"2026-09-19\",\n    \"leaveType\": \"ANNUAL\",\n    \"reason\": \"Family holiday to Portugal\"\n}"},
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_STAFF1_TOKEN_HERE"}]},
+                        "description": "Copy id from response → LEAVE_REQUEST_ID"
+                    }
+                },
+                {
+                    "name": "Submit — Past Date (expect 400)",
+                    "request": {
+                        "method": "POST",
+                        "url": "http://localhost:8900/leave-requests",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"managerId\": \"PASTE_MANAGER1_UID_HERE\",\n    \"startDate\": \"2025-01-01\",\n    \"endDate\": \"2025-01-05\",\n    \"leaveType\": \"ANNUAL\"\n}"},
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_STAFF1_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "Submit — End Before Start (expect 400)",
+                    "request": {
+                        "method": "POST",
+                        "url": "http://localhost:8900/leave-requests",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"managerId\": \"PASTE_MANAGER1_UID_HERE\",\n    \"startDate\": \"2026-10-15\",\n    \"endDate\": \"2026-10-10\",\n    \"leaveType\": \"ANNUAL\"\n}"},
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_STAFF1_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "GET /my (paste STAFF1_TOKEN)",
+                    "request": {
+                        "method": "GET",
+                        "url": "http://localhost:8900/leave-requests/my",
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_STAFF1_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "GET /team (paste MANAGER1_TOKEN)",
+                    "request": {
+                        "method": "GET",
+                        "url": "http://localhost:8900/leave-requests/team",
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_MANAGER1_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "GET /all (paste ADMIN_TOKEN)",
+                    "request": {
+                        "method": "GET",
+                        "url": "http://localhost:8900/leave-requests/all",
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_ADMIN_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "Approve — Lucy (paste MANAGER1_TOKEN, replace LEAVE_REQUEST_ID)",
+                    "request": {
+                        "method": "PATCH",
+                        "url": "http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_HERE/approve",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"reason\": \"Enjoy your holiday!\"\n}"},
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_MANAGER1_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "Cancel Approved — Raf (paste STAFF1_TOKEN, replace LEAVE_REQUEST_ID)",
+                    "request": {
+                        "method": "PATCH",
+                        "url": "http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_HERE/cancel",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"reason\": \"Plans changed\"\n}"},
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_STAFF1_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "Submit 2nd — for reject (paste STAFF1_TOKEN, replace MANAGER1_UID)",
+                    "request": {
+                        "method": "POST",
+                        "url": "http://localhost:8900/leave-requests",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"managerId\": \"PASTE_MANAGER1_UID_HERE\",\n    \"startDate\": \"2026-11-02\",\n    \"endDate\": \"2026-11-06\",\n    \"leaveType\": \"ANNUAL\",\n    \"reason\": \"Christmas shopping\"\n}"},
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_STAFF1_TOKEN_HERE"}]},
+                        "description": "Copy id → LEAVE_REQUEST_ID_2"
+                    }
+                },
+                {
+                    "name": "Reject — Lucy (paste MANAGER1_TOKEN, replace LEAVE_REQUEST_ID_2)",
+                    "request": {
+                        "method": "PATCH",
+                        "url": "http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_2_HERE/reject",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"reason\": \"Team short-staffed\"\n}"},
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_MANAGER1_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "POST /my/search — CANCELLED (paste STAFF1_TOKEN)",
+                    "request": {
+                        "method": "POST",
+                        "url": "http://localhost:8900/leave-requests/my/search",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"status\": \"CANCELLED\"\n}"},
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_STAFF1_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "POST /all/search — by staffMemberId (paste ADMIN_TOKEN, replace STAFF1_UID)",
+                    "request": {
+                        "method": "POST",
+                        "url": "http://localhost:8900/leave-requests/all/search",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"staffMemberId\": \"PASTE_STAFF1_UID_HERE\"\n}"},
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_ADMIN_TOKEN_HERE"}]}
+                    }
+                }
+            ]
+        },
+        {
+            "name": "5. Leave Allowances",
+            "item": [
+                {
+                    "name": "GET /my (paste STAFF1_TOKEN)",
+                    "request": {
+                        "method": "GET",
+                        "url": "http://localhost:8900/leave-allowances/my",
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_STAFF1_TOKEN_HERE"}]},
+                        "description": "Copy id → ALLOWANCE_ID for the PATCH below"
+                    }
+                },
+                {
+                    "name": "GET /team (paste MANAGER1_TOKEN)",
+                    "request": {
+                        "method": "GET",
+                        "url": "http://localhost:8900/leave-allowances/team",
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_MANAGER1_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "GET /all (paste ADMIN_TOKEN)",
+                    "request": {
+                        "method": "GET",
+                        "url": "http://localhost:8900/leave-allowances/all",
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_ADMIN_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "GET /all — Staff (expect 403)",
+                    "request": {
+                        "method": "GET",
+                        "url": "http://localhost:8900/leave-allowances/all",
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_STAFF1_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "PATCH Amend to 28 (paste ADMIN_TOKEN, replace ALLOWANCE_ID)",
+                    "request": {
+                        "method": "PATCH",
+                        "url": "http://localhost:8900/leave-allowances/PASTE_ALLOWANCE_ID_HERE",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"newEntitlement\": 28\n}"},
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_ADMIN_TOKEN_HERE"}]}
+                    }
+                },
+                {
+                    "name": "PATCH — Staff (expect 403, replace ALLOWANCE_ID)",
+                    "request": {
+                        "method": "PATCH",
+                        "url": "http://localhost:8900/leave-allowances/PASTE_ALLOWANCE_ID_HERE",
+                        "header": [{"key": "Content-Type", "value": "application/json"}],
+                        "body": {"mode": "raw", "raw": "{\n    \"newEntitlement\": 50\n}"},
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_STAFF1_TOKEN_HERE"}]}
+                    }
+                }
+            ]
+        },
+        {
+            "name": "6. Security & Errors",
+            "item": [
+                {
+                    "name": "Invalid Token (expect 401)",
+                    "request": {
+                        "method": "GET",
+                        "url": "http://localhost:8900/leave-requests/my",
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "eyJhbGciOiJSUzI1NiJ9.INVALID.sig"}]}
+                    }
+                },
+                {
+                    "name": "Security Headers (paste STAFF1_TOKEN)",
+                    "request": {
+                        "method": "GET",
+                        "url": "http://localhost:8900/leave-requests/my",
+                        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "PASTE_STAFF1_TOKEN_HERE"}]},
+                        "description": "Check headers: X-Content-Type-Options=nosniff, X-Frame-Options=DENY, Cache-Control=no-store, Server=(blank)"
+                    }
+                }
+            ]
+        }
+    ]
+}

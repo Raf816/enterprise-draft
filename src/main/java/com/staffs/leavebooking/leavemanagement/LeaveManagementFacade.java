@@ -389,6 +389,15 @@ public class LeaveManagementFacade {
     }
 
     /**
+     * Retrieves a leave allowance by its unique allowance ID (not staffMemberId).
+     * Used after amendEntitlement to return the updated allowance.
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    public LeaveAllowanceDTO findAllowanceById(String allowanceId) {
+        return leaveAllowanceQueryHandler.findAllowanceById(allowanceId);
+    }
+
+    /**
      * Retrieves the leave allowance for a specific staff member (manager/admin viewing another's allowance).
      *
      * <p><strong>Access:</strong> MANAGER or ADMIN — managers can view their team members'

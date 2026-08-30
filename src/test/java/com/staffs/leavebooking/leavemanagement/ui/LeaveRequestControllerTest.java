@@ -356,7 +356,7 @@ class LeaveRequestControllerTest {
         @WithMockUser(username = "staff-1")
         void shouldReturn201OnSubmit() throws Exception {
             // Arrange — staff is ACTIVE
-            when(staffFacade.findStaffMemberById("staff-1"))
+            when(staffFacade.findStaffMemberByIdInternal("staff-1"))
                     .thenReturn(createTestStaffDTO("staff-1", "ACTIVE"));
             var body = new SubmitLeaveRequestBody(
                     "mgr-1",
@@ -383,7 +383,7 @@ class LeaveRequestControllerTest {
         @WithMockUser(username = "pending-user")
         void shouldBlock403WhenPendingSetup() throws Exception {
             // Arrange — staff is PENDING_SETUP
-            when(staffFacade.findStaffMemberById("pending-user"))
+            when(staffFacade.findStaffMemberByIdInternal("pending-user"))
                     .thenReturn(createTestStaffDTO("pending-user", "PENDING_SETUP"));
             var body = new SubmitLeaveRequestBody(
                     "mgr-1",
@@ -408,7 +408,7 @@ class LeaveRequestControllerTest {
         @WithMockUser(username = "terminated-user")
         void shouldBlock403WhenTerminated() throws Exception {
             // Arrange — staff is TERMINATED
-            when(staffFacade.findStaffMemberById("terminated-user"))
+            when(staffFacade.findStaffMemberByIdInternal("terminated-user"))
                     .thenReturn(createTestStaffDTO("terminated-user", "TERMINATED"));
             var body = new SubmitLeaveRequestBody(
                     "mgr-1",

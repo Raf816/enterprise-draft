@@ -765,20 +765,17 @@ All value objects in this system are implemented as **Java records** (Lecture 4)
 public record Identity<T>(String id) implements ValueObject {
 
     public static final String IDENTITY_CANNOT_BE_NULL = "Identity cannot be null or blank";
-    public static final String IDENTITY_MUST_BE_UUID = "Identity must be a valid UUID format";
 
     public Identity {
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException(IDENTITY_CANNOT_BE_NULL);
         }
-        try {
-            UUID.fromString(id);  // Validates UUID format
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(IDENTITY_MUST_BE_UUID);
-        }
+        // Accepts both UUID format (internally generated) and Firebase UID format
+        // (alphanumeric strings). Firebase UIDs are used as staff record IDs for
+        // cross-context consistency (Firebase UID = staff record ID = leave allowance staffMemberId).
     }
 
-    /** Creates from existing UUID string (persistence read path). */
+    /** Creates from existing ID string (persistence read path). */
     public static <T> Identity<T> of(String id) {
         return new Identity<>(id);
     }
