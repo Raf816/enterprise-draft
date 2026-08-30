@@ -1,0 +1,48 @@
+server:
+  port: 0
+
+spring:
+  application:
+    name: leave-booking-system-test
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+  sql:
+    init:
+      mode: always
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    ssl:
+      enabled: false
+    listener:
+      simple:
+        auto-startup: false
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+
+firebase:
+  web-api-key: test-key-not-used
+
+rabbitmq:
+  outbox:
+    bindings:
+      "[com.staffs.leavebooking.common.events.StaffMemberAddedEvent]":
+        exchange: "staff-management"
+        routing-key: "staff.member.added"
+      "[com.staffs.leavebooking.common.events.StaffMemberUpdatedEvent]":
+        exchange: "staff-management"
+        routing-key: "staff.member.updated"

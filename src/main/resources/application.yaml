@@ -1,0 +1,59 @@
+server:
+  port: 8900
+
+spring:
+  application:
+    name: leave-booking-system
+  datasource:
+    url: jdbc:h2:mem:leavebooking
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+  sql:
+    init:
+      mode: always
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    ssl:
+      enabled: false
+  # CloudAMQP (use on unrestricted network - blocked on BT/Zscaler corporate network)
+  # rabbitmq:
+  #   host: seal-01.lmq.cloudamqp.com
+  #   username: fxactgkp
+  #   password: IowcBN82CH2TltRueLtaPpoMsPIDJp_J
+  #   virtual-host: fxactgkp
+  #   ssl:
+  #     enabled: true
+
+# Firebase web API key
+firebase:
+  web-api-key: AIzaSyCxZeTBdNzzZ2UvtnkvEuQcam95KzCY6Ck
+
+# Custom outbox routing (maps event FQCN to exchange + routing-key)
+rabbitmq:
+  outbox:
+    bindings:
+      "[com.staffs.leavebooking.common.events.StaffMemberAddedEvent]":
+        exchange: "staff-management"
+        routing-key: "staff.member.added"
+      "[com.staffs.leavebooking.common.events.StaffMemberUpdatedEvent]":
+        exchange: "staff-management"
+        routing-key: "staff.member.updated"
+      "[com.staffs.leavebooking.common.events.ManagerNotificationEvent]":
+        exchange: "leave-notifications"
+        routing-key: "notification.manager.pending"
+      "[com.staffs.leavebooking.common.events.StaffNotificationEvent]":
+        exchange: "leave-notifications"
+        routing-key: "notification.staff.decided"
