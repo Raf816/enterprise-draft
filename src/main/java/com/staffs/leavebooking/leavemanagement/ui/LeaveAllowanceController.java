@@ -170,7 +170,7 @@ public class LeaveAllowanceController {
     @ResponseStatus(HttpStatus.OK)      // Returns 200 OK on success
     public LeaveAllowanceDTO amendEntitlement(
             @PathVariable String id,
-            @RequestBody AmendEntitlementBody body) {
+            @jakarta.validation.Valid @RequestBody AmendEntitlementBody body) {
 
         // Build the CQRS command from the path variable (allowance ID) and request body (new entitlement)
         AmendEntitlementCommand command = new AmendEntitlementCommand(id, body.newEntitlement());
@@ -197,5 +197,8 @@ public class LeaveAllowanceController {
      *
      * @param newEntitlement the new total leave entitlement (in days) for the staff member
      */
-    public record AmendEntitlementBody(int newEntitlement) {}
+    public record AmendEntitlementBody(
+            @jakarta.validation.constraints.Min(value = 1, message = "Entitlement must be at least 1 day")
+            int newEntitlement
+    ) {}
 }

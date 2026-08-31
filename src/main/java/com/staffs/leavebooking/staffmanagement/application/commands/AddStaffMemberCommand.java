@@ -1,77 +1,79 @@
 package com.staffs.leavebooking.staffmanagement.application.commands;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDate;
 
 /**
  * CQRS Command record for creating a new staff member via admin POST /staff
  * (Lecture 6 — CQRS Commands).
  *
- * <p><strong>CQRS pattern:</strong> This command carries all the data needed
- * to create a new staff member. It is passed from the controller through the
- * facade to the application service, which uses it to construct the domain aggregate.
+ * <p><strong>Bean Validation:</strong> Validates at the controller level before Firebase
+ * user creation, preventing orphan Firebase accounts when domain validation would fail.
  *
- * <p><strong>Firebase coordination:</strong> The controller creates the Firebase user
- * FIRST (getting a UID), then passes this command to the application service which
- * creates the staff record using that Firebase UID as the ID.
- *
- * <p><strong>Defaults:</strong>
- * <ul>
- *   <li>{@code password} — defaults to "Password123!" if not provided (prototype default)</li>
- *   <li>{@code role} — defaults to "STAFF" if not provided</li>
- *   <li>{@code defaultLeaveEntitlement} — if 0 or negative, defaults to 25 in the service layer</li>
- * </ul>
- *
- * @param firstName              the staff member's first name
- * @param surname                the staff member's surname
- * @param email                  the staff member's email (must be unique)
- * @param department             the department (e.g., "Networks", "Digital")
- * @param lineManagerId          the UUID of the staff member's line manager
- * @param hireDate               the date the staff member was hired
- * @param currentRole            the job title (e.g., "Software Engineer")
- * @param startDateOfCurrentRole when the current role started
- * @param jobLevel               the seniority level (e.g., "JUNIOR", "MID", "SENIOR")
- * @param employmentType         the contract type (FULL_TIME, PART_TIME, CONTRACT)
- * @param defaultLeaveEntitlement annual leave days (defaults to 25 if not specified)
- * @param password               optional password for Firebase account (defaults to Password123!)
+ * @param firstName              the staff member's first name (required, max 50)
+ * @param surname                the staff member's surname (required, max 50)
+ * @param email                  the staff member's email (required, must be unique)
+ * @param department             the department (required)
+ * @param lineManagerId          the UUID of the staff member's line manager (optional)
+ * @param hireDate               the date hired (required, must not be in the future)
+ * @param currentRole            the job title (required)
+ * @param startDateOfCurrentRole when the current role started (required)
+ * @param jobLevel               the seniority level (optional)
+ * @param employmentType         the contract type: FULL_TIME, PART_TIME, CONTRACT (required)
+ * @param defaultLeaveEntitlement annual leave days (0 or negative defaults to 25)
+ * @param password               optional password for Firebase (defaults to Password123!)
  * @param role                   optional role for Firebase custom claim (defaults to STAFF)
  */
 public record AddStaffMemberCommand(
-        String firstName,               // Staff member's first name
-        String surname,                 // Staff member's surname
-        String email,                   // Must be unique (checked by Firebase and repository)
-        String department,              // Department name
-        String lineManagerId,           // Line manager's UUID
-        LocalDate hireDate,             // Date hired (cannot be in the future)
-        String currentRole,             // Job title
-        LocalDate startDateOfCurrentRole, // When current role started
-        String jobLevel,                // Seniority level (JUNIOR, MID, SENIOR, etc.)
-        String employmentType,          // Contract type (FULL_TIME, PART_TIME, CONTRACT)
-        int defaultLeaveEntitlement,    // Annual leave days (0 → default 25)
-        String password,                // Optional Firebase password (default: Password123!)
-        String role                     // Optional Firebase role (default: STAFF)
-) {
-    /** Default password for Firebase account creation if none specified */
-    public static final String DEFAULT_PASSWORD = "Password123!";
 
-    /** Default role for Firebase custom claims if none specified */
+        @NotBlank(message = "First name is required")
+        @Size(max = 50, message = "First name must not exceed 50 characters")
+        String firstName,
+
+        @NotBlank(message = "Surname is required")
+        @Size(max = 50, message = "Surname must not exceed 50 characters")
+        String surname,
+
+        @NotBlank(message = "Email is required")
+        String email,
+
+        @NotBlank(message = "Department is required")
+        String department,
+
+        String lineManagerId,           // Optional — nullable
+
+        @NotNull(message = "Hire date is required")
+        @PastOrPresent(message = "Hire date cannot be in the future")
+        LocalDate hireDate,
+
+        @NotBlank(message = "Current role is required")
+        String currentRole,
+
+        @NotNull(message = "Start date of current role is required")
+        LocalDate startDateOfCurrentRole,
+
+        String jobLevel,                // Optional — nullable
+
+        @NotBlank(message = "Employment type is required")
+        String employmentType,
+
+        int defaultLeaveEntitlement,    // 0 or negative defaults to 25 in the service
+
+        String password,                // Optional — defaults to Password123!
+        String role                     // Optional — defaults to STAFF
+) {
+    public static final String DEFAULT_PASSWORD = "Password123!";
     public static final String DEFAULT_ROLE = "STAFF";
 
-    /**
-     * Returns the password to use for Firebase account creation.
-     * If the command's password is null or blank, returns the default "Password123!".
-     *
-     * @return the effective password for Firebase user creation
-     */
     public String effectivePassword() {
         return (password != null && !password.isBlank()) ? password : DEFAULT_PASSWORD;
     }
 
-    /**
-     * Returns the role to use for Firebase custom claims.
-     * If the command's role is null or blank, returns "STAFF".
-     *
-     * @return the effective role for Firebase custom claims
-     */
     public String effectiveRole() {
         return (role != null && !role.isBlank()) ? role : DEFAULT_ROLE;
     }

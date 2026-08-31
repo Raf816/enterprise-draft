@@ -1,5 +1,7 @@
 package com.staffs.leavebooking.identity.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 /**
  * Request body DTO for POST /auth/login.
  *
@@ -7,11 +9,15 @@ package com.staffs.leavebooking.identity.dto;
  * On success, Firebase returns an ID token (JWT) that the client uses
  * for subsequent authenticated API requests.
  *
- * @param emailOrUsername the user's email address (Firebase uses email for auth)
- * @param password        the user's password
+ * @param emailOrUsername the user's email address (required)
+ * @param password        the user's password (required)
  */
 public record LoginRequest(
-        String emailOrUsername, // The email to authenticate with (Firebase key)
-        String password         // The user's password (validated by Firebase)
+
+        @NotBlank(message = "Email is required")
+        String emailOrUsername,
+
+        @NotBlank(message = "Password is required")
+        String password
 ) {
 }

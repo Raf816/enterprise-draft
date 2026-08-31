@@ -355,9 +355,15 @@ class LeaveRequestControllerTest {
         @DisplayName("Should return 201 Created on valid submission (ACTIVE staff)")
         @WithMockUser(username = "staff-1")
         void shouldReturn201OnSubmit() throws Exception {
-            // Arrange — staff is ACTIVE
+            // Arrange — staff is ACTIVE with lineManagerId "mgr-1"
             when(staffFacade.findStaffMemberByIdInternal("staff-1"))
                     .thenReturn(createTestStaffDTO("staff-1", "ACTIVE"));
+            // Manager exists check
+            when(staffFacade.findStaffMemberByIdInternal("mgr-1"))
+                    .thenReturn(createTestStaffDTO("mgr-1", "ACTIVE"));
+            // No overlapping requests
+            when(facade.findMyRequests("staff-1")).thenReturn(java.util.List.of());
+
             var body = new SubmitLeaveRequestBody(
                     "mgr-1",
                     LocalDate.now().plusDays(7),

@@ -279,12 +279,21 @@ public class LeaveRequestController {
         // Block PENDING_SETUP and TERMINATED staff from submitting leave requests
         verifyStaffIsActive(staffMemberId);
 
+        // Resolve managerId — if not provided, use the staff member's assigned lineManagerId
+        String managerId = resolveManagerId(staffMemberId, body.managerId());
+
+        // Validate that the managerId references a real staff member
+        verifyManagerExists(managerId);
+
+        // Check for date overlap with existing PENDING or APPROVED requests
+        verifyNoDateOverlap(staffMemberId, body.startDate(), body.endDate());
+
         // Build the CQRS command from the validated body and the JWT-derived staffMemberId
         SubmitLeaveRequestCommand command = new SubmitLeaveRequestCommand(
                 staffMemberId,          // From JWT — not from the request body (security)
-                body.managerId(),       // The manager who will approve/reject this request
+                managerId,              // Resolved: from body or auto-resolved from staff record
                 body.startDate(),       // First day of leave (validated: must be today or future)
-                body.endDate(),         // Last day of leave
+                body.endDate(),         // Last day of leave (validated: must be today or future)
                 body.leaveType(),       // Type of leave (e.g., "ANNUAL")
                 body.reason()           // Optional reason for the leave request
         );
@@ -326,6 +335,7 @@ public class LeaveRequestController {
 
         // Extract the optional decision reason from the body (null if no body provided)
         String reason = (body != null) ? body.get("reason") : null;
+        validateReasonLength(reason);
         // Delegate to facade — transitions status PENDING → APPROVED
         facade.approveLeaveRequest(id, decidedBy, reason);
         // Return the updated DTO so the client sees the new APPROVED status
@@ -363,6 +373,7 @@ public class LeaveRequestController {
 
         // Extract the optional decision reason from the body (null if no body provided)
         String reason = (body != null) ? body.get("reason") : null;
+        validateReasonLength(reason);
         // Delegate to facade — transitions status PENDING → REJECTED
         facade.rejectLeaveRequest(id, decidedBy, reason);
         // Return the updated DTO so the client sees the new REJECTED status
@@ -405,6 +416,7 @@ public class LeaveRequestController {
 
         // Extract the optional cancellation reason from the body (null if no body provided)
         String reason = (body != null) ? body.get("reason") : null;
+        validateReasonLength(reason);
 
         // Build the CQRS cancel command with the leave request ID, canceller, and reason
         CancelLeaveRequestCommand command = new CancelLeaveRequestCommand(id, cancelledBy, reason);
@@ -451,6 +463,25 @@ public class LeaveRequestController {
             // Return 400 with a helpful message pointing to the GET endpoint for unfiltered results
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "At least one search filter is required. Use " + getEndpoint + " for unfiltered results.");
+        }
+        // Validate status against allowed enum values if provided
+        if (criteria.status() != null && !criteria.status().isBlank()) {
+            try {
+                com.staffs.leavebooking.leavemanagement.domain.LeaveRequestStatus.valueOf(criteria.status().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Invalid status filter: '" + criteria.status() + "'. Valid values are: PENDING, APPROVED, REJECTED, CANCELLED.");
+            }
+        }
+        // Validate date range: if one date is provided, both must be
+        if ((criteria.from() != null) != (criteria.to() != null)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Both 'from' and 'to' dates must be provided for date range filtering.");
+        }
+        // Validate from <= to
+        if (criteria.from() != null && criteria.to() != null && criteria.from().isAfter(criteria.to())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "'from' date must be on or before 'to' date.");
         }
     }
 
@@ -567,6 +598,103 @@ public class LeaveRequestController {
             // Staff record not found in Staff Management — may not have been set up yet
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     "Your staff profile has not been set up. Please contact your administrator.");
+        }
+    }
+
+    /**
+     * Validates that the optional reason string does not exceed 500 characters.
+     * Matches the VARCHAR(500) column limits in schema.sql and the @Size(max=500)
+     * on the JPA entity. Catches oversized text early at the controller level
+     * rather than letting it fail at the database layer.
+     *
+     * @param reason the optional reason string (null is allowed)
+     * @throws ResponseStatusException 400 if reason exceeds 500 characters
+     */
+    private void validateReasonLength(String reason) {
+        if (reason != null && reason.length() > 500) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Reason must not exceed 500 characters (provided: " + reason.length() + ").");
+        }
+    }
+
+    /**
+     * Resolves the managerId for a leave request.
+     * If the caller provided a managerId in the request body, uses that.
+     * If not (null or blank), looks up the staff member's assigned lineManagerId.
+     *
+     * @param staffMemberId the staff member submitting the request
+     * @param providedManagerId the managerId from the request body (may be null/blank)
+     * @return the resolved managerId
+     * @throws ResponseStatusException 400 if no manager could be resolved
+     */
+    private String resolveManagerId(String staffMemberId, String providedManagerId) {
+        // If the caller provided a managerId, use it
+        if (providedManagerId != null && !providedManagerId.isBlank()) {
+            return providedManagerId;
+        }
+
+        // Auto-resolve from the staff member's assigned lineManagerId
+        try {
+            StaffMemberDTO staff = staffFacade.findStaffMemberByIdInternal(staffMemberId);
+            if (staff.lineManagerId() != null && !staff.lineManagerId().isBlank()) {
+                return staff.lineManagerId();
+            }
+        } catch (Exception e) {
+            // Staff record lookup failed — fall through to error below
+        }
+
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "Manager ID is required. Either provide a managerId in the request body " +
+                "or ensure your staff profile has an assigned line manager.");
+    }
+
+    /**
+     * Validates that the managerId references a real staff member in the system.
+     * Prevents leave requests being assigned to non-existent managers.
+     *
+     * @param managerId the manager UUID to validate
+     * @throws ResponseStatusException 400 if the manager doesn't exist
+     */
+    private void verifyManagerExists(String managerId) {
+        try {
+            staffFacade.findStaffMemberByIdInternal(managerId);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Manager not found: " + managerId + ". Please provide a valid manager ID.");
+        }
+    }
+
+    /**
+     * Checks for date overlap with existing PENDING or APPROVED leave requests.
+     * A staff member cannot request leave for dates that overlap with an existing
+     * active request (unless the existing request is REJECTED or CANCELLED).
+     *
+     * <p>Two date ranges overlap if: start1 <= end2 AND start2 <= end1
+     *
+     * @param staffMemberId the staff member submitting the request
+     * @param startDate the requested start date
+     * @param endDate the requested end date
+     * @throws ResponseStatusException 409 if dates overlap with an active request
+     */
+    private void verifyNoDateOverlap(String staffMemberId, java.time.LocalDate startDate, java.time.LocalDate endDate) {
+        // Get all of this staff member's existing requests
+        java.util.List<LeaveRequestDTO> existingRequests = facade.findMyRequests(staffMemberId);
+
+        for (LeaveRequestDTO existing : existingRequests) {
+            // Only check PENDING and APPROVED requests — REJECTED and CANCELLED don't block
+            if (!"PENDING".equals(existing.status()) && !"APPROVED".equals(existing.status())) {
+                continue;
+            }
+
+            // Two ranges overlap if: start1 <= end2 AND start2 <= end1
+            boolean overlaps = !startDate.isAfter(existing.endDate()) && !endDate.isBefore(existing.startDate());
+
+            if (overlaps) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT,
+                        "Leave request dates overlap with an existing " + existing.status() +
+                        " request (" + existing.startDate() + " to " + existing.endDate() + ")." +
+                        " Cancel the existing request first or choose different dates.");
+            }
         }
     }
 }

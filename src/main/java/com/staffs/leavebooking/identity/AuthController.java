@@ -146,7 +146,7 @@ public class AuthController {
      * @return 200 with LoginResponse containing the JWT, or error on failure
      */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@jakarta.validation.Valid @RequestBody LoginRequest request) {
         // Delegate to FirebaseAuthService which calls the Firebase REST API
         // Returns a LoginResponse with the JWT, refresh token, UID, etc.
         LoginResponse response = firebaseAuthService.loginUser(
@@ -215,21 +215,13 @@ public class AuthController {
     @PreAuthorize("isAuthenticated()") // Must be logged in to change own password
     @PatchMapping("/password")
     public ResponseEntity<?> changePassword(Authentication authentication,
-                                             @RequestBody java.util.Map<String, String> body) {
+                                             @jakarta.validation.Valid @RequestBody ChangePasswordRequest body) {
         try {
             // Extract the user's Firebase UID from the JWT (set by FirebaseTokenFilter)
             String uid = authentication.getName();
-            // Extract the new password from the request body
-            String newPassword = body.get("newPassword");
-
-            // Validate that a new password was provided
-            if (newPassword == null || newPassword.isBlank()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(ErrorResponse.of(400, "Bad Request", "newPassword is required"));
-            }
 
             // Delegate the password change to Firebase
-            firebaseAuthService.changePassword(uid, newPassword);
+            firebaseAuthService.changePassword(uid, body.newPassword());
 
             return ResponseEntity.ok(java.util.Map.of(
                     "message", "Password changed successfully"

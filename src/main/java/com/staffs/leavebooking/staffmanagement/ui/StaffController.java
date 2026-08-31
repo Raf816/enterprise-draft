@@ -74,6 +74,15 @@ public class StaffController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "At least one search filter is required (department, status). Use GET /staff for unfiltered results.");
         }
+        // Validate status against allowed EmploymentStatus enum values if provided
+        if (criteria.status() != null && !criteria.status().isBlank()) {
+            try {
+                com.staffs.leavebooking.staffmanagement.domain.EmploymentStatus.valueOf(criteria.status().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Invalid status filter: '" + criteria.status() + "'. Valid values are: PENDING_SETUP, ACTIVE, ON_LEAVE, TERMINATED.");
+            }
+        }
         return facade.searchStaff(criteria);
     }
 
@@ -90,8 +99,19 @@ public class StaffController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public StaffMemberCreatedResponse addStaffMember(@RequestBody AddStaffMemberCommand command) {
+    public StaffMemberCreatedResponse addStaffMember(@jakarta.validation.Valid @RequestBody AddStaffMemberCommand command) {
         String firebaseUid;
+
+        // Pre-validate domain value objects BEFORE creating the Firebase user.
+        // This prevents orphan Firebase accounts when domain validation would fail.
+        // Bean Validation (@Valid) catches null/blank/size issues, but the domain
+        // has stricter rules (e.g., FullName rejects digits, Email checks regex format).
+        try {
+            new com.staffs.leavebooking.common.domain.FullName(command.firstName(), command.surname());
+            new com.staffs.leavebooking.common.domain.Email(command.email());
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
 
         try {
             String displayName = command.firstName() + " " + command.surname();

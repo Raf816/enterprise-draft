@@ -196,23 +196,29 @@ These follow the Lecture 6 pattern: `Controller → Facade → ApplicationServic
 
 | # | Method | Path | Roles | Request Body | Success | Errors | Description |
 |---|--------|------|-------|-------------|---------|--------|-------------|
-| 8 | POST | `/leave-requests` | STAFF, MANAGER, ADMIN | `SubmitLeaveRequestCommand` | 201 Created | 400, 409 (insufficient balance) | Submit new leave request |
+| 8 | POST | `/leave-requests` | STAFF, MANAGER, ADMIN | `SubmitLeaveRequestBody` | 201 Created | 400 (validation), 409 (date overlap / insufficient balance) | Submit new leave request. managerId optional (auto-resolved from staff record). Date overlap detection prevents double-booking. |
 | 9 | PATCH | `/leave-requests/{id}/approve` | MANAGER (assigned), ADMIN | `{"reason?"}` optional | 200 + `LeaveRequestDTO` | 403 (not assigned manager), 404, 409 (not pending) | Approve a pending request. Only the assigned manager or admin. |
 | 10 | PATCH | `/leave-requests/{id}/reject` | MANAGER (assigned), ADMIN | `{"reason?"}` optional | 200 + `LeaveRequestDTO` | 403 (not assigned manager), 404, 409 (not pending) | Reject a pending request. Only the assigned manager or admin. |
 | 11 | PATCH | `/leave-requests/{id}/cancel` | STAFF (own), ADMIN | `{"reason?"}` optional | 200 + `LeaveRequestDTO` | 403 (not owner), 404, 409 (already terminal) | Cancel own request. Staff can only cancel their own. Admin can cancel any. |
 
 ### Request/Response Schemas
 
-**SubmitLeaveRequestCommand:**
+**SubmitLeaveRequestBody:**
 ```json
 {
+  "managerId": "optional — auto-resolved from staff record if not provided",
   "startDate": "2026-09-15",
   "endDate": "2026-09-19",
   "leaveType": "ANNUAL",
-  "reason": "Family holiday"
+  "reason": "Family holiday (optional, max 500 chars)"
 }
 ```
-> **Note:** `staffMemberId` and `managerId` are derived from the authenticated user's JWT token — not passed in the body. This prevents request forgery (a staff member cannot submit on behalf of someone else).
+> **Notes:**
+> - `staffMemberId` is derived from the authenticated user's JWT token — never passed in the body (prevents request forgery).
+> - `managerId` is optional. If omitted, auto-resolved from the staff member's assigned `lineManagerId`. If provided, validated to reference a real staff member.
+> - `startDate` and `endDate` must be today or in the future.
+> - Date overlap detection: if the staff member already has a PENDING or APPROVED request covering the same dates, the submission is rejected with 409 Conflict.
+> - `reason` is optional (max 500 characters).
 
 **LeaveRequestSearchCriteria (POST /search body):**
 ```json
@@ -394,9 +400,9 @@ curl -X PATCH http://localhost:8900/leave-allowances/allow-001 \
 
 | # | Method | Path | Roles | Request Body | Success | Description |
 |---|--------|------|-------|-------------|---------|-------------|
-| 17 | POST | `/staff` | ADMIN | `AddStaffMemberCommand` (includes optional `password`, `role`) | 201 + `StaffMemberCreatedResponse` | Creates Firebase user account + staff record (PENDING_SETUP). Firebase UID = staff record ID. Default password: `Password123!`, default role: `STAFF`. |
+| 17 | POST | `/staff` | ADMIN | `AddStaffMemberCommand` (Bean Validated, includes optional `password`, `role`) | 201 + `StaffMemberCreatedResponse` | Creates Firebase user account + staff record (PENDING_SETUP). Domain value objects (FullName, Email) are pre-validated before Firebase call to prevent orphan accounts. Firebase UID = staff record ID. Default password: `Password123!`, default role: `STAFF`. |
 | 18 | GET | `/staff` | ADMIN | — | 200 + `List<StaffMemberDTO>` | View all staff (unfiltered) |
-| 18a | POST | `/staff/search` | ADMIN | `{"department?", "status?"}` | 200 + `List<StaffMemberDTO>` | Search staff with optional filters (can combine department + status) |
+| 18a | POST | `/staff/search` | ADMIN | `{"department?", "status?"}` | 200 + `List<StaffMemberDTO>` | Search staff with optional filters. Status validated against EmploymentStatus enum (PENDING_SETUP, ACTIVE, ON_LEAVE, TERMINATED). |
 | 19 | GET | `/staff/{id}` | MANAGER (team), ADMIN | — | 200 + `StaffMemberDTO` | View specific staff member |
 | 20 | PATCH | `/staff/{id}` | ADMIN | `UpdateStaffBody` (all fields optional including `role`) | 200 + `StaffMemberDTO` | Update any combination of department, placement, status, role. Department changes trigger StaffMemberUpdatedEvent. Status PENDING_SETUP→ACTIVE triggers StaffMemberAddedEvent (creates allowance). Role updates Firebase custom claims. |
 
