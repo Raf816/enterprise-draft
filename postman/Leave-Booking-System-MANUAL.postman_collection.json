@@ -1,833 +1,635 @@
-{
+﻿{
   "info": {
-    "name": "Leave Booking System - MANUAL",
-    "description": "Manual testing collection — paste real tokens and IDs into each request.\nReplace PASTE_ADMIN_TOKEN, PASTE_MANAGER1_TOKEN, PASTE_STAFF1_TOKEN etc. with real JWT tokens from login responses.\nReplace PASTE_*_UID with real Firebase UIDs from register/login responses.\nReplace PASTE_LEAVE_REQUEST_ID / PASTE_ALLOWANCE_ID with real IDs from create responses.\n\nNo environment variables. No test scripts. Pure manual step-by-step.",
+    "name": "Leave Booking System: Manual",
+    "description": "Comprehensive automated collection covering all 26 endpoints with 137 requests.\nOrganised by bounded context (DDD). Edge cases in subfolders.\nRun with Postman Collection Runner in folder order.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "01 — REGISTRATION",
+      "name": "1. Auth: Registration & Login",
       "item": [
         {
-          "name": "01.01 Register Admin",
-          "request": {
-            "method": "POST",
-            "header": [{"key":"Content-Type","value":"application/json"}],
-            "body": {"mode":"raw","raw":"{\n  \"username\": \"Admin User\",\n  \"email\": \"admin@leavebooking.test\",\n  \"password\": \"Admin123!\",\n  \"role\": \"ADMIN\"\n}"},
-            "url": {"raw":"http://localhost:8900/auth/register","host":["http://localhost:8900"],"path":["auth","register"]}
-          }
+          "name": "Register Admin",
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"username\":\"Admin User\",\"email\":\"admin@leavebooking.test\",\"password\":\"Admin123!\",\"role\":\"ADMIN\"}"},"url":{"raw":"http://localhost:8900/auth/register","host":["http://localhost:8900"],"path":["auth","register"]}}
         },
         {
-          "name": "01.02 Register Manager1",
-          "request": {
-            "method": "POST",
-            "header": [{"key":"Content-Type","value":"application/json"}],
-            "body": {"mode":"raw","raw":"{\n  \"username\": \"Manager One\",\n  \"email\": \"manager1@leavebooking.test\",\n  \"password\": \"Manager123!\",\n  \"role\": \"MANAGER\"\n}"},
-            "url": {"raw":"http://localhost:8900/auth/register","host":["http://localhost:8900"],"path":["auth","register"]}
-          }
+          "name": "Register Manager1",
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"username\":\"Manager One\",\"email\":\"manager1@leavebooking.test\",\"password\":\"Manager123!\",\"role\":\"MANAGER\"}"},"url":{"raw":"http://localhost:8900/auth/register","host":["http://localhost:8900"],"path":["auth","register"]}}
         },
         {
-          "name": "01.03 Register Manager2",
-          "request": {
-            "method": "POST",
-            "header": [{"key":"Content-Type","value":"application/json"}],
-            "body": {"mode":"raw","raw":"{\n  \"username\": \"Manager Two\",\n  \"email\": \"manager2@leavebooking.test\",\n  \"password\": \"Manager123!\",\n  \"role\": \"MANAGER\"\n}"},
-            "url": {"raw":"http://localhost:8900/auth/register","host":["http://localhost:8900"],"path":["auth","register"]}
-          }
+          "name": "Register Manager2",
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"username\":\"Manager Two\",\"email\":\"manager2@leavebooking.test\",\"password\":\"Manager123!\",\"role\":\"MANAGER\"}"},"url":{"raw":"http://localhost:8900/auth/register","host":["http://localhost:8900"],"path":["auth","register"]}}
         },
         {
-          "name": "01.04 Register Staff1",
-          "request": {
-            "method": "POST",
-            "header": [{"key":"Content-Type","value":"application/json"}],
-            "body": {"mode":"raw","raw":"{\n  \"username\": \"Staff One\",\n  \"email\": \"staff1@leavebooking.test\",\n  \"password\": \"Staff123!\",\n  \"role\": \"STAFF\"\n}"},
-            "url": {"raw":"http://localhost:8900/auth/register","host":["http://localhost:8900"],"path":["auth","register"]}
-          }
+          "name": "Register Staff1",
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"username\":\"Staff One\",\"email\":\"staff1@leavebooking.test\",\"password\":\"Staff123!\",\"role\":\"STAFF\"}"},"url":{"raw":"http://localhost:8900/auth/register","host":["http://localhost:8900"],"path":["auth","register"]}}
         },
         {
-          "name": "01.05 Register Staff2",
-          "request": {
-            "method": "POST",
-            "header": [{"key":"Content-Type","value":"application/json"}],
-            "body": {"mode":"raw","raw":"{\n  \"username\": \"Staff Two\",\n  \"email\": \"staff2@leavebooking.test\",\n  \"password\": \"Staff123!\",\n  \"role\": \"STAFF\"\n}"},
-            "url": {"raw":"http://localhost:8900/auth/register","host":["http://localhost:8900"],"path":["auth","register"]}
-          }
-        }
-      ]
-    },
-    {
-      "name": "02 — REGISTRATION EDGE CASES",
-      "item": [
-        {
-          "name": "02.01 Register — blank username → 400",
-          "request": {
-            "method": "POST",
-            "header": [{"key":"Content-Type","value":"application/json"}],
-            "body": {"mode":"raw","raw":"{\n  \"username\": \"\",\n  \"email\": \"bad@test.com\",\n  \"password\": \"Pass123!\"\n}"},
-            "url": {"raw":"http://localhost:8900/auth/register","host":["http://localhost:8900"],"path":["auth","register"]}
-          }
+          "name": "Register Staff2",
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"username\":\"Staff Two\",\"email\":\"staff2@leavebooking.test\",\"password\":\"Staff123!\",\"role\":\"STAFF\"}"},"url":{"raw":"http://localhost:8900/auth/register","host":["http://localhost:8900"],"path":["auth","register"]}}
         },
         {
-          "name": "02.02 Register — invalid email → 400",
-          "request": {
-            "method": "POST",
-            "header": [{"key":"Content-Type","value":"application/json"}],
-            "body": {"mode":"raw","raw":"{\n  \"username\": \"Test User\",\n  \"email\": \"not-an-email\",\n  \"password\": \"Pass123!\"\n}"},
-            "url": {"raw":"http://localhost:8900/auth/register","host":["http://localhost:8900"],"path":["auth","register"]}
-          }
+          "name": "Login Admin",
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"emailOrUsername\":\"admin@leavebooking.test\",\"password\":\"Admin123!\"}"},"url":{"raw":"http://localhost:8900/auth/login","host":["http://localhost:8900"],"path":["auth","login"]}}
         },
         {
-          "name": "02.03 Register — short password → 400",
-          "request": {
-            "method": "POST",
-            "header": [{"key":"Content-Type","value":"application/json"}],
-            "body": {"mode":"raw","raw":"{\n  \"username\": \"Test User\",\n  \"email\": \"short@test.com\",\n  \"password\": \"12345\"\n}"},
-            "url": {"raw":"http://localhost:8900/auth/register","host":["http://localhost:8900"],"path":["auth","register"]}
-          }
+          "name": "Login Manager1",
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"emailOrUsername\":\"manager1@leavebooking.test\",\"password\":\"Manager123!\"}"},"url":{"raw":"http://localhost:8900/auth/login","host":["http://localhost:8900"],"path":["auth","login"]}}
         },
         {
-          "name": "02.04 Register — duplicate email → 400",
-          "request": {
-            "method": "POST",
-            "header": [{"key":"Content-Type","value":"application/json"}],
-            "body": {"mode":"raw","raw":"{\n  \"username\": \"Dup User\",\n  \"email\": \"admin@leavebooking.test\",\n  \"password\": \"Pass123!\"\n}"},
-            "url": {"raw":"http://localhost:8900/auth/register","host":["http://localhost:8900"],"path":["auth","register"]}
-          }
+          "name": "Login Manager2",
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"emailOrUsername\":\"manager2@leavebooking.test\",\"password\":\"Manager123!\"}"},"url":{"raw":"http://localhost:8900/auth/login","host":["http://localhost:8900"],"path":["auth","login"]}}
         },
         {
-          "name": "02.05 Register — empty body → 400",
-          "request": {
-            "method": "POST",
-            "header": [{"key":"Content-Type","value":"application/json"}],
-            "body": {"mode":"raw","raw":"{}"},
-            "url": {"raw":"http://localhost:8900/auth/register","host":["http://localhost:8900"],"path":["auth","register"]}
-          }
+          "name": "Login Staff1",
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"emailOrUsername\":\"staff1@leavebooking.test\",\"password\":\"Staff123!\"}"},"url":{"raw":"http://localhost:8900/auth/login","host":["http://localhost:8900"],"path":["auth","login"]}}
+        },
+        {
+          "name": "Login Staff2",
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"emailOrUsername\":\"staff2@leavebooking.test\",\"password\":\"Staff123!\"}"},"url":{"raw":"http://localhost:8900/auth/login","host":["http://localhost:8900"],"path":["auth","login"]}}
+        },
+        {
+          "name": "Edge Cases",
+          "item": [
+            {
+              "name": "Register: blank username (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"username\":\"\",\"email\":\"bad@test.com\",\"password\":\"Pass123!\"}"},"url":{"raw":"http://localhost:8900/auth/register","host":["http://localhost:8900"],"path":["auth","register"]}}
+            },
+            {
+              "name": "Register: invalid email (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"username\":\"Test User\",\"email\":\"not-an-email\",\"password\":\"Pass123!\"}"},"url":{"raw":"http://localhost:8900/auth/register","host":["http://localhost:8900"],"path":["auth","register"]}}
+            },
+            {
+              "name": "Register: short password (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"username\":\"Test User\",\"email\":\"short@test.com\",\"password\":\"12345\"}"},"url":{"raw":"http://localhost:8900/auth/register","host":["http://localhost:8900"],"path":["auth","register"]}}
+            },
+            {
+              "name": "Register: duplicate email (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"username\":\"Dup User\",\"email\":\"admin@leavebooking.test\",\"password\":\"Pass123!\"}"},"url":{"raw":"http://localhost:8900/auth/register","host":["http://localhost:8900"],"path":["auth","register"]}}
+            },
+            {
+              "name": "Register: empty body (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/auth/register","host":["http://localhost:8900"],"path":["auth","register"]}}
+            },
+            {
+              "name": "Login: blank email (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"emailOrUsername\":\"\",\"password\":\"Pass123!\"}"},"url":{"raw":"http://localhost:8900/auth/login","host":["http://localhost:8900"],"path":["auth","login"]}}
+            },
+            {
+              "name": "Login: blank password (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"emailOrUsername\":\"admin@leavebooking.test\",\"password\":\"\"}"},"url":{"raw":"http://localhost:8900/auth/login","host":["http://localhost:8900"],"path":["auth","login"]}}
+            },
+            {
+              "name": "Login: wrong password",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"emailOrUsername\":\"admin@leavebooking.test\",\"password\":\"WrongPass!\"}"},"url":{"raw":"http://localhost:8900/auth/login","host":["http://localhost:8900"],"path":["auth","login"]}}
+            },
+            {
+              "name": "Login: non-existent user",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"emailOrUsername\":\"nobody@test.com\",\"password\":\"Pass123!\"}"},"url":{"raw":"http://localhost:8900/auth/login","host":["http://localhost:8900"],"path":["auth","login"]}}
+            },
+            {
+              "name": "Login: empty body (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/auth/login","host":["http://localhost:8900"],"path":["auth","login"]}}
+            }
+          ]
         }
       ]
     }
     ,{
-      "name": "03 — LOGIN",
+      "name": "2. Auth: Role Check, Find User & Password",
       "item": [
         {
-          "name": "03.01 Login Admin — copy idToken",
-          "request": {
-            "method": "POST",
-            "header": [{"key":"Content-Type","value":"application/json"}],
-            "body": {"mode":"raw","raw":"{\n  \"emailOrUsername\": \"admin@leavebooking.test\",\n  \"password\": \"Admin123!\"\n}"},
-            "url": {"raw":"http://localhost:8900/auth/login","host":["http://localhost:8900"],"path":["auth","login"]}
-          }
+          "name": "Role Check: Admin",
+          "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"url":{"raw":"http://localhost:8900/auth/role-check","host":["http://localhost:8900"],"path":["auth","role-check"]}}
         },
         {
-          "name": "03.02 Login Manager1 — copy idToken",
-          "request": {
-            "method": "POST",
-            "header": [{"key":"Content-Type","value":"application/json"}],
-            "body": {"mode":"raw","raw":"{\n  \"emailOrUsername\": \"manager1@leavebooking.test\",\n  \"password\": \"Manager123!\"\n}"},
-            "url": {"raw":"http://localhost:8900/auth/login","host":["http://localhost:8900"],"path":["auth","login"]}
-          }
+          "name": "Role Check: Staff1",
+          "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"url":{"raw":"http://localhost:8900/auth/role-check","host":["http://localhost:8900"],"path":["auth","role-check"]}}
         },
         {
-          "name": "03.03 Login Manager2 — copy idToken",
-          "request": {
-            "method": "POST",
-            "header": [{"key":"Content-Type","value":"application/json"}],
-            "body": {"mode":"raw","raw":"{\n  \"emailOrUsername\": \"manager2@leavebooking.test\",\n  \"password\": \"Manager123!\"\n}"},
-            "url": {"raw":"http://localhost:8900/auth/login","host":["http://localhost:8900"],"path":["auth","login"]}
-          }
+          "name": "Find User by Email: Admin (200)",
+          "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"url":{"raw":"http://localhost:8900/auth/users/staff1@leavebooking.test","host":["http://localhost:8900"],"path":["auth","users","staff1@leavebooking.test"]}}
         },
         {
-          "name": "03.04 Login Staff1 — copy idToken",
-          "request": {
-            "method": "POST",
-            "header": [{"key":"Content-Type","value":"application/json"}],
-            "body": {"mode":"raw","raw":"{\n  \"emailOrUsername\": \"staff1@leavebooking.test\",\n  \"password\": \"Staff123!\"\n}"},
-            "url": {"raw":"http://localhost:8900/auth/login","host":["http://localhost:8900"],"path":["auth","login"]}
-          }
+          "name": "Change Password: Staff1 (200)",
+          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"newPassword\":\"NewStaff123!\"}"},"url":{"raw":"http://localhost:8900/auth/password","host":["http://localhost:8900"],"path":["auth","password"]}}
         },
         {
-          "name": "03.05 Login Staff2 — copy idToken",
-          "request": {
-            "method": "POST",
-            "header": [{"key":"Content-Type","value":"application/json"}],
-            "body": {"mode":"raw","raw":"{\n  \"emailOrUsername\": \"staff2@leavebooking.test\",\n  \"password\": \"Staff123!\"\n}"},
-            "url": {"raw":"http://localhost:8900/auth/login","host":["http://localhost:8900"],"path":["auth","login"]}
-          }
-        }
-      ]
-    },
-    {
-      "name": "04 — LOGIN EDGE CASES",
-      "item": [
-        {
-          "name": "04.01 Login — blank email → 400",
-          "request": {
-            "method": "POST",
-            "header": [{"key":"Content-Type","value":"application/json"}],
-            "body": {"mode":"raw","raw":"{\n  \"emailOrUsername\": \"\",\n  \"password\": \"Pass123!\"\n}"},
-            "url": {"raw":"http://localhost:8900/auth/login","host":["http://localhost:8900"],"path":["auth","login"]}
-          }
+          "name": "Change Password: revert Staff1",
+          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"newPassword\":\"Staff123!\"}"},"url":{"raw":"http://localhost:8900/auth/password","host":["http://localhost:8900"],"path":["auth","password"]}}
         },
         {
-          "name": "04.02 Login — blank password → 400",
-          "request": {
-            "method": "POST",
-            "header": [{"key":"Content-Type","value":"application/json"}],
-            "body": {"mode":"raw","raw":"{\n  \"emailOrUsername\": \"admin@leavebooking.test\",\n  \"password\": \"\"\n}"},
-            "url": {"raw":"http://localhost:8900/auth/login","host":["http://localhost:8900"],"path":["auth","login"]}
-          }
-        },
-        {
-          "name": "04.03 Login — wrong password",
-          "request": {
-            "method": "POST",
-            "header": [{"key":"Content-Type","value":"application/json"}],
-            "body": {"mode":"raw","raw":"{\n  \"emailOrUsername\": \"admin@leavebooking.test\",\n  \"password\": \"WrongPass!\"\n}"},
-            "url": {"raw":"http://localhost:8900/auth/login","host":["http://localhost:8900"],"path":["auth","login"]}
-          }
-        },
-        {
-          "name": "04.04 Login — non-existent user",
-          "request": {
-            "method": "POST",
-            "header": [{"key":"Content-Type","value":"application/json"}],
-            "body": {"mode":"raw","raw":"{\n  \"emailOrUsername\": \"nobody@test.com\",\n  \"password\": \"Pass123!\"\n}"},
-            "url": {"raw":"http://localhost:8900/auth/login","host":["http://localhost:8900"],"path":["auth","login"]}
-          }
-        },
-        {
-          "name": "04.05 Login — empty body → 400",
-          "request": {
-            "method": "POST",
-            "header": [{"key":"Content-Type","value":"application/json"}],
-            "body": {"mode":"raw","raw":"{}"},
-            "url": {"raw":"http://localhost:8900/auth/login","host":["http://localhost:8900"],"path":["auth","login"]}
-          }
+          "name": "Edge Cases",
+          "item": [
+            {
+              "name": "Role Check: no token (401)",
+              "request": {"method":"GET","header":[],"url":{"raw":"http://localhost:8900/auth/role-check","host":["http://localhost:8900"],"path":["auth","role-check"]}}
+            },
+            {
+              "name": "Role Check: invalid token (401)",
+              "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer invalid.jwt.token"}],"url":{"raw":"http://localhost:8900/auth/role-check","host":["http://localhost:8900"],"path":["auth","role-check"]}}
+            },
+            {
+              "name": "Find User: non-existent email (404)",
+              "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"url":{"raw":"http://localhost:8900/auth/users/nobody@test.com","host":["http://localhost:8900"],"path":["auth","users","nobody@test.com"]}}
+            },
+            {
+              "name": "Find User: Staff role (403)",
+              "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"url":{"raw":"http://localhost:8900/auth/users/admin@leavebooking.test","host":["http://localhost:8900"],"path":["auth","users","admin@leavebooking.test"]}}
+            },
+            {
+              "name": "Find User: no token (401)",
+              "request": {"method":"GET","header":[],"url":{"raw":"http://localhost:8900/auth/users/admin@leavebooking.test","host":["http://localhost:8900"],"path":["auth","users","admin@leavebooking.test"]}}
+            },
+            {
+              "name": "Change Password: blank (400)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"newPassword\":\"\"}"},"url":{"raw":"http://localhost:8900/auth/password","host":["http://localhost:8900"],"path":["auth","password"]}}
+            },
+            {
+              "name": "Change Password: too short (400)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"newPassword\":\"12345\"}"},"url":{"raw":"http://localhost:8900/auth/password","host":["http://localhost:8900"],"path":["auth","password"]}}
+            },
+            {
+              "name": "Change Password: no token (401)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"newPassword\":\"NewPass123!\"}"},"url":{"raw":"http://localhost:8900/auth/password","host":["http://localhost:8900"],"path":["auth","password"]}}
+            }
+          ]
         }
       ]
     }
     ,{
-      "name": "05 — ROLE CHECK & AUTH EDGE CASES",
+      "name": "3. Staff Management: Setup & Queries",
       "item": [
         {
-          "name": "05.01 Role Check — Admin → 200",
-          "request": {
-            "method": "GET",
-            "header": [{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],
-            "url": {"raw":"http://localhost:8900/auth/role-check","host":["http://localhost:8900"],"path":["auth","role-check"]}
-          }
+          "name": "PATCH Admin skeleton: activate",
+          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"department\":\"IT\",\"currentRole\":\"System Admin\",\"jobLevel\":\"SENIOR\",\"employmentType\":\"FULL_TIME\",\"employmentStatus\":\"ACTIVE\"}"},"url":{"raw":"http://localhost:8900/staff/PASTE_ADMIN_UID","host":["http://localhost:8900"],"path":["staff","PASTE_ADMIN_UID"]}}
         },
         {
-          "name": "05.02 Role Check — Staff1 → 200",
-          "request": {
-            "method": "GET",
-            "header": [{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],
-            "url": {"raw":"http://localhost:8900/auth/role-check","host":["http://localhost:8900"],"path":["auth","role-check"]}
-          }
+          "name": "PATCH Manager1 skeleton: activate",
+          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"department\":\"Networks\",\"lineManagerId\":\"PASTE_ADMIN_UID\",\"currentRole\":\"Team Lead\",\"jobLevel\":\"MID\",\"employmentType\":\"FULL_TIME\",\"employmentStatus\":\"ACTIVE\"}"},"url":{"raw":"http://localhost:8900/staff/PASTE_MANAGER1_UID","host":["http://localhost:8900"],"path":["staff","PASTE_MANAGER1_UID"]}}
         },
         {
-          "name": "05.03 Role Check — no token → 401",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {"raw":"http://localhost:8900/auth/role-check","host":["http://localhost:8900"],"path":["auth","role-check"]}
-          }
+          "name": "PATCH Manager2 skeleton: activate",
+          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"department\":\"Digital\",\"lineManagerId\":\"PASTE_ADMIN_UID\",\"currentRole\":\"Project Manager\",\"jobLevel\":\"MID\",\"employmentType\":\"FULL_TIME\",\"employmentStatus\":\"ACTIVE\"}"},"url":{"raw":"http://localhost:8900/staff/PASTE_MANAGER2_UID","host":["http://localhost:8900"],"path":["staff","PASTE_MANAGER2_UID"]}}
         },
         {
-          "name": "05.04 Role Check — invalid token → 401",
-          "request": {
-            "method": "GET",
-            "header": [{"key":"Authorization","value":"Bearer invalid.jwt.token"}],
-            "url": {"raw":"http://localhost:8900/auth/role-check","host":["http://localhost:8900"],"path":["auth","role-check"]}
-          }
+          "name": "PATCH Staff1 skeleton: under Manager1",
+          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"department\":\"Networks\",\"lineManagerId\":\"PASTE_MANAGER1_UID\",\"currentRole\":\"Developer\",\"jobLevel\":\"JUNIOR\",\"employmentType\":\"FULL_TIME\",\"employmentStatus\":\"ACTIVE\"}"},"url":{"raw":"http://localhost:8900/staff/PASTE_STAFF1_UID","host":["http://localhost:8900"],"path":["staff","PASTE_STAFF1_UID"]}}
         },
         {
-          "name": "05.05 Find User by Email — Admin → 200",
-          "request": {
-            "method": "GET",
-            "header": [{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],
-            "url": {"raw":"http://localhost:8900/auth/users/staff1@leavebooking.test","host":["http://localhost:8900"],"path":["auth","users","staff1@leavebooking.test"]}
-          }
+          "name": "PATCH Staff2 skeleton: under Manager2",
+          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"department\":\"Digital\",\"lineManagerId\":\"PASTE_MANAGER2_UID\",\"currentRole\":\"Designer\",\"jobLevel\":\"JUNIOR\",\"employmentType\":\"PART_TIME\",\"employmentStatus\":\"ACTIVE\"}"},"url":{"raw":"http://localhost:8900/staff/PASTE_STAFF2_UID","host":["http://localhost:8900"],"path":["staff","PASTE_STAFF2_UID"]}}
         },
         {
-          "name": "05.06 Find User by Email — non-existent → 404",
-          "request": {
-            "method": "GET",
-            "header": [{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],
-            "url": {"raw":"http://localhost:8900/auth/users/nobody@test.com","host":["http://localhost:8900"],"path":["auth","users","nobody@test.com"]}
-          }
-        },
-        {
-          "name": "05.07 Find User by Email — Staff role → 403",
-          "request": {
-            "method": "GET",
-            "header": [{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],
-            "url": {"raw":"http://localhost:8900/auth/users/admin@leavebooking.test","host":["http://localhost:8900"],"path":["auth","users","admin@leavebooking.test"]}
-          }
-        },
-        {
-          "name": "05.08 Find User by Email — no token → 401",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {"raw":"http://localhost:8900/auth/users/admin@leavebooking.test","host":["http://localhost:8900"],"path":["auth","users","admin@leavebooking.test"]}
-          }
-        }
-      ]
-    },
-    {
-      "name": "06 — CHANGE PASSWORD",
-      "item": [
-        {
-          "name": "06.01 Change Password — Staff1 → 200",
-          "request": {
-            "method": "PATCH",
-            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],
-            "body": {"mode":"raw","raw":"{\n  \"newPassword\": \"NewStaff123!\"\n}"},
-            "url": {"raw":"http://localhost:8900/auth/password","host":["http://localhost:8900"],"path":["auth","password"]}
-          }
-        },
-        {
-          "name": "06.02 Change Password — revert Staff1 → 200",
-          "request": {
-            "method": "PATCH",
-            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],
-            "body": {"mode":"raw","raw":"{\n  \"newPassword\": \"Staff123!\"\n}"},
-            "url": {"raw":"http://localhost:8900/auth/password","host":["http://localhost:8900"],"path":["auth","password"]}
-          }
-        },
-        {
-          "name": "06.03 Change Password — blank → 400",
-          "request": {
-            "method": "PATCH",
-            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],
-            "body": {"mode":"raw","raw":"{\n  \"newPassword\": \"\"\n}"},
-            "url": {"raw":"http://localhost:8900/auth/password","host":["http://localhost:8900"],"path":["auth","password"]}
-          }
-        },
-        {
-          "name": "06.04 Change Password — too short → 400",
-          "request": {
-            "method": "PATCH",
-            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],
-            "body": {"mode":"raw","raw":"{\n  \"newPassword\": \"12345\"\n}"},
-            "url": {"raw":"http://localhost:8900/auth/password","host":["http://localhost:8900"],"path":["auth","password"]}
-          }
-        },
-        {
-          "name": "06.05 Change Password — no token → 401",
-          "request": {
-            "method": "PATCH",
-            "header": [{"key":"Content-Type","value":"application/json"}],
-            "body": {"mode":"raw","raw":"{\n  \"newPassword\": \"NewPass123!\"\n}"},
-            "url": {"raw":"http://localhost:8900/auth/password","host":["http://localhost:8900"],"path":["auth","password"]}
-          }
-        }
-      ]
-    }
-    ,{
-      "name": "07 — ADMIN PATCHES SKELETON RECORDS",
-      "description": "After registration, each user has a PENDING_SETUP skeleton. Admin fills in department, lineManagerId, role, and activates.\nReplace PASTE_*_UID placeholders with real Firebase UIDs from registration responses.",
-      "item": [
-        {
-          "name": "07.01 PATCH Admin skeleton — activate",
-          "request": {
-            "method": "PATCH",
-            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],
-            "body": {"mode":"raw","raw":"{\n  \"department\": \"IT\",\n  \"currentRole\": \"System Admin\",\n  \"jobLevel\": \"SENIOR\",\n  \"employmentType\": \"FULL_TIME\",\n  \"employmentStatus\": \"ACTIVE\"\n}"},
-            "url": {"raw":"http://localhost:8900/staff/PASTE_ADMIN_UID","host":["http://localhost:8900"],"path":["staff","PASTE_ADMIN_UID"]}
-          }
-        },
-        {
-          "name": "07.02 PATCH Manager1 skeleton",
-          "request": {
-            "method": "PATCH",
-            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],
-            "body": {"mode":"raw","raw":"{\n  \"department\": \"Networks\",\n  \"lineManagerId\": \"PASTE_ADMIN_UID\",\n  \"currentRole\": \"Team Lead\",\n  \"jobLevel\": \"MID\",\n  \"employmentType\": \"FULL_TIME\",\n  \"employmentStatus\": \"ACTIVE\"\n}"},
-            "url": {"raw":"http://localhost:8900/staff/PASTE_MANAGER1_UID","host":["http://localhost:8900"],"path":["staff","PASTE_MANAGER1_UID"]}
-          }
-        },
-        {
-          "name": "07.03 PATCH Manager2 skeleton",
-          "request": {
-            "method": "PATCH",
-            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],
-            "body": {"mode":"raw","raw":"{\n  \"department\": \"Digital\",\n  \"lineManagerId\": \"PASTE_ADMIN_UID\",\n  \"currentRole\": \"Project Manager\",\n  \"jobLevel\": \"MID\",\n  \"employmentType\": \"FULL_TIME\",\n  \"employmentStatus\": \"ACTIVE\"\n}"},
-            "url": {"raw":"http://localhost:8900/staff/PASTE_MANAGER2_UID","host":["http://localhost:8900"],"path":["staff","PASTE_MANAGER2_UID"]}
-          }
-        },
-        {
-          "name": "07.04 PATCH Staff1 skeleton — under Manager1",
-          "request": {
-            "method": "PATCH",
-            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],
-            "body": {"mode":"raw","raw":"{\n  \"department\": \"Networks\",\n  \"lineManagerId\": \"PASTE_MANAGER1_UID\",\n  \"currentRole\": \"Developer\",\n  \"jobLevel\": \"JUNIOR\",\n  \"employmentType\": \"FULL_TIME\",\n  \"employmentStatus\": \"ACTIVE\"\n}"},
-            "url": {"raw":"http://localhost:8900/staff/PASTE_STAFF1_UID","host":["http://localhost:8900"],"path":["staff","PASTE_STAFF1_UID"]}
-          }
-        },
-        {
-          "name": "07.05 PATCH Staff2 skeleton — under Manager2",
-          "request": {
-            "method": "PATCH",
-            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],
-            "body": {"mode":"raw","raw":"{\n  \"department\": \"Digital\",\n  \"lineManagerId\": \"PASTE_MANAGER2_UID\",\n  \"currentRole\": \"Designer\",\n  \"jobLevel\": \"JUNIOR\",\n  \"employmentType\": \"PART_TIME\",\n  \"employmentStatus\": \"ACTIVE\"\n}"},
-            "url": {"raw":"http://localhost:8900/staff/PASTE_STAFF2_UID","host":["http://localhost:8900"],"path":["staff","PASTE_STAFF2_UID"]}
-          }
-        }
-      ]
-    }
-    ,{
-      "name": "08 — STAFF QUERIES & SEARCH",
-      "item": [
-        {
-          "name": "08.01 GET /staff — Admin list all → 200",
+          "name": "GET /staff: Admin list all (200)",
           "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"url":{"raw":"http://localhost:8900/staff","host":["http://localhost:8900"],"path":["staff"]}}
         },
         {
-          "name": "08.02 GET /staff — Staff role → 403",
-          "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"url":{"raw":"http://localhost:8900/staff","host":["http://localhost:8900"],"path":["staff"]}}
-        },
-        {
-          "name": "08.03 GET /staff — no token → 401",
-          "request": {"method":"GET","header":[],"url":{"raw":"http://localhost:8900/staff","host":["http://localhost:8900"],"path":["staff"]}}
-        },
-        {
-          "name": "08.04 GET /staff/{id} — Admin → 200",
+          "name": "GET /staff/{id}: Admin (200)",
           "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"url":{"raw":"http://localhost:8900/staff/PASTE_STAFF1_UID","host":["http://localhost:8900"],"path":["staff","PASTE_STAFF1_UID"]}}
         },
         {
-          "name": "08.05 GET /staff/{id} — Manager → 200",
+          "name": "GET /staff/{id}: Manager (200)",
           "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"url":{"raw":"http://localhost:8900/staff/PASTE_STAFF1_UID","host":["http://localhost:8900"],"path":["staff","PASTE_STAFF1_UID"]}}
         },
         {
-          "name": "08.06 GET /staff/{id} — Staff role → 403",
-          "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"url":{"raw":"http://localhost:8900/staff/PASTE_STAFF2_UID","host":["http://localhost:8900"],"path":["staff","PASTE_STAFF2_UID"]}}
+          "name": "POST /staff/search: by department (200)",
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"department\":\"Networks\"}"},"url":{"raw":"http://localhost:8900/staff/search","host":["http://localhost:8900"],"path":["staff","search"]}}
         },
         {
-          "name": "08.07 GET /staff/{id} — not found → 404",
-          "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"url":{"raw":"http://localhost:8900/staff/non-existent-id-12345","host":["http://localhost:8900"],"path":["staff","non-existent-id-12345"]}}
+          "name": "POST /staff/search: by status ACTIVE (200)",
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"status\":\"ACTIVE\"}"},"url":{"raw":"http://localhost:8900/staff/search","host":["http://localhost:8900"],"path":["staff","search"]}}
         },
         {
-          "name": "08.08 POST /staff/search — by department → 200",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"department\": \"Networks\"\n}"},"url":{"raw":"http://localhost:8900/staff/search","host":["http://localhost:8900"],"path":["staff","search"]}}
+          "name": "POST /staff/search: combined dept+status (200)",
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"department\":\"Networks\",\"status\":\"ACTIVE\"}"},"url":{"raw":"http://localhost:8900/staff/search","host":["http://localhost:8900"],"path":["staff","search"]}}
         },
         {
-          "name": "08.09 POST /staff/search — by status ACTIVE → 200",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"status\": \"ACTIVE\"\n}"},"url":{"raw":"http://localhost:8900/staff/search","host":["http://localhost:8900"],"path":["staff","search"]}}
-        },
-        {
-          "name": "08.10 POST /staff/search — invalid status BANANA → 400",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"status\": \"BANANA\"\n}"},"url":{"raw":"http://localhost:8900/staff/search","host":["http://localhost:8900"],"path":["staff","search"]}}
-        },
-        {
-          "name": "08.11 POST /staff/search — no filters → 400",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/staff/search","host":["http://localhost:8900"],"path":["staff","search"]}}
-        },
-        {
-          "name": "08.12 POST /staff/search — combined dept+status → 200",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"department\": \"Networks\",\n  \"status\": \"ACTIVE\"\n}"},"url":{"raw":"http://localhost:8900/staff/search","host":["http://localhost:8900"],"path":["staff","search"]}}
-        },
-        {
-          "name": "08.13 POST /staff/search — Staff role → 403",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"department\": \"Networks\"\n}"},"url":{"raw":"http://localhost:8900/staff/search","host":["http://localhost:8900"],"path":["staff","search"]}}
+          "name": "Edge Cases",
+          "item": [
+            {
+              "name": "GET /staff: Staff role (403)",
+              "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"url":{"raw":"http://localhost:8900/staff","host":["http://localhost:8900"],"path":["staff"]}}
+            },
+            {
+              "name": "GET /staff: no token (401)",
+              "request": {"method":"GET","header":[],"url":{"raw":"http://localhost:8900/staff","host":["http://localhost:8900"],"path":["staff"]}}
+            },
+            {
+              "name": "GET /staff/{id}: Staff role (403)",
+              "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"url":{"raw":"http://localhost:8900/staff/PASTE_STAFF2_UID","host":["http://localhost:8900"],"path":["staff","PASTE_STAFF2_UID"]}}
+            },
+            {
+              "name": "GET /staff/{id}: not found (404)",
+              "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"url":{"raw":"http://localhost:8900/staff/non-existent-id-12345","host":["http://localhost:8900"],"path":["staff","non-existent-id-12345"]}}
+            },
+            {
+              "name": "POST /staff/search: invalid status BANANA (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"status\":\"BANANA\"}"},"url":{"raw":"http://localhost:8900/staff/search","host":["http://localhost:8900"],"path":["staff","search"]}}
+            },
+            {
+              "name": "POST /staff/search: no filters (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/staff/search","host":["http://localhost:8900"],"path":["staff","search"]}}
+            },
+            {
+              "name": "POST /staff/search: Staff role (403)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"department\":\"Networks\"}"},"url":{"raw":"http://localhost:8900/staff/search","host":["http://localhost:8900"],"path":["staff","search"]}}
+            },
+            {
+              "name": "POST /staff: missing firstName (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"surname\":\"Test\",\"email\":\"missing-fn@test.com\",\"department\":\"IT\",\"hireDate\":\"2025-01-01\",\"currentRole\":\"Dev\",\"startDateOfCurrentRole\":\"2025-01-01\",\"employmentType\":\"FULL_TIME\"}"},"url":{"raw":"http://localhost:8900/staff","host":["http://localhost:8900"],"path":["staff"]}}
+            },
+            {
+              "name": "POST /staff: missing email (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"firstName\":\"Test\",\"surname\":\"User\",\"department\":\"IT\",\"hireDate\":\"2025-01-01\",\"currentRole\":\"Dev\",\"startDateOfCurrentRole\":\"2025-01-01\",\"employmentType\":\"FULL_TIME\"}"},"url":{"raw":"http://localhost:8900/staff","host":["http://localhost:8900"],"path":["staff"]}}
+            },
+            {
+              "name": "POST /staff: future hireDate (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"firstName\":\"Future\",\"surname\":\"Hire\",\"email\":\"future@test.com\",\"department\":\"IT\",\"hireDate\":\"2030-01-01\",\"currentRole\":\"Dev\",\"startDateOfCurrentRole\":\"2030-01-01\",\"employmentType\":\"FULL_TIME\"}"},"url":{"raw":"http://localhost:8900/staff","host":["http://localhost:8900"],"path":["staff"]}}
+            },
+            {
+              "name": "POST /staff: digits in name (400 domain VO)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"firstName\":\"Raf123\",\"surname\":\"Ahmed\",\"email\":\"digits@test.com\",\"department\":\"IT\",\"hireDate\":\"2025-01-01\",\"currentRole\":\"Dev\",\"startDateOfCurrentRole\":\"2025-01-01\",\"employmentType\":\"FULL_TIME\"}"},"url":{"raw":"http://localhost:8900/staff","host":["http://localhost:8900"],"path":["staff"]}}
+            },
+            {
+              "name": "POST /staff: firstName >50 chars (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"firstName\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\"surname\":\"Test\",\"email\":\"longname@test.com\",\"department\":\"IT\",\"hireDate\":\"2025-01-01\",\"currentRole\":\"Dev\",\"startDateOfCurrentRole\":\"2025-01-01\",\"employmentType\":\"FULL_TIME\"}"},"url":{"raw":"http://localhost:8900/staff","host":["http://localhost:8900"],"path":["staff"]}}
+            },
+            {
+              "name": "POST /staff: empty body (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/staff","host":["http://localhost:8900"],"path":["staff"]}}
+            },
+            {
+              "name": "POST /staff: Staff role (403)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"firstName\":\"Nope\",\"surname\":\"Staff\",\"email\":\"nope@test.com\",\"department\":\"IT\",\"hireDate\":\"2025-01-01\",\"currentRole\":\"Dev\",\"startDateOfCurrentRole\":\"2025-01-01\",\"employmentType\":\"FULL_TIME\"}"},"url":{"raw":"http://localhost:8900/staff","host":["http://localhost:8900"],"path":["staff"]}}
+            },
+            {
+              "name": "POST /staff: no token (401)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"firstName\":\"No\",\"surname\":\"Token\",\"email\":\"notoken@test.com\",\"department\":\"IT\",\"hireDate\":\"2025-01-01\",\"currentRole\":\"Dev\",\"startDateOfCurrentRole\":\"2025-01-01\",\"employmentType\":\"FULL_TIME\"}"},"url":{"raw":"http://localhost:8900/staff","host":["http://localhost:8900"],"path":["staff"]}}
+            },
+            {
+              "name": "PATCH /staff/{id}: not found (404)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"department\":\"IT\"}"},"url":{"raw":"http://localhost:8900/staff/non-existent-id","host":["http://localhost:8900"],"path":["staff","non-existent-id"]}}
+            },
+            {
+              "name": "PATCH /staff/{id}: Staff role (403)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"department\":\"Hacked\"}"},"url":{"raw":"http://localhost:8900/staff/PASTE_STAFF1_UID","host":["http://localhost:8900"],"path":["staff","PASTE_STAFF1_UID"]}}
+            },
+            {
+              "name": "PATCH /staff/{id}: no token (401)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"department\":\"IT\"}"},"url":{"raw":"http://localhost:8900/staff/PASTE_STAFF1_UID","host":["http://localhost:8900"],"path":["staff","PASTE_STAFF1_UID"]}}
+            }
+          ]
         }
       ]
     }
     ,{
-      "name": "09 — POST /staff (ADMIN CREATE) + EDGE CASES",
+      "name": "4. Staff Management: Updates & Transitions",
       "item": [
         {
-          "name": "09.01 POST /staff — missing firstName → 400",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"surname\": \"Test\",\n  \"email\": \"missing-fn@test.com\",\n  \"department\": \"IT\",\n  \"hireDate\": \"2025-01-01\",\n  \"currentRole\": \"Dev\",\n  \"startDateOfCurrentRole\": \"2025-01-01\",\n  \"employmentType\": \"FULL_TIME\"\n}"},"url":{"raw":"http://localhost:8900/staff","host":["http://localhost:8900"],"path":["staff"]}}
+          "name": "Terminate Staff2 (200)",
+          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"employmentStatus\":\"TERMINATED\"}"},"url":{"raw":"http://localhost:8900/staff/PASTE_STAFF2_UID","host":["http://localhost:8900"],"path":["staff","PASTE_STAFF2_UID"]}}
         },
         {
-          "name": "09.02 POST /staff — missing email → 400",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"firstName\": \"Test\",\n  \"surname\": \"User\",\n  \"department\": \"IT\",\n  \"hireDate\": \"2025-01-01\",\n  \"currentRole\": \"Dev\",\n  \"startDateOfCurrentRole\": \"2025-01-01\",\n  \"employmentType\": \"FULL_TIME\"\n}"},"url":{"raw":"http://localhost:8900/staff","host":["http://localhost:8900"],"path":["staff"]}}
-        },
-        {
-          "name": "09.03 POST /staff — future hireDate → 400",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"firstName\": \"Future\",\n  \"surname\": \"Hire\",\n  \"email\": \"future@test.com\",\n  \"department\": \"IT\",\n  \"hireDate\": \"2030-01-01\",\n  \"currentRole\": \"Dev\",\n  \"startDateOfCurrentRole\": \"2030-01-01\",\n  \"employmentType\": \"FULL_TIME\"\n}"},"url":{"raw":"http://localhost:8900/staff","host":["http://localhost:8900"],"path":["staff"]}}
-        },
-        {
-          "name": "09.04 POST /staff — digits in name (domain VO) → 400",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"firstName\": \"Raf123\",\n  \"surname\": \"Ahmed\",\n  \"email\": \"digits@test.com\",\n  \"department\": \"IT\",\n  \"hireDate\": \"2025-01-01\",\n  \"currentRole\": \"Dev\",\n  \"startDateOfCurrentRole\": \"2025-01-01\",\n  \"employmentType\": \"FULL_TIME\"\n}"},"url":{"raw":"http://localhost:8900/staff","host":["http://localhost:8900"],"path":["staff"]}}
-        },
-        {
-          "name": "09.05 POST /staff — Staff role → 403",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"firstName\": \"Nope\",\n  \"surname\": \"Staff\",\n  \"email\": \"nope@test.com\",\n  \"department\": \"IT\",\n  \"hireDate\": \"2025-01-01\",\n  \"currentRole\": \"Dev\",\n  \"startDateOfCurrentRole\": \"2025-01-01\",\n  \"employmentType\": \"FULL_TIME\"\n}"},"url":{"raw":"http://localhost:8900/staff","host":["http://localhost:8900"],"path":["staff"]}}
-        },
-        {
-          "name": "09.06 POST /staff — no token → 401",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"firstName\": \"No\",\n  \"surname\": \"Token\",\n  \"email\": \"notoken@test.com\",\n  \"department\": \"IT\",\n  \"hireDate\": \"2025-01-01\",\n  \"currentRole\": \"Dev\",\n  \"startDateOfCurrentRole\": \"2025-01-01\",\n  \"employmentType\": \"FULL_TIME\"\n}"},"url":{"raw":"http://localhost:8900/staff","host":["http://localhost:8900"],"path":["staff"]}}
-        },
-        {
-          "name": "09.07 POST /staff — empty body → 400",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/staff","host":["http://localhost:8900"],"path":["staff"]}}
-        },
-        {
-          "name": "09.08 POST /staff — firstName >50 chars → 400",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"firstName\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\n  \"surname\": \"Test\",\n  \"email\": \"longname@test.com\",\n  \"department\": \"IT\",\n  \"hireDate\": \"2025-01-01\",\n  \"currentRole\": \"Dev\",\n  \"startDateOfCurrentRole\": \"2025-01-01\",\n  \"employmentType\": \"FULL_TIME\"\n}"},"url":{"raw":"http://localhost:8900/staff","host":["http://localhost:8900"],"path":["staff"]}}
-        }
-      ]
-    },
-    {
-      "name": "10 — PATCH /staff/{id} EDGE CASES",
-      "item": [
-        {
-          "name": "10.01 PATCH /staff/{id} — not found → 404",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"department\": \"IT\"\n}"},"url":{"raw":"http://localhost:8900/staff/non-existent-id","host":["http://localhost:8900"],"path":["staff","non-existent-id"]}}
-        },
-        {
-          "name": "10.02 PATCH /staff/{id} — Staff role → 403",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"department\": \"Hacked\"\n}"},"url":{"raw":"http://localhost:8900/staff/PASTE_STAFF1_UID","host":["http://localhost:8900"],"path":["staff","PASTE_STAFF1_UID"]}}
-        },
-        {
-          "name": "10.03 PATCH /staff/{id} — no token → 401",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"department\": \"IT\"\n}"},"url":{"raw":"http://localhost:8900/staff/PASTE_STAFF1_UID","host":["http://localhost:8900"],"path":["staff","PASTE_STAFF1_UID"]}}
+          "name": "Edge Cases",
+          "item": [
+            {
+              "name": "Reactivate terminated staff (409 invariant)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"employmentStatus\":\"ACTIVE\"}"},"url":{"raw":"http://localhost:8900/staff/PASTE_STAFF2_UID","host":["http://localhost:8900"],"path":["staff","PASTE_STAFF2_UID"]}}
+            },
+            {
+              "name": "Terminated staff submits leave (403)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF2_TOKEN"}],"body":{"mode":"raw","raw":"{\"startDate\":\"2027-03-01\",\"endDate\":\"2027-03-05\",\"leaveType\":\"ANNUAL\"}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
+            }
+          ]
         }
       ]
     }
     ,{
-      "name": "11 — SUBMIT LEAVE REQUESTS",
+      "name": "5. Leave Requests: Submit",
       "item": [
         {
-          "name": "11.01 Staff1 submits leave (auto-resolve manager) → 201",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"startDate\": \"2026-10-01\",\n  \"endDate\": \"2026-10-05\",\n  \"leaveType\": \"ANNUAL\",\n  \"reason\": \"Holiday\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
+          "name": "Staff1 submits leave (auto-resolve manager): 201",
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"startDate\":\"2026-10-01\",\"endDate\":\"2026-10-05\",\"leaveType\":\"ANNUAL\",\"reason\":\"Holiday\"}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
         },
         {
-          "name": "11.02 Staff1 submits leave (explicit managerId) → 201",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"managerId\": \"PASTE_MANAGER1_UID\",\n  \"startDate\": \"2026-11-01\",\n  \"endDate\": \"2026-11-03\",\n  \"leaveType\": \"ANNUAL\",\n  \"reason\": \"Family event\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
+          "name": "Staff1 submits leave (explicit managerId): 201",
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"managerId\":\"PASTE_MANAGER1_UID\",\"startDate\":\"2026-11-01\",\"endDate\":\"2026-11-03\",\"leaveType\":\"ANNUAL\",\"reason\":\"Family event\"}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
         },
         {
-          "name": "11.03 Staff2 submits leave → 201",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF2_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"startDate\": \"2026-12-20\",\n  \"endDate\": \"2026-12-24\",\n  \"leaveType\": \"ANNUAL\",\n  \"reason\": \"Christmas\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
-        }
-      ]
-    },
-    {
-      "name": "12 — SUBMIT LEAVE EDGE CASES",
-      "item": [
-        {
-          "name": "12.01 Submit — missing startDate → 400",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"endDate\": \"2026-12-01\",\n  \"leaveType\": \"ANNUAL\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
+          "name": "Staff2 submits leave: 201",
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF2_TOKEN"}],"body":{"mode":"raw","raw":"{\"startDate\":\"2026-12-20\",\"endDate\":\"2026-12-24\",\"leaveType\":\"ANNUAL\",\"reason\":\"Christmas\"}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
         },
         {
-          "name": "12.02 Submit — missing endDate → 400",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"startDate\": \"2026-12-01\",\n  \"leaveType\": \"ANNUAL\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
-        },
-        {
-          "name": "12.03 Submit — missing leaveType → 400",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"startDate\": \"2026-12-01\",\n  \"endDate\": \"2026-12-05\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
-        },
-        {
-          "name": "12.04 Submit — startDate in the past → 400",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"startDate\": \"2020-01-01\",\n  \"endDate\": \"2020-01-05\",\n  \"leaveType\": \"ANNUAL\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
-        },
-        {
-          "name": "12.05 Submit — endDate in the past → 400",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"startDate\": \"2026-10-20\",\n  \"endDate\": \"2020-01-05\",\n  \"leaveType\": \"ANNUAL\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
-        },
-        {
-          "name": "12.06 Submit — endDate before startDate (domain) → 400",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"startDate\": \"2026-12-10\",\n  \"endDate\": \"2026-12-05\",\n  \"leaveType\": \"ANNUAL\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
-        },
-        {
-          "name": "12.07 Submit — reason >500 chars → 400",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"startDate\": \"2027-03-01\",\n  \"endDate\": \"2027-03-05\",\n  \"leaveType\": \"ANNUAL\",\n  \"reason\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
-        },
-        {
-          "name": "12.08 Submit — non-existent managerId → 400",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"managerId\": \"non-existent-manager-id\",\n  \"startDate\": \"2027-01-10\",\n  \"endDate\": \"2027-01-12\",\n  \"leaveType\": \"ANNUAL\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
-        },
-        {
-          "name": "12.09 Submit — date overlap with existing PENDING → 409",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"startDate\": \"2026-10-03\",\n  \"endDate\": \"2026-10-07\",\n  \"leaveType\": \"ANNUAL\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
-        },
-        {
-          "name": "12.10 Submit — no token → 401",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"startDate\": \"2027-02-01\",\n  \"endDate\": \"2027-02-05\",\n  \"leaveType\": \"ANNUAL\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
-        },
-        {
-          "name": "12.11 Submit — empty body → 400",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
+          "name": "Edge Cases",
+          "item": [
+            {
+              "name": "Submit: missing startDate (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"endDate\":\"2026-12-01\",\"leaveType\":\"ANNUAL\"}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
+            },
+            {
+              "name": "Submit: missing endDate (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"startDate\":\"2026-12-01\",\"leaveType\":\"ANNUAL\"}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
+            },
+            {
+              "name": "Submit: missing leaveType (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"startDate\":\"2026-12-01\",\"endDate\":\"2026-12-05\"}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
+            },
+            {
+              "name": "Submit: startDate in the past (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"startDate\":\"2020-01-01\",\"endDate\":\"2020-01-05\",\"leaveType\":\"ANNUAL\"}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
+            },
+            {
+              "name": "Submit: endDate in the past (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"startDate\":\"2026-10-20\",\"endDate\":\"2020-01-05\",\"leaveType\":\"ANNUAL\"}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
+            },
+            {
+              "name": "Submit: endDate before startDate (400 domain)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"startDate\":\"2026-12-10\",\"endDate\":\"2026-12-05\",\"leaveType\":\"ANNUAL\"}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
+            },
+            {
+              "name": "Submit: reason >500 chars (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"startDate\":\"2027-03-01\",\"endDate\":\"2027-03-05\",\"leaveType\":\"ANNUAL\",\"reason\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
+            },
+            {
+              "name": "Submit: non-existent managerId (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"managerId\":\"non-existent-manager-id\",\"startDate\":\"2027-01-10\",\"endDate\":\"2027-01-12\",\"leaveType\":\"ANNUAL\"}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
+            },
+            {
+              "name": "Submit: date overlap with existing PENDING (409)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"startDate\":\"2026-10-03\",\"endDate\":\"2026-10-07\",\"leaveType\":\"ANNUAL\"}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
+            },
+            {
+              "name": "Submit: no token (401)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"startDate\":\"2027-02-01\",\"endDate\":\"2027-02-05\",\"leaveType\":\"ANNUAL\"}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
+            },
+            {
+              "name": "Submit: empty body (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
+            }
+          ]
         }
       ]
     }
     ,{
-      "name": "13 — LEAVE REQUEST QUERIES",
+      "name": "6. Leave Requests: Approve, Reject & Cancel",
       "item": [
         {
-          "name": "13.01 GET /leave-requests/my — Staff1 → 200",
+          "name": "Approve: Manager1 approves Staff1 request (200)",
+          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"body":{"mode":"raw","raw":"{\"reason\":\"Approved: enjoy your holiday\"}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID/approve","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID","approve"]}}
+        },
+        {
+          "name": "Reject: Manager1 rejects Staff1 request #2 (200)",
+          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"body":{"mode":"raw","raw":"{\"reason\":\"Insufficient team coverage\"}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_2/reject","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID_2","reject"]}}
+        },
+        {
+          "name": "Cancel: Staff1 cancels approved request (200)",
+          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"reason\":\"Plans changed\"}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID/cancel","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID","cancel"]}}
+        },
+        {
+          "name": "Approve: Admin overrides (approves Staff2 req) (200)",
+          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"reason\":\"Admin approved\"}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_3/approve","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID_3","approve"]}}
+        },
+        {
+          "name": "Cancel: Admin cancels anyone (200)",
+          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"reason\":\"Admin cancelled\"}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_3/cancel","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID_3","cancel"]}}
+        },
+        {
+          "name": "Edge Cases",
+          "item": [
+            {
+              "name": "Approve: already approved (409)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"body":{"mode":"raw","raw":"{\"reason\":\"Try again\"}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID/approve","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID","approve"]}}
+            },
+            {
+              "name": "Reject: already rejected (409)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_2/reject","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID_2","reject"]}}
+            },
+            {
+              "name": "Cancel: already cancelled (409)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID/cancel","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID","cancel"]}}
+            },
+            {
+              "name": "Cancel: rejected request (409)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_2/cancel","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID_2","cancel"]}}
+            },
+            {
+              "name": "Approve: wrong manager (403)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_3/approve","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID_3","approve"]}}
+            },
+            {
+              "name": "Approve: Staff role (403)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_3/approve","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID_3","approve"]}}
+            },
+            {
+              "name": "Approve: no token (401)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_3/approve","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID_3","approve"]}}
+            },
+            {
+              "name": "Approve: not found (404)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/00000000-0000-0000-0000-000000000000/approve","host":["http://localhost:8900"],"path":["leave-requests","00000000-0000-0000-0000-000000000000","approve"]}}
+            },
+            {
+              "name": "Approve: reason >500 chars (400)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_MANAGER2_TOKEN"}],"body":{"mode":"raw","raw":"{\"reason\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_3/approve","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID_3","approve"]}}
+            },
+            {
+              "name": "Cancel: not owner not admin (403)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_3/cancel","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID_3","cancel"]}}
+            },
+            {
+              "name": "Reject: no token (401)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_3/reject","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID_3","reject"]}}
+            },
+            {
+              "name": "Cancel: no token (401)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_3/cancel","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID_3","cancel"]}}
+            }
+          ]
+        }
+      ]
+    }
+    ,{
+      "name": "7. Leave Requests: Queries & Search",
+      "item": [
+        {
+          "name": "GET /leave-requests/my: Staff1 (200)",
           "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-requests/my","host":["http://localhost:8900"],"path":["leave-requests","my"]}}
         },
         {
-          "name": "13.02 GET /leave-requests/my — no token → 401",
-          "request": {"method":"GET","header":[],"url":{"raw":"http://localhost:8900/leave-requests/my","host":["http://localhost:8900"],"path":["leave-requests","my"]}}
-        },
-        {
-          "name": "13.03 GET /leave-requests/team — Manager1 → 200",
+          "name": "GET /leave-requests/team: Manager1 (200)",
           "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-requests/team","host":["http://localhost:8900"],"path":["leave-requests","team"]}}
         },
         {
-          "name": "13.04 GET /leave-requests/team — Staff role → 403",
-          "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-requests/team","host":["http://localhost:8900"],"path":["leave-requests","team"]}}
-        },
-        {
-          "name": "13.05 GET /leave-requests/all — Admin → 200",
+          "name": "GET /leave-requests/all: Admin (200)",
           "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-requests/all","host":["http://localhost:8900"],"path":["leave-requests","all"]}}
         },
         {
-          "name": "13.06 GET /leave-requests/all — Staff role → 403",
-          "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-requests/all","host":["http://localhost:8900"],"path":["leave-requests","all"]}}
-        },
-        {
-          "name": "13.07 GET /leave-requests/all — Manager role → 403",
-          "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-requests/all","host":["http://localhost:8900"],"path":["leave-requests","all"]}}
-        },
-        {
-          "name": "13.08 GET /leave-requests/{id} — by ID → 200",
+          "name": "GET /leave-requests/{id}: by ID (200)",
           "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID"]}}
         },
         {
-          "name": "13.09 GET /leave-requests/{id} — not found → 404",
-          "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-requests/00000000-0000-0000-0000-000000000000","host":["http://localhost:8900"],"path":["leave-requests","00000000-0000-0000-0000-000000000000"]}}
+          "name": "POST /leave-requests/my/search: by status PENDING (200)",
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"status\":\"PENDING\"}"},"url":{"raw":"http://localhost:8900/leave-requests/my/search","host":["http://localhost:8900"],"path":["leave-requests","my","search"]}}
+        },
+        {
+          "name": "POST /leave-requests/team/search: by status (200)",
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"body":{"mode":"raw","raw":"{\"status\":\"PENDING\"}"},"url":{"raw":"http://localhost:8900/leave-requests/team/search","host":["http://localhost:8900"],"path":["leave-requests","team","search"]}}
+        },
+        {
+          "name": "POST /leave-requests/team/search: by date range (200)",
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"body":{"mode":"raw","raw":"{\"from\":\"2026-10-01\",\"to\":\"2026-12-31\"}"},"url":{"raw":"http://localhost:8900/leave-requests/team/search","host":["http://localhost:8900"],"path":["leave-requests","team","search"]}}
+        },
+        {
+          "name": "POST /leave-requests/all/search: by staffMemberId (200)",
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"staffMemberId\":\"PASTE_STAFF1_UID\"}"},"url":{"raw":"http://localhost:8900/leave-requests/all/search","host":["http://localhost:8900"],"path":["leave-requests","all","search"]}}
+        },
+        {
+          "name": "POST /leave-requests/all/search: by managerId (200)",
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"managerId\":\"PASTE_MANAGER1_UID\"}"},"url":{"raw":"http://localhost:8900/leave-requests/all/search","host":["http://localhost:8900"],"path":["leave-requests","all","search"]}}
+        },
+        {
+          "name": "POST /leave-requests/all/search: combined filters (200)",
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"status\":\"PENDING\",\"from\":\"2026-10-01\",\"to\":\"2026-12-31\"}"},"url":{"raw":"http://localhost:8900/leave-requests/all/search","host":["http://localhost:8900"],"path":["leave-requests","all","search"]}}
+        },
+        {
+          "name": "Edge Cases",
+          "item": [
+            {
+              "name": "GET /leave-requests/my: no token (401)",
+              "request": {"method":"GET","header":[],"url":{"raw":"http://localhost:8900/leave-requests/my","host":["http://localhost:8900"],"path":["leave-requests","my"]}}
+            },
+            {
+              "name": "GET /leave-requests/team: Staff role (403)",
+              "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-requests/team","host":["http://localhost:8900"],"path":["leave-requests","team"]}}
+            },
+            {
+              "name": "GET /leave-requests/all: Staff role (403)",
+              "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-requests/all","host":["http://localhost:8900"],"path":["leave-requests","all"]}}
+            },
+            {
+              "name": "GET /leave-requests/all: Manager role (403)",
+              "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-requests/all","host":["http://localhost:8900"],"path":["leave-requests","all"]}}
+            },
+            {
+              "name": "GET /leave-requests/{id}: not found (404)",
+              "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-requests/00000000-0000-0000-0000-000000000000","host":["http://localhost:8900"],"path":["leave-requests","00000000-0000-0000-0000-000000000000"]}}
+            },
+            {
+              "name": "POST /my/search: no filters (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/my/search","host":["http://localhost:8900"],"path":["leave-requests","my","search"]}}
+            },
+            {
+              "name": "POST /my/search: invalid status BANANA (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"status\":\"BANANA\"}"},"url":{"raw":"http://localhost:8900/leave-requests/my/search","host":["http://localhost:8900"],"path":["leave-requests","my","search"]}}
+            },
+            {
+              "name": "POST /team/search: Staff role (403)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"status\":\"PENDING\"}"},"url":{"raw":"http://localhost:8900/leave-requests/team/search","host":["http://localhost:8900"],"path":["leave-requests","team","search"]}}
+            },
+            {
+              "name": "POST /team/search: only 'from' no 'to' (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"body":{"mode":"raw","raw":"{\"from\":\"2026-10-01\"}"},"url":{"raw":"http://localhost:8900/leave-requests/team/search","host":["http://localhost:8900"],"path":["leave-requests","team","search"]}}
+            },
+            {
+              "name": "POST /team/search: from after to (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"body":{"mode":"raw","raw":"{\"from\":\"2026-12-31\",\"to\":\"2026-10-01\"}"},"url":{"raw":"http://localhost:8900/leave-requests/team/search","host":["http://localhost:8900"],"path":["leave-requests","team","search"]}}
+            },
+            {
+              "name": "POST /all/search: Staff role (403)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"status\":\"PENDING\"}"},"url":{"raw":"http://localhost:8900/leave-requests/all/search","host":["http://localhost:8900"],"path":["leave-requests","all","search"]}}
+            },
+            {
+              "name": "POST /all/search: no filters (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/all/search","host":["http://localhost:8900"],"path":["leave-requests","all","search"]}}
+            }
+          ]
         }
       ]
     }
     ,{
-      "name": "14 — LEAVE REQUEST SEARCH",
+      "name": "8. Leave Allowances",
       "item": [
         {
-          "name": "14.01 POST /leave-requests/my/search — by status PENDING → 200",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"status\": \"PENDING\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests/my/search","host":["http://localhost:8900"],"path":["leave-requests","my","search"]}}
-        },
-        {
-          "name": "14.02 POST /leave-requests/my/search — no filters → 400",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/my/search","host":["http://localhost:8900"],"path":["leave-requests","my","search"]}}
-        },
-        {
-          "name": "14.03 POST /leave-requests/my/search — invalid status BANANA → 400",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"status\": \"BANANA\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests/my/search","host":["http://localhost:8900"],"path":["leave-requests","my","search"]}}
-        },
-        {
-          "name": "14.04 POST /leave-requests/team/search — by status → 200",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"status\": \"PENDING\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests/team/search","host":["http://localhost:8900"],"path":["leave-requests","team","search"]}}
-        },
-        {
-          "name": "14.05 POST /leave-requests/team/search — by date range → 200",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"from\": \"2026-10-01\",\n  \"to\": \"2026-12-31\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests/team/search","host":["http://localhost:8900"],"path":["leave-requests","team","search"]}}
-        },
-        {
-          "name": "14.06 POST /leave-requests/team/search — Staff role → 403",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"status\": \"PENDING\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests/team/search","host":["http://localhost:8900"],"path":["leave-requests","team","search"]}}
-        },
-        {
-          "name": "14.07 POST /leave-requests/team/search — only 'from' no 'to' → 400",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"from\": \"2026-10-01\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests/team/search","host":["http://localhost:8900"],"path":["leave-requests","team","search"]}}
-        },
-        {
-          "name": "14.08 POST /leave-requests/team/search — from after to → 400",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"from\": \"2026-12-31\",\n  \"to\": \"2026-10-01\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests/team/search","host":["http://localhost:8900"],"path":["leave-requests","team","search"]}}
-        },
-        {
-          "name": "14.09 POST /leave-requests/all/search — by staffMemberId → 200",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"staffMemberId\": \"PASTE_STAFF1_UID\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests/all/search","host":["http://localhost:8900"],"path":["leave-requests","all","search"]}}
-        },
-        {
-          "name": "14.10 POST /leave-requests/all/search — by managerId → 200",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"managerId\": \"PASTE_MANAGER1_UID\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests/all/search","host":["http://localhost:8900"],"path":["leave-requests","all","search"]}}
-        },
-        {
-          "name": "14.11 POST /leave-requests/all/search — combined filters → 200",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"status\": \"PENDING\",\n  \"from\": \"2026-10-01\",\n  \"to\": \"2026-12-31\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests/all/search","host":["http://localhost:8900"],"path":["leave-requests","all","search"]}}
-        },
-        {
-          "name": "14.12 POST /leave-requests/all/search — Staff role → 403",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"status\": \"PENDING\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests/all/search","host":["http://localhost:8900"],"path":["leave-requests","all","search"]}}
-        },
-        {
-          "name": "14.13 POST /leave-requests/all/search — no filters → 400",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/all/search","host":["http://localhost:8900"],"path":["leave-requests","all","search"]}}
-        }
-      ]
-    }
-    ,{
-      "name": "15 — APPROVE / REJECT / CANCEL",
-      "item": [
-        {
-          "name": "15.01 Approve — Manager1 approves Staff1 request → 200",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"reason\": \"Approved — enjoy your holiday\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID/approve","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID","approve"]}}
-        },
-        {
-          "name": "15.02 Approve — already approved → 409",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"reason\": \"Try again\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID/approve","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID","approve"]}}
-        },
-        {
-          "name": "15.03 Reject — Manager1 rejects Staff1 request #2 → 200",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"reason\": \"Insufficient team coverage\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_2/reject","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID_2","reject"]}}
-        },
-        {
-          "name": "15.04 Reject — already rejected → 409",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_2/reject","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID_2","reject"]}}
-        },
-        {
-          "name": "15.05 Cancel — Staff1 cancels approved request → 200",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"reason\": \"Plans changed\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID/cancel","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID","cancel"]}}
-        },
-        {
-          "name": "15.06 Cancel — already cancelled → 409",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID/cancel","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID","cancel"]}}
-        },
-        {
-          "name": "15.07 Cancel — rejected request → 409",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_2/cancel","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID_2","cancel"]}}
-        }
-      ]
-    }
-    ,{
-      "name": "16 — APPROVE/REJECT/CANCEL EDGE CASES",
-      "item": [
-        {
-          "name": "16.01 Approve — wrong manager → 403",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_3/approve","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID_3","approve"]}}
-        },
-        {
-          "name": "16.02 Approve — Staff role → 403",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_3/approve","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID_3","approve"]}}
-        },
-        {
-          "name": "16.03 Approve — no token → 401",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_3/approve","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID_3","approve"]}}
-        },
-        {
-          "name": "16.04 Approve — not found → 404",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/00000000-0000-0000-0000-000000000000/approve","host":["http://localhost:8900"],"path":["leave-requests","00000000-0000-0000-0000-000000000000","approve"]}}
-        },
-        {
-          "name": "16.05 Approve — reason >500 chars → 400",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_MANAGER2_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"reason\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_3/approve","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID_3","approve"]}}
-        },
-        {
-          "name": "16.06 Approve — Admin overrides (approves Staff2 req) → 200",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"reason\": \"Admin approved\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_3/approve","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID_3","approve"]}}
-        },
-        {
-          "name": "16.07 Cancel — not owner, not admin → 403",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_3/cancel","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID_3","cancel"]}}
-        },
-        {
-          "name": "16.08 Cancel — Admin can cancel anyone → 200",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"reason\": \"Admin cancelled\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_3/cancel","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID_3","cancel"]}}
-        },
-        {
-          "name": "16.09 Reject — no token → 401",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_3/reject","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID_3","reject"]}}
-        },
-        {
-          "name": "16.10 Cancel — no token → 401",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID_3/cancel","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID_3","cancel"]}}
-        }
-      ]
-    }
-    ,{
-      "name": "17 — LEAVE ALLOWANCE QUERIES",
-      "item": [
-        {
-          "name": "17.01 GET /leave-allowances/my — Staff1 → 200",
+          "name": "GET /leave-allowances/my: Staff1 (200)",
           "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-allowances/my","host":["http://localhost:8900"],"path":["leave-allowances","my"]}}
         },
         {
-          "name": "17.02 GET /leave-allowances/my — no token → 401",
-          "request": {"method":"GET","header":[],"url":{"raw":"http://localhost:8900/leave-allowances/my","host":["http://localhost:8900"],"path":["leave-allowances","my"]}}
-        },
-        {
-          "name": "17.03 GET /leave-allowances/staff/{id} — Manager → 200",
+          "name": "GET /leave-allowances/staff/{id}: Manager (200)",
           "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-allowances/staff/PASTE_STAFF1_UID","host":["http://localhost:8900"],"path":["leave-allowances","staff","PASTE_STAFF1_UID"]}}
         },
         {
-          "name": "17.04 GET /leave-allowances/staff/{id} — Staff role → 403",
-          "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-allowances/staff/PASTE_STAFF2_UID","host":["http://localhost:8900"],"path":["leave-allowances","staff","PASTE_STAFF2_UID"]}}
-        },
-        {
-          "name": "17.05 GET /leave-allowances/staff/{id} — not found → 404",
-          "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-allowances/staff/non-existent-id","host":["http://localhost:8900"],"path":["leave-allowances","staff","non-existent-id"]}}
-        },
-        {
-          "name": "17.06 GET /leave-allowances/team — Manager1 → 200",
+          "name": "GET /leave-allowances/team: Manager1 (200)",
           "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-allowances/team","host":["http://localhost:8900"],"path":["leave-allowances","team"]}}
         },
         {
-          "name": "17.07 GET /leave-allowances/team — Staff role → 403",
-          "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-allowances/team","host":["http://localhost:8900"],"path":["leave-allowances","team"]}}
-        },
-        {
-          "name": "17.08 GET /leave-allowances/all — Admin → 200",
+          "name": "GET /leave-allowances/all: Admin (200)",
           "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-allowances/all","host":["http://localhost:8900"],"path":["leave-allowances","all"]}}
         },
         {
-          "name": "17.09 GET /leave-allowances/all — Staff role → 403",
-          "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-allowances/all","host":["http://localhost:8900"],"path":["leave-allowances","all"]}}
-        },
-        {
-          "name": "17.10 GET /leave-allowances/all?department=Networks → 200",
+          "name": "GET /leave-allowances/all?department=Networks (200)",
           "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-allowances/all?department=Networks","host":["http://localhost:8900"],"path":["leave-allowances","all"],"query":[{"key":"department","value":"Networks"}]}}
         },
         {
-          "name": "17.11 GET /leave-allowances/all — no token → 401",
-          "request": {"method":"GET","header":[],"url":{"raw":"http://localhost:8900/leave-allowances/all","host":["http://localhost:8900"],"path":["leave-allowances","all"]}}
-        }
-      ]
-    }
-    ,{
-      "name": "18 — AMEND ENTITLEMENT",
-      "item": [
-        {
-          "name": "18.01 PATCH /leave-allowances/{id} — Admin amends → 200",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"newEntitlement\": 30\n}"},"url":{"raw":"http://localhost:8900/leave-allowances/PASTE_ALLOWANCE_ID","host":["http://localhost:8900"],"path":["leave-allowances","PASTE_ALLOWANCE_ID"]}}
+          "name": "PATCH /leave-allowances/{id}: Admin amends to 30 (200)",
+          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"newEntitlement\":30}"},"url":{"raw":"http://localhost:8900/leave-allowances/PASTE_ALLOWANCE_ID","host":["http://localhost:8900"],"path":["leave-allowances","PASTE_ALLOWANCE_ID"]}}
         },
         {
-          "name": "18.02 PATCH /leave-allowances/{id} — 0 entitlement → 400",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"newEntitlement\": 0\n}"},"url":{"raw":"http://localhost:8900/leave-allowances/PASTE_ALLOWANCE_ID","host":["http://localhost:8900"],"path":["leave-allowances","PASTE_ALLOWANCE_ID"]}}
+          "name": "PATCH /leave-allowances/{id}: revert to 25 (200)",
+          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"newEntitlement\":25}"},"url":{"raw":"http://localhost:8900/leave-allowances/PASTE_ALLOWANCE_ID","host":["http://localhost:8900"],"path":["leave-allowances","PASTE_ALLOWANCE_ID"]}}
         },
         {
-          "name": "18.03 PATCH /leave-allowances/{id} — negative → 400",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"newEntitlement\": -5\n}"},"url":{"raw":"http://localhost:8900/leave-allowances/PASTE_ALLOWANCE_ID","host":["http://localhost:8900"],"path":["leave-allowances","PASTE_ALLOWANCE_ID"]}}
-        },
-        {
-          "name": "18.04 PATCH /leave-allowances/{id} — Staff role → 403",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"newEntitlement\": 50\n}"},"url":{"raw":"http://localhost:8900/leave-allowances/PASTE_ALLOWANCE_ID","host":["http://localhost:8900"],"path":["leave-allowances","PASTE_ALLOWANCE_ID"]}}
-        },
-        {
-          "name": "18.05 PATCH /leave-allowances/{id} — Manager role → 403",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"newEntitlement\": 50\n}"},"url":{"raw":"http://localhost:8900/leave-allowances/PASTE_ALLOWANCE_ID","host":["http://localhost:8900"],"path":["leave-allowances","PASTE_ALLOWANCE_ID"]}}
-        },
-        {
-          "name": "18.06 PATCH /leave-allowances/{id} — not found → 404",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"newEntitlement\": 30\n}"},"url":{"raw":"http://localhost:8900/leave-allowances/00000000-0000-0000-0000-000000000000","host":["http://localhost:8900"],"path":["leave-allowances","00000000-0000-0000-0000-000000000000"]}}
-        },
-        {
-          "name": "18.07 PATCH /leave-allowances/{id} — no token → 401",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"newEntitlement\": 30\n}"},"url":{"raw":"http://localhost:8900/leave-allowances/PASTE_ALLOWANCE_ID","host":["http://localhost:8900"],"path":["leave-allowances","PASTE_ALLOWANCE_ID"]}}
-        },
-        {
-          "name": "18.08 Revert entitlement back to 25",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"newEntitlement\": 25\n}"},"url":{"raw":"http://localhost:8900/leave-allowances/PASTE_ALLOWANCE_ID","host":["http://localhost:8900"],"path":["leave-allowances","PASTE_ALLOWANCE_ID"]}}
-        }
-      ]
-    },
-    {
-      "name": "19 — STAFF STATUS TRANSITIONS",
-      "item": [
-        {
-          "name": "19.01 Terminate Staff2 → 200",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"employmentStatus\": \"TERMINATED\"\n}"},"url":{"raw":"http://localhost:8900/staff/PASTE_STAFF2_UID","host":["http://localhost:8900"],"path":["staff","PASTE_STAFF2_UID"]}}
-        },
-        {
-          "name": "19.02 Terminated staff submits leave → 403",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF2_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"startDate\": \"2027-03-01\",\n  \"endDate\": \"2027-03-05\",\n  \"leaveType\": \"ANNUAL\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
-        },
-        {
-          "name": "19.03 Reactivate terminated staff → 409",
-          "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"employmentStatus\": \"ACTIVE\"\n}"},"url":{"raw":"http://localhost:8900/staff/PASTE_STAFF2_UID","host":["http://localhost:8900"],"path":["staff","PASTE_STAFF2_UID"]}}
+          "name": "Edge Cases",
+          "item": [
+            {
+              "name": "GET /leave-allowances/my: no token (401)",
+              "request": {"method":"GET","header":[],"url":{"raw":"http://localhost:8900/leave-allowances/my","host":["http://localhost:8900"],"path":["leave-allowances","my"]}}
+            },
+            {
+              "name": "GET /leave-allowances/staff/{id}: Staff role (403)",
+              "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-allowances/staff/PASTE_STAFF2_UID","host":["http://localhost:8900"],"path":["leave-allowances","staff","PASTE_STAFF2_UID"]}}
+            },
+            {
+              "name": "GET /leave-allowances/staff/{id}: not found (404)",
+              "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-allowances/staff/non-existent-id","host":["http://localhost:8900"],"path":["leave-allowances","staff","non-existent-id"]}}
+            },
+            {
+              "name": "GET /leave-allowances/team: Staff role (403)",
+              "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-allowances/team","host":["http://localhost:8900"],"path":["leave-allowances","team"]}}
+            },
+            {
+              "name": "GET /leave-allowances/all: Staff role (403)",
+              "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-allowances/all","host":["http://localhost:8900"],"path":["leave-allowances","all"]}}
+            },
+            {
+              "name": "GET /leave-allowances/all: no token (401)",
+              "request": {"method":"GET","header":[],"url":{"raw":"http://localhost:8900/leave-allowances/all","host":["http://localhost:8900"],"path":["leave-allowances","all"]}}
+            },
+            {
+              "name": "PATCH entitlement: 0 (400 @Min)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"newEntitlement\":0}"},"url":{"raw":"http://localhost:8900/leave-allowances/PASTE_ALLOWANCE_ID","host":["http://localhost:8900"],"path":["leave-allowances","PASTE_ALLOWANCE_ID"]}}
+            },
+            {
+              "name": "PATCH entitlement: negative (400)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"newEntitlement\":-5}"},"url":{"raw":"http://localhost:8900/leave-allowances/PASTE_ALLOWANCE_ID","host":["http://localhost:8900"],"path":["leave-allowances","PASTE_ALLOWANCE_ID"]}}
+            },
+            {
+              "name": "PATCH entitlement: Staff role (403)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"newEntitlement\":50}"},"url":{"raw":"http://localhost:8900/leave-allowances/PASTE_ALLOWANCE_ID","host":["http://localhost:8900"],"path":["leave-allowances","PASTE_ALLOWANCE_ID"]}}
+            },
+            {
+              "name": "PATCH entitlement: Manager role (403)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"body":{"mode":"raw","raw":"{\"newEntitlement\":50}"},"url":{"raw":"http://localhost:8900/leave-allowances/PASTE_ALLOWANCE_ID","host":["http://localhost:8900"],"path":["leave-allowances","PASTE_ALLOWANCE_ID"]}}
+            },
+            {
+              "name": "PATCH entitlement: not found (404)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\"newEntitlement\":30}"},"url":{"raw":"http://localhost:8900/leave-allowances/00000000-0000-0000-0000-000000000000","host":["http://localhost:8900"],"path":["leave-allowances","00000000-0000-0000-0000-000000000000"]}}
+            },
+            {
+              "name": "PATCH entitlement: no token (401)",
+              "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"newEntitlement\":30}"},"url":{"raw":"http://localhost:8900/leave-allowances/PASTE_ALLOWANCE_ID","host":["http://localhost:8900"],"path":["leave-allowances","PASTE_ALLOWANCE_ID"]}}
+            }
+          ]
         }
       ]
     }
