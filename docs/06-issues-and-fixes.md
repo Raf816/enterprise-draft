@@ -269,10 +269,10 @@ These items were identified during an exhaustive line-by-line audit of both the 
 |------|--------|
 | **Mark scheme criterion** | Testing Decisions (/30): "API (if used) is **comprehensively tested** using an appropriate tool. **Follows best practice.**" |
 | **Guidance says** | "Coverage of **ALL** end points – considering both valid data (which might have different roles to take into consideration) as well as invalid data." |
-| **Resolution** | Comprehensive Postman collection created at `postman/Leave-Booking-System.postman_collection.json` with environment file `Leave-Booking-System.postman_environment.json`. |
-| **Coverage** | 6 folders, ~55 requests covering: (1) Auth — register 5 users, login all roles, duplicate email, wrong password, non-existent email, role-check with/without token, find user by email RBAC, update role RBAC; (2) Staff Management — create staff, duplicate email, RBAC enforcement, get all/by dept/by ID, 404 not found, update department/placement/status, terminal state invariant; (3) Leave Request Commands — submit valid, past date, end-before-start, invalid type, no token, approve/reject/cancel, double-approve, cancel rejected, RBAC enforcement, 404 not found; (4) Leave Request Queries & Search — GET my/team/all with RBAC, POST search by status/date range/staffMemberId/managerId; (5) Leave Allowances — my/staff/team/all with RBAC, amend entitlement, department filter; (6) Security — rate limiting, security headers verification, invalid token. |
-| **Test scripts** | Every request has `pm.test()` assertions verifying status codes, response structure, and business rules. Login scripts auto-save JWT tokens via `pm.globals.set()` for use in subsequent requests (Lecture 9 pattern). |
-| **Status** | ✅ IMPLEMENTED (2026-08-29) |
+| **Resolution** | Comprehensive Postman collections created: automated at `postman/Leave-Booking-System.postman_collection.json`, manual at `postman/Leave-Booking-System-MANUAL.postman_collection.json`, with environment file `Leave-Booking-System.postman_environment.json`. |
+| **Coverage** | 8 domain-based folders with Edge Cases subfolders, 137 requests total covering all 26 endpoints: (1) Auth: Registration & Login — register 5 users + login all + edge cases (blank/invalid/duplicate/empty); (2) Auth: Role Check, Find User & Password — role-check, find-by-email, change password + edge cases (401/403/404); (3) Staff Management: Setup & Queries — PATCH 5 skeletons, GET all/by-id, POST search + edge cases (RBAC 403, 404 not-found, invalid status BANANA→400, no filters→400, POST /staff validation: missing fields, future hireDate, digits in name domain VO, >50 chars, empty body); (4) Staff Management: Updates & Transitions — terminate + edge cases (reactivate terminated→409, terminated submits leave→403); (5) Leave Requests: Submit — auto-resolve manager, explicit managerId, Staff2 submit + edge cases (missing fields, past dates, end<start, reason >500, non-existent manager, date overlap→409, no token, empty body); (6) Leave Requests: Approve, Reject & Cancel — approve/reject/cancel happy paths, admin override + edge cases (already-approved→409, already-rejected→409, already-cancelled→409, cancel-rejected→409, wrong manager→403, staff role→403, not-owner→403, reason >500, 404 not-found, no-token 401); (7) Leave Requests: Queries & Search — GET my/team/all/{id}, POST search by status/date-range/staffMemberId/managerId/combined + edge cases (RBAC 403, 404, no filters→400, invalid status→400, single date→400, from>to→400); (8) Leave Allowances — GET my/staff/team/all/dept-filter, PATCH amend/revert + edge cases (401, 403 staff/manager, 404, @Min 0→400, negative→400). |
+| **Test scripts** | Every request in the automated collection has `pm.test()` assertions verifying status codes, response structure, and business rules. Login scripts auto-save JWT tokens via `pm.environment.set()` for use in subsequent requests. Manual collection uses PASTE_*_TOKEN placeholders with no scripts. |
+| **Status** | ✅ IMPLEMENTED AND RESTRUCTURED (2026-08-31) — 137 requests, domain-based folders matching bounded contexts |
 
 ---
 
@@ -331,8 +331,22 @@ These items were identified during an exhaustive line-by-line audit of both the 
 
 | Priority | Gap | Effort | Impact |
 |----------|-----|--------|--------|
-| 1 (RESOLVED) | ~~Postman collection~~ | ~~2-3 hours~~ | ✅ Implemented — 6 folders, ~55 requests, all endpoints covered |
+| 1 (RESOLVED) | ~~Postman collection~~ | ~~2-3 hours~~ | ✅ Implemented — 8 folders, 137 requests, all 26 endpoints covered with edge cases |
 | 2 (MEDIUM) | **Prior learning reflection** | 1 hour writing | +3-5 marks across all sections |
 | 3 (RESOLVED) | ~~Admin filtering params~~ | ~~10 minutes code~~ | ✅ Implemented — POST `/all/search` with staffMemberId/managerId filters |
 | 4 (RESOLVED) | ~~PUT/DELETE justification in report~~ | ~~Already documented~~ | ✅ Fully justified in docs/04 section 13 |
 | 5 (RESOLVED) | ~~Date range filter on /team~~ | ~~20 minutes code~~ | ✅ Implemented — POST `/team/search` with from/to date range |
+| 6 (DEFERRED) | **Rate limit 429 Postman test** | 30 min code + collection | Low risk — code works, unit tested. Increase limit to 20/min, add 429 demo |
+
+---
+
+### GAP 6: Rate Limit (429) Not Demonstrated in Postman Collection — DEFERRED
+
+| Item | Detail |
+|------|--------|
+| **What we have** | `RateLimitFilter` uses Bucket4j token-bucket algorithm: 5 POST requests per IP per minute on `/auth/login`. Code works, unit tests pass. But the Postman collection does not include a test that triggers the 429 response. |
+| **Problem** | The current limit of 5 per minute conflicts with the Postman collection flow. The 5 happy-path logins (admin, manager1, manager2, staff1, staff2) already exhaust the bucket. Any subsequent login edge case test (wrong password, non-existent user, empty body) running within the same minute would get 429 instead of the expected 400/401 — causing false failures in the Collection Runner. |
+| **Proposed fix (when revisiting)** | (1) Increase `MAX_REQUESTS` from 5 to 20 per minute — a realistic production value (most APIs use 10-30 for login). This gives headroom for the collection runner (5 happy logins + edge case logins = ~11 total, well within 20). (2) Add a rate-limit test subfolder that fires 21 rapid login requests, asserting the 21st returns 429 with the correct JSON body (`{"status":429,"error":"Too Many Requests","message":"Rate limit exceeded..."}`). |
+| **File to change** | `src/main/java/com/staffs/leavebooking/identity/security/RateLimitFilter.java` — change `MAX_REQUESTS = 5` to `MAX_REQUESTS = 20` and `REFILL_DURATION = Duration.ofMinutes(1)`. Then add the Postman test requests to both collections. Update the `RateLimitFilterTest` to match the new limit. |
+| **Impact if not done** | The rate limiting feature works and is unit tested (451 tests pass), but the marker doesn't see it demonstrated in the Postman collection. Low risk — the code and tests prove it works. |
+| **Status** | ⏸️ DEFERRED — noted for revisit if time permits before deadline |
