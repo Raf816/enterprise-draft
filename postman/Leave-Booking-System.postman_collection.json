@@ -1,360 +1,1440 @@
 {
-    "info": {
-        "name": "Leave Booking System API Tests",
-        "description": "Comprehensive API testing. Run folders in order (1→6).\nDelete Firebase users and restart app before re-running.\n\nFlow: Register 5 users → Login → Admin fills in skeleton details and activates staff → Staff submits leave → Manager approves/rejects.",
-        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-    },
-    "item": [
+  "info": {
+    "name": "Leave Booking System - Automated",
+    "description": "All 26 endpoints. Run with Collection Runner in order.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 — REGISTRATION",
+      "item": [
         {
-            "name": "1. Auth — Setup & Login",
-            "item": [
-                {
-                    "name": "Register Admin",
-                    "request": { "method": "POST", "url": "{{base_url}}/auth/register", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"username\": \"Admin User\",\n    \"email\": \"testadmin@staffs.ac.uk\",\n    \"password\": \"Password123!\",\n    \"role\": \"ADMIN\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('201', function() { pm.response.to.have.status(201); });","pm.environment.set('admin_uid', pm.response.json().uid);"]}}]
-                },
-                {
-                    "name": "Register Manager 1 — Lucy",
-                    "request": { "method": "POST", "url": "{{base_url}}/auth/register", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"username\": \"Lucy Reed\",\n    \"email\": \"lucy.reed@staffs.ac.uk\",\n    \"password\": \"Password123!\",\n    \"role\": \"MANAGER\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('201', function() { pm.response.to.have.status(201); });","pm.environment.set('manager1_uid', pm.response.json().uid);"]}}]
-                },
-                {
-                    "name": "Register Manager 2 — Dan",
-                    "request": { "method": "POST", "url": "{{base_url}}/auth/register", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"username\": \"Dan Thompson\",\n    \"email\": \"dan.thompson@bt.com\",\n    \"password\": \"Password123!\",\n    \"role\": \"MANAGER\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('201', function() { pm.response.to.have.status(201); });","pm.environment.set('manager2_uid', pm.response.json().uid);"]}}]
-                },
-                {
-                    "name": "Register Staff 1 — Raf",
-                    "request": { "method": "POST", "url": "{{base_url}}/auth/register", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"username\": \"Raf Ahmed\",\n    \"email\": \"raf.ahmed@bt.com\",\n    \"password\": \"Password123!\",\n    \"role\": \"STAFF\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('201', function() { pm.response.to.have.status(201); });","pm.environment.set('staff1_uid', pm.response.json().uid);"]}}]
-                },
-                {
-                    "name": "Register Staff 2 — Phil",
-                    "request": { "method": "POST", "url": "{{base_url}}/auth/register", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"username\": \"Phil James\",\n    \"email\": \"phil.james@staffs.ac.uk\",\n    \"password\": \"Password123!\",\n    \"role\": \"STAFF\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('201', function() { pm.response.to.have.status(201); });","pm.environment.set('staff2_uid', pm.response.json().uid);"]}}]
-                },
-                {
-                    "name": "Register — Duplicate (expect 400)",
-                    "request": { "method": "POST", "url": "{{base_url}}/auth/register", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"username\": \"Dup\",\n    \"email\": \"testadmin@staffs.ac.uk\",\n    \"password\": \"Password123!\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('400', function() { pm.response.to.have.status(400); });"]}}]
-                },
-                {
-                    "name": "Register — Missing Fields (expect 400)",
-                    "request": { "method": "POST", "url": "{{base_url}}/auth/register", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"email\": \"x@x.com\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('400', function() { pm.response.to.have.status(400); });"]}}]
-                },
-                {
-                    "name": "Login Admin",
-                    "request": { "method": "POST", "url": "{{base_url}}/auth/login", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"emailOrUsername\": \"testadmin@staffs.ac.uk\",\n    \"password\": \"Password123!\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });","pm.environment.set('jwt_admin_token', pm.response.json().idToken);"]}}]
-                },
-                {
-                    "name": "Login Manager 1",
-                    "request": { "method": "POST", "url": "{{base_url}}/auth/login", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"emailOrUsername\": \"lucy.reed@staffs.ac.uk\",\n    \"password\": \"Password123!\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });","pm.environment.set('jwt_manager1_token', pm.response.json().idToken);"]}}]
-                },
-                {
-                    "name": "Login Manager 2",
-                    "request": { "method": "POST", "url": "{{base_url}}/auth/login", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"emailOrUsername\": \"dan.thompson@bt.com\",\n    \"password\": \"Password123!\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });","pm.environment.set('jwt_manager2_token', pm.response.json().idToken);"]}}]
-                },
-                {
-                    "name": "Login Staff 1",
-                    "request": { "method": "POST", "url": "{{base_url}}/auth/login", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"emailOrUsername\": \"raf.ahmed@bt.com\",\n    \"password\": \"Password123!\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });","pm.environment.set('jwt_staff1_token', pm.response.json().idToken);"]}}]
-                },
-                {
-                    "name": "Login Staff 2",
-                    "request": { "method": "POST", "url": "{{base_url}}/auth/login", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"emailOrUsername\": \"phil.james@staffs.ac.uk\",\n    \"password\": \"Password123!\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });","pm.environment.set('jwt_staff2_token', pm.response.json().idToken);"]}}]
-                },
-                {
-                    "name": "Login — Wrong Password (expect 400/429)",
-                    "request": { "method": "POST", "url": "{{base_url}}/auth/login", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"emailOrUsername\": \"testadmin@staffs.ac.uk\",\n    \"password\": \"Wrong!\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('400 or 429', function() { pm.expect(pm.response.code).to.be.oneOf([400, 429]); });"]}}]
-                },
-                {
-                    "name": "Role Check — Admin",
-                    "request": { "method": "GET", "url": "{{base_url}}/auth/role-check", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });","pm.test('ROLE_ADMIN', function() { pm.expect(pm.response.text()).to.include('ROLE_ADMIN'); });"]}}]
-                },
-                {
-                    "name": "Role Check — No Token (expect 401)",
-                    "request": { "method": "GET", "url": "{{base_url}}/auth/role-check", "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('401 or 403', function() { pm.expect(pm.response.code).to.be.oneOf([401, 403]); });"]}}]
-                },
-                {
-                    "name": "Find User — Admin",
-                    "request": { "method": "GET", "url": "{{base_url}}/auth/users/lucy.reed@staffs.ac.uk", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
-                },
-                {
-                    "name": "Find User — Staff (expect 403)",
-                    "request": { "method": "GET", "url": "{{base_url}}/auth/users/testadmin@staffs.ac.uk", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('403', function() { pm.response.to.have.status(403); });"]}}]
-                },
-                {
-                    "name": "Change Password",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/auth/password", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"newPassword\": \"NewPass456!\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff2_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
-                },
-                {
-                    "name": "Change Password — Reset back",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/auth/password", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"newPassword\": \"Password123!\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff2_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
-                }
-            ]
+          "name": "01.01 Register Admin",
+          "event": [{"listen":"test","script":{"exec":["pm.test('201 Created', function(){ pm.response.to.have.status(201); });","var json = pm.response.json();","pm.test('has uid', function(){ pm.expect(json.uid).to.be.a('string'); });","pm.environment.set('admin_uid', json.uid);","pm.test('has message', function(){ pm.expect(json.message).to.include('successfully'); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\"username\":\"Admin User\",\"email\":\"admin@leavebooking.test\",\"password\":\"Admin123!\",\"role\":\"ADMIN\"}"},
+            "url": {"raw":"{{base_url}}/auth/register","host":["{{base_url}}"],"path":["auth","register"]}
+          }
         },
         {
-            "name": "2. Staff Management",
-            "description": "Admin fills in skeleton details and activates self-registered users. Uses the SAME UIDs from registration — no new staff created.",
-            "item": [
-                {
-                    "name": "Fill in Raf's details + assign to Lucy",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff1_uid}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"department\": \"Networks\",\n    \"lineManagerId\": \"{{manager1_uid}}\",\n    \"currentRole\": \"Apprentice Software Engineer\",\n    \"startDateOfCurrentRole\": \"2025-09-01\",\n    \"jobLevel\": \"JUNIOR\",\n    \"employmentType\": \"FULL_TIME\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
-                },
-                {
-                    "name": "Activate Raf (PENDING_SETUP → ACTIVE)",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff1_uid}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"employmentStatus\": \"ACTIVE\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });","pm.test('ACTIVE', function() { pm.expect(pm.response.json().employmentStatus).to.equal('ACTIVE'); });"]}}]
-                },
-                {
-                    "name": "Fill in Phil's details + assign to Dan",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff2_uid}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"department\": \"Digital\",\n    \"lineManagerId\": \"{{manager2_uid}}\",\n    \"currentRole\": \"Software Engineer\",\n    \"startDateOfCurrentRole\": \"2023-04-01\",\n    \"jobLevel\": \"MID\",\n    \"employmentType\": \"PART_TIME\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
-                },
-                {
-                    "name": "Activate Phil",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff2_uid}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"employmentStatus\": \"ACTIVE\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
-                },
-                {
-                    "name": "GET /staff — Admin",
-                    "request": { "method": "GET", "url": "{{base_url}}/staff", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
-                },
-                {
-                    "name": "GET /staff — Staff (expect 403)",
-                    "request": { "method": "GET", "url": "{{base_url}}/staff", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('403', function() { pm.response.to.have.status(403); });"]}}]
-                },
-                {
-                    "name": "Search by Department",
-                    "request": { "method": "POST", "url": "{{base_url}}/staff/search", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"department\": \"Networks\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
-                },
-                {
-                    "name": "Search — No Filters (expect 400)",
-                    "request": { "method": "POST", "url": "{{base_url}}/staff/search", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('400', function() { pm.response.to.have.status(400); });"]}}]
-                },
-                {
-                    "name": "GET /staff/{id} — Valid",
-                    "request": { "method": "GET", "url": "{{base_url}}/staff/{{staff1_uid}}", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
-                },
-                {
-                    "name": "GET /staff/{id} — Not Found (expect 404)",
-                    "request": { "method": "GET", "url": "{{base_url}}/staff/00000000-0000-0000-0000-000000000000", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('404', function() { pm.response.to.have.status(404); });"]}}]
-                },
-                {
-                    "name": "Update Department — move Raf to Digital",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff1_uid}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"department\": \"Digital\",\n    \"lineManagerId\": \"{{manager2_uid}}\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
-                },
-                {
-                    "name": "Move Raf back to Networks",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff1_uid}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"department\": \"Networks\",\n    \"lineManagerId\": \"{{manager1_uid}}\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
-                },
-                {
-                    "name": "Terminate Phil",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff2_uid}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"employmentStatus\": \"TERMINATED\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
-                },
-                {
-                    "name": "Reactivate Terminated (expect 409)",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff2_uid}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"employmentStatus\": \"ACTIVE\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('409 or 400', function() { pm.expect(pm.response.code).to.be.oneOf([409, 400]); });"]}}]
-                },
-                {
-                    "name": "PATCH — Staff (expect 403)",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/staff/{{staff1_uid}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"department\": \"Finance\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('403', function() { pm.response.to.have.status(403); });"]}}]
-                }
-            ]
+          "name": "01.02 Register Manager1",
+          "event": [{"listen":"test","script":{"exec":["pm.test('201 Created', function(){ pm.response.to.have.status(201); });","var json = pm.response.json();","pm.environment.set('manager1_uid', json.uid);"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\"username\":\"Manager One\",\"email\":\"manager1@leavebooking.test\",\"password\":\"Manager123!\",\"role\":\"MANAGER\"}"},
+            "url": {"raw":"{{base_url}}/auth/register","host":["{{base_url}}"],"path":["auth","register"]}
+          }
         },
         {
-            "name": "3. Leave Requests — Commands",
-            "item": [
-                {
-                    "name": "Submit — Raf (5 days)",
-                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"managerId\": \"{{manager1_uid}}\",\n    \"startDate\": \"2026-09-15\",\n    \"endDate\": \"2026-09-19\",\n    \"leaveType\": \"ANNUAL\",\n    \"reason\": \"Family holiday to Portugal\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('201', function() { pm.response.to.have.status(201); });","pm.test('PENDING', function() { pm.expect(pm.response.json().status).to.equal('PENDING'); });","pm.environment.set('leave_request_id', pm.response.json().id);"]}}]
-                },
-                {
-                    "name": "Submit — Past Date (expect 400)",
-                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"managerId\": \"{{manager1_uid}}\",\n    \"startDate\": \"2025-01-01\",\n    \"endDate\": \"2025-01-05\",\n    \"leaveType\": \"ANNUAL\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('400', function() { pm.response.to.have.status(400); });"]}}]
-                },
-                {
-                    "name": "Submit — End Before Start (expect 400)",
-                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"managerId\": \"{{manager1_uid}}\",\n    \"startDate\": \"2026-10-15\",\n    \"endDate\": \"2026-10-10\",\n    \"leaveType\": \"ANNUAL\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('400', function() { pm.response.to.have.status(400); });"]}}]
-                },
-                {
-                    "name": "Submit — No Token (expect 401)",
-                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"managerId\": \"{{manager1_uid}}\",\n    \"startDate\": \"2026-10-15\",\n    \"endDate\": \"2026-10-19\",\n    \"leaveType\": \"ANNUAL\"\n}"}, "auth": {"type":"noauth"} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('401', function() { pm.response.to.have.status(401); });"]}}]
-                },
-                {
-                    "name": "Approve — Lucy",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/leave-requests/{{leave_request_id}}/approve", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"reason\": \"Enjoy your holiday!\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_manager1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });","pm.test('APPROVED', function() { pm.expect(pm.response.json().status).to.equal('APPROVED'); });"]}}]
-                },
-                {
-                    "name": "Approve — Already (expect 409)",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/leave-requests/{{leave_request_id}}/approve", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_manager1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('409 or 400', function() { pm.expect(pm.response.code).to.be.oneOf([409, 400]); });"]}}]
-                },
-                {
-                    "name": "Approve — Staff (expect 403)",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/leave-requests/{{leave_request_id}}/approve", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('403', function() { pm.response.to.have.status(403); });"]}}]
-                },
-                {
-                    "name": "Approve — Wrong Manager (expect 403)",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/leave-requests/{{leave_request_id}}/approve", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_manager2_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('403', function() { pm.response.to.have.status(403); });"]}}]
-                },
-                {
-                    "name": "Cancel Approved — Raf",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/leave-requests/{{leave_request_id}}/cancel", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"reason\": \"Plans changed\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });","pm.test('CANCELLED', function() { pm.expect(pm.response.json().status).to.equal('CANCELLED'); });"]}}]
-                },
-                {
-                    "name": "Submit 2nd — for reject",
-                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"managerId\": \"{{manager1_uid}}\",\n    \"startDate\": \"2026-11-02\",\n    \"endDate\": \"2026-11-06\",\n    \"leaveType\": \"ANNUAL\",\n    \"reason\": \"Christmas shopping\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('201', function() { pm.response.to.have.status(201); });","pm.environment.set('leave_request_id_2', pm.response.json().id);"]}}]
-                },
-                {
-                    "name": "Reject — Lucy",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/leave-requests/{{leave_request_id_2}}/reject", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"reason\": \"Team short-staffed\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_manager1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });","pm.test('REJECTED', function() { pm.expect(pm.response.json().status).to.equal('REJECTED'); });"]}}]
-                },
-                {
-                    "name": "Cancel Rejected (expect 409)",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/leave-requests/{{leave_request_id_2}}/cancel", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('409 or 400', function() { pm.expect(pm.response.code).to.be.oneOf([409, 400]); });"]}}]
-                },
-                {
-                    "name": "Approve Non-Existent (expect 404)",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/leave-requests/00000000-0000-0000-0000-000000000000/approve", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_manager1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('404', function() { pm.response.to.have.status(404); });"]}}]
-                }
-            ]
+          "name": "01.03 Register Manager2",
+          "event": [{"listen":"test","script":{"exec":["pm.test('201 Created', function(){ pm.response.to.have.status(201); });","var json = pm.response.json();","pm.environment.set('manager2_uid', json.uid);"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\"username\":\"Manager Two\",\"email\":\"manager2@leavebooking.test\",\"password\":\"Manager123!\",\"role\":\"MANAGER\"}"},
+            "url": {"raw":"{{base_url}}/auth/register","host":["{{base_url}}"],"path":["auth","register"]}
+          }
         },
         {
-            "name": "4. Leave Requests — Queries & Search",
-            "item": [
-                {
-                    "name": "GET /my",
-                    "request": { "method": "GET", "url": "{{base_url}}/leave-requests/my", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
-                },
-                {
-                    "name": "GET /team — Manager",
-                    "request": { "method": "GET", "url": "{{base_url}}/leave-requests/team", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_manager1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
-                },
-                {
-                    "name": "GET /team — Staff (expect 403)",
-                    "request": { "method": "GET", "url": "{{base_url}}/leave-requests/team", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('403', function() { pm.response.to.have.status(403); });"]}}]
-                },
-                {
-                    "name": "GET /all — Admin",
-                    "request": { "method": "GET", "url": "{{base_url}}/leave-requests/all", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
-                },
-                {
-                    "name": "GET /all — Manager (expect 403)",
-                    "request": { "method": "GET", "url": "{{base_url}}/leave-requests/all", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_manager1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('403', function() { pm.response.to.have.status(403); });"]}}]
-                },
-                {
-                    "name": "POST /my/search — CANCELLED",
-                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests/my/search", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"status\": \"CANCELLED\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
-                },
-                {
-                    "name": "POST /my/search — No Filters (expect 400)",
-                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests/my/search", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('400', function() { pm.response.to.have.status(400); });"]}}]
-                },
-                {
-                    "name": "POST /all/search — by staffMemberId",
-                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests/all/search", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"staffMemberId\": \"{{staff1_uid}}\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
-                },
-                {
-                    "name": "POST /all/search — Staff (expect 403)",
-                    "request": { "method": "POST", "url": "{{base_url}}/leave-requests/all/search", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"status\": \"PENDING\"\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('403', function() { pm.response.to.have.status(403); });"]}}]
-                }
-            ]
+          "name": "01.04 Register Staff1",
+          "event": [{"listen":"test","script":{"exec":["pm.test('201 Created', function(){ pm.response.to.have.status(201); });","var json = pm.response.json();","pm.environment.set('staff1_uid', json.uid);"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\"username\":\"Staff One\",\"email\":\"staff1@leavebooking.test\",\"password\":\"Staff123!\",\"role\":\"STAFF\"}"},
+            "url": {"raw":"{{base_url}}/auth/register","host":["{{base_url}}"],"path":["auth","register"]}
+          }
         },
         {
-            "name": "5. Leave Allowances",
-            "item": [
-                {
-                    "name": "GET /my — Staff",
-                    "request": { "method": "GET", "url": "{{base_url}}/leave-allowances/my", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });","pm.environment.set('leave_allowance_id', pm.response.json().id);"]}}]
-                },
-                {
-                    "name": "GET /team — Manager",
-                    "request": { "method": "GET", "url": "{{base_url}}/leave-allowances/team", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_manager1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
-                },
-                {
-                    "name": "GET /all — Admin",
-                    "request": { "method": "GET", "url": "{{base_url}}/leave-allowances/all", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
-                },
-                {
-                    "name": "GET /all — Staff (expect 403)",
-                    "request": { "method": "GET", "url": "{{base_url}}/leave-allowances/all", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('403', function() { pm.response.to.have.status(403); });"]}}]
-                },
-                {
-                    "name": "PATCH Amend to 28 — Admin",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/leave-allowances/{{leave_allowance_id}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"newEntitlement\": 28\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_admin_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('200', function() { pm.response.to.have.status(200); });"]}}]
-                },
-                {
-                    "name": "PATCH — Staff (expect 403)",
-                    "request": { "method": "PATCH", "url": "{{base_url}}/leave-allowances/{{leave_allowance_id}}", "header": [{"key":"Content-Type","value":"application/json"}], "body": {"mode":"raw","raw":"{\n    \"newEntitlement\": 50\n}"}, "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('403', function() { pm.response.to.have.status(403); });"]}}]
-                }
-            ]
-        },
-        {
-            "name": "6. Security",
-            "item": [
-                {
-                    "name": "Security Headers",
-                    "request": { "method": "GET", "url": "{{base_url}}/leave-requests/my", "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{jwt_staff1_token}}"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('nosniff', function() { pm.expect(pm.response.headers.get('X-Content-Type-Options')).to.equal('nosniff'); });","pm.test('DENY', function() { pm.expect(pm.response.headers.get('X-Frame-Options')).to.equal('DENY'); });","pm.test('no-store', function() { pm.expect(pm.response.headers.get('Cache-Control')).to.equal('no-store'); });"]}}]
-                },
-                {
-                    "name": "Invalid Token (expect 401)",
-                    "request": { "method": "GET", "url": "{{base_url}}/leave-requests/my", "auth": {"type":"bearer","bearer":[{"key":"token","value":"eyJhbGciOiJSUzI1NiJ9.INVALID.sig"}]} },
-                    "event": [{"listen":"test","script":{"exec":["pm.test('401', function() { pm.response.to.have.status(401); });"]}}]
-                }
-            ]
+          "name": "01.05 Register Staff2",
+          "event": [{"listen":"test","script":{"exec":["pm.test('201 Created', function(){ pm.response.to.have.status(201); });","var json = pm.response.json();","pm.environment.set('staff2_uid', json.uid);"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\"username\":\"Staff Two\",\"email\":\"staff2@leavebooking.test\",\"password\":\"Staff123!\",\"role\":\"STAFF\"}"},
+            "url": {"raw":"{{base_url}}/auth/register","host":["{{base_url}}"],"path":["auth","register"]}
+          }
         }
-    ]
+      ]
+    },
+    {
+      "name": "02 — REGISTRATION EDGE CASES",
+      "item": [
+        {
+          "name": "02.01 Register — blank username (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","var json = pm.response.json();","pm.test('username error', function(){ pm.expect(json.errors.username).to.include('required'); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\"username\":\"\",\"email\":\"bad@test.com\",\"password\":\"Pass123!\"}"},
+            "url": {"raw":"{{base_url}}/auth/register","host":["{{base_url}}"],"path":["auth","register"]}
+          }
+        },
+        {
+          "name": "02.02 Register — invalid email (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","var json = pm.response.json();","pm.test('email error', function(){ pm.expect(json.errors.email).to.include('valid email'); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\"username\":\"Test User\",\"email\":\"not-an-email\",\"password\":\"Pass123!\"}"},
+            "url": {"raw":"{{base_url}}/auth/register","host":["{{base_url}}"],"path":["auth","register"]}
+          }
+        },
+        {
+          "name": "02.03 Register — short password (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","var json = pm.response.json();","pm.test('password error', function(){ pm.expect(json.errors.password).to.include('6 characters'); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\"username\":\"Test User\",\"email\":\"short@test.com\",\"password\":\"12345\"}"},
+            "url": {"raw":"{{base_url}}/auth/register","host":["{{base_url}}"],"path":["auth","register"]}
+          }
+        },
+        {
+          "name": "02.04 Register — duplicate email (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","var json = pm.response.json();","pm.test('duplicate msg', function(){ pm.expect(json.message).to.include('already exists'); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\"username\":\"Dup User\",\"email\":\"admin@leavebooking.test\",\"password\":\"Pass123!\"}"},
+            "url": {"raw":"{{base_url}}/auth/register","host":["{{base_url}}"],"path":["auth","register"]}
+          }
+        },
+        {
+          "name": "02.05 Register — missing all fields (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","var json = pm.response.json();","pm.test('has errors', function(){ pm.expect(json.errors).to.be.an('object'); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{}"},
+            "url": {"raw":"{{base_url}}/auth/register","host":["{{base_url}}"],"path":["auth","register"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 — LOGIN",
+      "item": [
+        {
+          "name": "03.01 Login Admin",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('has idToken', function(){ pm.expect(json.idToken).to.be.a('string'); });","pm.environment.set('jwt_admin_token', json.idToken);"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\"emailOrUsername\":\"admin@leavebooking.test\",\"password\":\"Admin123!\"}"},
+            "url": {"raw":"{{base_url}}/auth/login","host":["{{base_url}}"],"path":["auth","login"]}
+          }
+        },
+        {
+          "name": "03.02 Login Manager1",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.environment.set('jwt_manager1_token', json.idToken);"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\"emailOrUsername\":\"manager1@leavebooking.test\",\"password\":\"Manager123!\"}"},
+            "url": {"raw":"{{base_url}}/auth/login","host":["{{base_url}}"],"path":["auth","login"]}
+          }
+        },
+        {
+          "name": "03.03 Login Manager2",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.environment.set('jwt_manager2_token', json.idToken);"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\"emailOrUsername\":\"manager2@leavebooking.test\",\"password\":\"Manager123!\"}"},
+            "url": {"raw":"{{base_url}}/auth/login","host":["{{base_url}}"],"path":["auth","login"]}
+          }
+        },
+        {
+          "name": "03.04 Login Staff1",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.environment.set('jwt_staff1_token', json.idToken);"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\"emailOrUsername\":\"staff1@leavebooking.test\",\"password\":\"Staff123!\"}"},
+            "url": {"raw":"{{base_url}}/auth/login","host":["{{base_url}}"],"path":["auth","login"]}
+          }
+        },
+        {
+          "name": "03.05 Login Staff2",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.environment.set('jwt_staff2_token', json.idToken);"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\"emailOrUsername\":\"staff2@leavebooking.test\",\"password\":\"Staff123!\"}"},
+            "url": {"raw":"{{base_url}}/auth/login","host":["{{base_url}}"],"path":["auth","login"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 — LOGIN EDGE CASES",
+      "item": [
+        {
+          "name": "04.01 Login — blank email (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\"emailOrUsername\":\"\",\"password\":\"Pass123!\"}"},
+            "url": {"raw":"{{base_url}}/auth/login","host":["{{base_url}}"],"path":["auth","login"]}
+          }
+        },
+        {
+          "name": "04.02 Login — blank password (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\"emailOrUsername\":\"admin@leavebooking.test\",\"password\":\"\"}"},
+            "url": {"raw":"{{base_url}}/auth/login","host":["{{base_url}}"],"path":["auth","login"]}
+          }
+        },
+        {
+          "name": "04.03 Login — wrong password",
+          "event": [{"listen":"test","script":{"exec":["pm.test('non-200 response', function(){ pm.expect(pm.response.code).to.not.eql(200); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\"emailOrUsername\":\"admin@leavebooking.test\",\"password\":\"WrongPass!\"}"},
+            "url": {"raw":"{{base_url}}/auth/login","host":["{{base_url}}"],"path":["auth","login"]}
+          }
+        },
+        {
+          "name": "04.04 Login — non-existent user",
+          "event": [{"listen":"test","script":{"exec":["pm.test('non-200 response', function(){ pm.expect(pm.response.code).to.not.eql(200); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\"emailOrUsername\":\"nobody@test.com\",\"password\":\"Pass123!\"}"},
+            "url": {"raw":"{{base_url}}/auth/login","host":["{{base_url}}"],"path":["auth","login"]}
+          }
+        },
+        {
+          "name": "04.05 Login — empty body (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{}"},
+            "url": {"raw":"{{base_url}}/auth/login","host":["{{base_url}}"],"path":["auth","login"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 — ROLE CHECK & AUTH EDGE CASES",
+      "item": [
+        {
+          "name": "05.01 Role Check — Admin",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","pm.test('has ROLE_ADMIN', function(){ pm.expect(pm.response.text()).to.include('ROLE_ADMIN'); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "url": {"raw":"{{base_url}}/auth/role-check","host":["{{base_url}}"],"path":["auth","role-check"]}
+          }
+        },
+        {
+          "name": "05.02 Role Check — Staff1",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","pm.test('has ROLE_STAFF', function(){ pm.expect(pm.response.text()).to.include('ROLE_STAFF'); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "url": {"raw":"{{base_url}}/auth/role-check","host":["{{base_url}}"],"path":["auth","role-check"]}
+          }
+        },
+        {
+          "name": "05.03 Role Check — no token (401)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('401 Unauthorized', function(){ pm.response.to.have.status(401); });","var json = pm.response.json();","pm.test('has error message', function(){ pm.expect(json.message).to.be.a('string'); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw":"{{base_url}}/auth/role-check","host":["{{base_url}}"],"path":["auth","role-check"]}
+          }
+        },
+        {
+          "name": "05.04 Role Check — invalid token (401)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('401 Unauthorized', function(){ pm.response.to.have.status(401); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer invalid.jwt.token"}],
+            "url": {"raw":"{{base_url}}/auth/role-check","host":["{{base_url}}"],"path":["auth","role-check"]}
+          }
+        },
+        {
+          "name": "05.05 Find User by Email — Admin (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('has uid', function(){ pm.expect(json.uid).to.be.a('string'); });","pm.test('has email', function(){ pm.expect(json.email).to.eql('staff1@leavebooking.test'); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "url": {"raw":"{{base_url}}/auth/users/staff1@leavebooking.test","host":["{{base_url}}"],"path":["auth","users","staff1@leavebooking.test"]}
+          }
+        },
+        {
+          "name": "05.06 Find User by Email — non-existent (404)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('404 Not Found', function(){ pm.response.to.have.status(404); });","var json = pm.response.json();","pm.test('has message', function(){ pm.expect(json.message).to.include('No user found'); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "url": {"raw":"{{base_url}}/auth/users/nobody@test.com","host":["{{base_url}}"],"path":["auth","users","nobody@test.com"]}
+          }
+        },
+        {
+          "name": "05.07 Find User by Email — Staff role (403)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "url": {"raw":"{{base_url}}/auth/users/admin@leavebooking.test","host":["{{base_url}}"],"path":["auth","users","admin@leavebooking.test"]}
+          }
+        },
+        {
+          "name": "05.08 Find User by Email — no token (401)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('401 Unauthorized', function(){ pm.response.to.have.status(401); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw":"{{base_url}}/auth/users/admin@leavebooking.test","host":["{{base_url}}"],"path":["auth","users","admin@leavebooking.test"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 — CHANGE PASSWORD",
+      "item": [
+        {
+          "name": "06.01 Change Password — Staff1 (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('success msg', function(){ pm.expect(json.message).to.include('successfully'); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"newPassword\":\"NewStaff123!\"}"},
+            "url": {"raw":"{{base_url}}/auth/password","host":["{{base_url}}"],"path":["auth","password"]}
+          }
+        },
+        {
+          "name": "06.02 Change Password — revert Staff1",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"newPassword\":\"Staff123!\"}"},
+            "url": {"raw":"{{base_url}}/auth/password","host":["{{base_url}}"],"path":["auth","password"]}
+          }
+        },
+        {
+          "name": "06.03 Change Password — blank (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"newPassword\":\"\"}"},
+            "url": {"raw":"{{base_url}}/auth/password","host":["{{base_url}}"],"path":["auth","password"]}
+          }
+        },
+        {
+          "name": "06.04 Change Password — too short (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"newPassword\":\"12345\"}"},
+            "url": {"raw":"{{base_url}}/auth/password","host":["{{base_url}}"],"path":["auth","password"]}
+          }
+        },
+        {
+          "name": "06.05 Change Password — no token (401)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('401 Unauthorized', function(){ pm.response.to.have.status(401); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\"newPassword\":\"NewPass123!\"}"},
+            "url": {"raw":"{{base_url}}/auth/password","host":["{{base_url}}"],"path":["auth","password"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 — ADMIN PATCHES SKELETON RECORDS",
+      "description": "After registration, each user has a PENDING_SETUP skeleton. Admin fills in department, lineManagerId, role, and activates.",
+      "item": [
+        {
+          "name": "07.01 PATCH Admin skeleton — set department + activate",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('ACTIVE', function(){ pm.expect(json.employmentStatus).to.eql('ACTIVE'); });","pm.test('department set', function(){ pm.expect(json.department).to.eql('IT'); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"department\":\"IT\",\"currentRole\":\"System Admin\",\"jobLevel\":\"SENIOR\",\"employmentType\":\"FULL_TIME\",\"employmentStatus\":\"ACTIVE\"}"},
+            "url": {"raw":"{{base_url}}/staff/{{admin_uid}}","host":["{{base_url}}"],"path":["staff","{{admin_uid}}"]}
+          }
+        },
+        {
+          "name": "07.02 PATCH Manager1 skeleton",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('ACTIVE', function(){ pm.expect(json.employmentStatus).to.eql('ACTIVE'); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"department\":\"Networks\",\"lineManagerId\":\"{{admin_uid}}\",\"currentRole\":\"Team Lead\",\"jobLevel\":\"MID\",\"employmentType\":\"FULL_TIME\",\"employmentStatus\":\"ACTIVE\"}"},
+            "url": {"raw":"{{base_url}}/staff/{{manager1_uid}}","host":["{{base_url}}"],"path":["staff","{{manager1_uid}}"]}
+          }
+        },
+        {
+          "name": "07.03 PATCH Manager2 skeleton",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"department\":\"Digital\",\"lineManagerId\":\"{{admin_uid}}\",\"currentRole\":\"Project Manager\",\"jobLevel\":\"MID\",\"employmentType\":\"FULL_TIME\",\"employmentStatus\":\"ACTIVE\"}"},
+            "url": {"raw":"{{base_url}}/staff/{{manager2_uid}}","host":["{{base_url}}"],"path":["staff","{{manager2_uid}}"]}
+          }
+        },
+        {
+          "name": "07.04 PATCH Staff1 skeleton — under Manager1",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('lineManagerId set', function(){ pm.expect(json.lineManagerId).to.eql(pm.environment.get('manager1_uid')); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"department\":\"Networks\",\"lineManagerId\":\"{{manager1_uid}}\",\"currentRole\":\"Developer\",\"jobLevel\":\"JUNIOR\",\"employmentType\":\"FULL_TIME\",\"employmentStatus\":\"ACTIVE\"}"},
+            "url": {"raw":"{{base_url}}/staff/{{staff1_uid}}","host":["{{base_url}}"],"path":["staff","{{staff1_uid}}"]}
+          }
+        },
+        {
+          "name": "07.05 PATCH Staff2 skeleton — under Manager2",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"department\":\"Digital\",\"lineManagerId\":\"{{manager2_uid}}\",\"currentRole\":\"Designer\",\"jobLevel\":\"JUNIOR\",\"employmentType\":\"PART_TIME\",\"employmentStatus\":\"ACTIVE\"}"},
+            "url": {"raw":"{{base_url}}/staff/{{staff2_uid}}","host":["{{base_url}}"],"path":["staff","{{staff2_uid}}"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 — STAFF QUERIES & SEARCH",
+      "item": [
+        {
+          "name": "08.01 GET /staff — Admin list all (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('is array', function(){ pm.expect(json).to.be.an('array'); });","pm.test('has staff', function(){ pm.expect(json.length).to.be.at.least(5); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "url": {"raw":"{{base_url}}/staff","host":["{{base_url}}"],"path":["staff"]}
+          }
+        },
+        {
+          "name": "08.02 GET /staff — Staff role (403)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "url": {"raw":"{{base_url}}/staff","host":["{{base_url}}"],"path":["staff"]}
+          }
+        },
+        {
+          "name": "08.03 GET /staff — no token (401)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('401 Unauthorized', function(){ pm.response.to.have.status(401); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw":"{{base_url}}/staff","host":["{{base_url}}"],"path":["staff"]}
+          }
+        },
+        {
+          "name": "08.04 GET /staff/{id} — Admin (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('has email', function(){ pm.expect(json.email).to.eql('staff1@leavebooking.test'); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "url": {"raw":"{{base_url}}/staff/{{staff1_uid}}","host":["{{base_url}}"],"path":["staff","{{staff1_uid}}"]}
+          }
+        },
+        {
+          "name": "08.05 GET /staff/{id} — Manager (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_manager1_token}}"}],
+            "url": {"raw":"{{base_url}}/staff/{{staff1_uid}}","host":["{{base_url}}"],"path":["staff","{{staff1_uid}}"]}
+          }
+        },
+        {
+          "name": "08.06 GET /staff/{id} — Staff role (403)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "url": {"raw":"{{base_url}}/staff/{{staff2_uid}}","host":["{{base_url}}"],"path":["staff","{{staff2_uid}}"]}
+          }
+        },
+        {
+          "name": "08.07 GET /staff/{id} — not found (404)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('404 Not Found', function(){ pm.response.to.have.status(404); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "url": {"raw":"{{base_url}}/staff/non-existent-id-12345","host":["{{base_url}}"],"path":["staff","non-existent-id-12345"]}
+          }
+        },
+        {
+          "name": "08.08 POST /staff/search — by department (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('is array', function(){ pm.expect(json).to.be.an('array'); });","pm.test('all Networks', function(){ json.forEach(s => pm.expect(s.department).to.eql('Networks')); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"department\":\"Networks\"}"},
+            "url": {"raw":"{{base_url}}/staff/search","host":["{{base_url}}"],"path":["staff","search"]}
+          }
+        },
+        {
+          "name": "08.09 POST /staff/search — by status ACTIVE (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('all ACTIVE', function(){ json.forEach(s => pm.expect(s.employmentStatus).to.eql('ACTIVE')); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"status\":\"ACTIVE\"}"},
+            "url": {"raw":"{{base_url}}/staff/search","host":["{{base_url}}"],"path":["staff","search"]}
+          }
+        },
+        {
+          "name": "08.10 POST /staff/search — invalid status BANANA (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","var json = pm.response.json();","pm.test('invalid status msg', function(){ pm.expect(json.message).to.include('Invalid status'); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"status\":\"BANANA\"}"},
+            "url": {"raw":"{{base_url}}/staff/search","host":["{{base_url}}"],"path":["staff","search"]}
+          }
+        },
+        {
+          "name": "08.11 POST /staff/search — no filters (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","var json = pm.response.json();","pm.test('filter required msg', function(){ pm.expect(json.message).to.include('filter'); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{}"},
+            "url": {"raw":"{{base_url}}/staff/search","host":["{{base_url}}"],"path":["staff","search"]}
+          }
+        },
+        {
+          "name": "08.12 POST /staff/search — combined dept+status (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"department\":\"Networks\",\"status\":\"ACTIVE\"}"},
+            "url": {"raw":"{{base_url}}/staff/search","host":["{{base_url}}"],"path":["staff","search"]}
+          }
+        },
+        {
+          "name": "08.13 POST /staff/search — Staff role (403)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"department\":\"Networks\"}"},
+            "url": {"raw":"{{base_url}}/staff/search","host":["{{base_url}}"],"path":["staff","search"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 — POST /staff (ADMIN CREATE) + EDGE CASES",
+      "item": [
+        {
+          "name": "09.01 POST /staff — missing firstName (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"surname\":\"Test\",\"email\":\"missing-fn@test.com\",\"department\":\"IT\",\"hireDate\":\"2025-01-01\",\"currentRole\":\"Dev\",\"startDateOfCurrentRole\":\"2025-01-01\",\"employmentType\":\"FULL_TIME\"}"},
+            "url": {"raw":"{{base_url}}/staff","host":["{{base_url}}"],"path":["staff"]}
+          }
+        },
+        {
+          "name": "09.02 POST /staff — missing email (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"firstName\":\"Test\",\"surname\":\"User\",\"department\":\"IT\",\"hireDate\":\"2025-01-01\",\"currentRole\":\"Dev\",\"startDateOfCurrentRole\":\"2025-01-01\",\"employmentType\":\"FULL_TIME\"}"},
+            "url": {"raw":"{{base_url}}/staff","host":["{{base_url}}"],"path":["staff"]}
+          }
+        },
+        {
+          "name": "09.03 POST /staff — future hireDate (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"firstName\":\"Future\",\"surname\":\"Hire\",\"email\":\"future@test.com\",\"department\":\"IT\",\"hireDate\":\"2030-01-01\",\"currentRole\":\"Dev\",\"startDateOfCurrentRole\":\"2030-01-01\",\"employmentType\":\"FULL_TIME\"}"},
+            "url": {"raw":"{{base_url}}/staff","host":["{{base_url}}"],"path":["staff"]}
+          }
+        },
+        {
+          "name": "09.04 POST /staff — digits in name (400 domain VO)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","var json = pm.response.json();","pm.test('name pattern error', function(){ pm.expect(json.message).to.be.a('string'); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"firstName\":\"Raf123\",\"surname\":\"Ahmed\",\"email\":\"digits@test.com\",\"department\":\"IT\",\"hireDate\":\"2025-01-01\",\"currentRole\":\"Dev\",\"startDateOfCurrentRole\":\"2025-01-01\",\"employmentType\":\"FULL_TIME\"}"},
+            "url": {"raw":"{{base_url}}/staff","host":["{{base_url}}"],"path":["staff"]}
+          }
+        },
+        {
+          "name": "09.05 POST /staff — Staff role (403)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"firstName\":\"Nope\",\"surname\":\"Staff\",\"email\":\"nope@test.com\",\"department\":\"IT\",\"hireDate\":\"2025-01-01\",\"currentRole\":\"Dev\",\"startDateOfCurrentRole\":\"2025-01-01\",\"employmentType\":\"FULL_TIME\"}"},
+            "url": {"raw":"{{base_url}}/staff","host":["{{base_url}}"],"path":["staff"]}
+          }
+        },
+        {
+          "name": "09.06 POST /staff — no token (401)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('401 Unauthorized', function(){ pm.response.to.have.status(401); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\"firstName\":\"No\",\"surname\":\"Token\",\"email\":\"notoken@test.com\",\"department\":\"IT\",\"hireDate\":\"2025-01-01\",\"currentRole\":\"Dev\",\"startDateOfCurrentRole\":\"2025-01-01\",\"employmentType\":\"FULL_TIME\"}"},
+            "url": {"raw":"{{base_url}}/staff","host":["{{base_url}}"],"path":["staff"]}
+          }
+        },
+        {
+          "name": "09.07 POST /staff — empty body (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{}"},
+            "url": {"raw":"{{base_url}}/staff","host":["{{base_url}}"],"path":["staff"]}
+          }
+        },
+        {
+          "name": "09.08 POST /staff — firstName too long >50 chars (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"firstName\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\"surname\":\"Test\",\"email\":\"longname@test.com\",\"department\":\"IT\",\"hireDate\":\"2025-01-01\",\"currentRole\":\"Dev\",\"startDateOfCurrentRole\":\"2025-01-01\",\"employmentType\":\"FULL_TIME\"}"},
+            "url": {"raw":"{{base_url}}/staff","host":["{{base_url}}"],"path":["staff"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 — PATCH /staff/{id} EDGE CASES",
+      "item": [
+        {
+          "name": "10.01 PATCH /staff/{id} — not found (404)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('404 Not Found', function(){ pm.response.to.have.status(404); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"department\":\"IT\"}"},
+            "url": {"raw":"{{base_url}}/staff/non-existent-id","host":["{{base_url}}"],"path":["staff","non-existent-id"]}
+          }
+        },
+        {
+          "name": "10.02 PATCH /staff/{id} — Staff role (403)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"department\":\"Hacked\"}"},
+            "url": {"raw":"{{base_url}}/staff/{{staff1_uid}}","host":["{{base_url}}"],"path":["staff","{{staff1_uid}}"]}
+          }
+        },
+        {
+          "name": "10.03 PATCH /staff/{id} — no token (401)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('401 Unauthorized', function(){ pm.response.to.have.status(401); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\"department\":\"IT\"}"},
+            "url": {"raw":"{{base_url}}/staff/{{staff1_uid}}","host":["{{base_url}}"],"path":["staff","{{staff1_uid}}"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 — SUBMIT LEAVE REQUESTS",
+      "item": [
+        {
+          "name": "11.01 Staff1 submits leave (auto-resolve manager) — 201",
+          "event": [{"listen":"test","script":{"exec":["pm.test('201 Created', function(){ pm.response.to.have.status(201); });","var json = pm.response.json();","pm.test('PENDING', function(){ pm.expect(json.status).to.eql('PENDING'); });","pm.test('managerId is manager1', function(){ pm.expect(json.managerId).to.eql(pm.environment.get('manager1_uid')); });","pm.environment.set('leave_request_id', json.id);"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"startDate\":\"2026-10-01\",\"endDate\":\"2026-10-05\",\"leaveType\":\"ANNUAL\",\"reason\":\"Holiday\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}
+          }
+        },
+        {
+          "name": "11.02 Staff1 submits leave (explicit managerId) — 201",
+          "event": [{"listen":"test","script":{"exec":["pm.test('201 Created', function(){ pm.response.to.have.status(201); });","var json = pm.response.json();","pm.environment.set('leave_request_id_2', json.id);"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"managerId\":\"{{manager1_uid}}\",\"startDate\":\"2026-11-01\",\"endDate\":\"2026-11-03\",\"leaveType\":\"ANNUAL\",\"reason\":\"Family event\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}
+          }
+        },
+        {
+          "name": "11.03 Staff2 submits leave — 201",
+          "event": [{"listen":"test","script":{"exec":["pm.test('201 Created', function(){ pm.response.to.have.status(201); });","var json = pm.response.json();","pm.environment.set('leave_request_id_3', json.id);"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff2_token}}"}],
+            "body": {"mode":"raw","raw":"{\"startDate\":\"2026-12-20\",\"endDate\":\"2026-12-24\",\"leaveType\":\"ANNUAL\",\"reason\":\"Christmas\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "12 — SUBMIT LEAVE EDGE CASES",
+      "item": [
+        {
+          "name": "12.01 Submit — missing startDate (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","var json = pm.response.json();","pm.test('startDate error', function(){ pm.expect(json.errors.startDate).to.include('required'); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"endDate\":\"2026-12-01\",\"leaveType\":\"ANNUAL\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}
+          }
+        },
+        {
+          "name": "12.02 Submit — missing endDate (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","var json = pm.response.json();","pm.test('endDate error', function(){ pm.expect(json.errors.endDate).to.include('required'); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"startDate\":\"2026-12-01\",\"leaveType\":\"ANNUAL\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}
+          }
+        },
+        {
+          "name": "12.03 Submit — missing leaveType (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"startDate\":\"2026-12-01\",\"endDate\":\"2026-12-05\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}
+          }
+        },
+        {
+          "name": "12.04 Submit — startDate in the past (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"startDate\":\"2020-01-01\",\"endDate\":\"2020-01-05\",\"leaveType\":\"ANNUAL\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}
+          }
+        },
+        {
+          "name": "12.05 Submit — endDate in the past (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"startDate\":\"2026-10-20\",\"endDate\":\"2020-01-05\",\"leaveType\":\"ANNUAL\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}
+          }
+        },
+        {
+          "name": "12.06 Submit — endDate before startDate (400 domain)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","var json = pm.response.json();","pm.test('date range msg', function(){ pm.expect(json.message).to.include('after'); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"startDate\":\"2026-12-10\",\"endDate\":\"2026-12-05\",\"leaveType\":\"ANNUAL\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}
+          }
+        },
+        {
+          "name": "12.07 Submit — reason too long >500 chars (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"startDate\":\"2027-03-01\",\"endDate\":\"2027-03-05\",\"leaveType\":\"ANNUAL\",\"reason\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}
+          }
+        },
+        {
+          "name": "12.08 Submit — non-existent managerId (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","var json = pm.response.json();","pm.test('manager not found', function(){ pm.expect(json.message).to.include('Manager not found'); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"managerId\":\"non-existent-manager-id\",\"startDate\":\"2027-01-10\",\"endDate\":\"2027-01-12\",\"leaveType\":\"ANNUAL\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}
+          }
+        },
+        {
+          "name": "12.09 Submit — date overlap with existing PENDING (409)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('409 Conflict', function(){ pm.response.to.have.status(409); });","var json = pm.response.json();","pm.test('overlap msg', function(){ pm.expect(json.message).to.include('overlap'); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"startDate\":\"2026-10-03\",\"endDate\":\"2026-10-07\",\"leaveType\":\"ANNUAL\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}
+          }
+        },
+        {
+          "name": "12.10 Submit — no token (401)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('401 Unauthorized', function(){ pm.response.to.have.status(401); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\"startDate\":\"2027-02-01\",\"endDate\":\"2027-02-05\",\"leaveType\":\"ANNUAL\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}
+          }
+        },
+        {
+          "name": "12.11 Submit — empty body (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{}"},
+            "url": {"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "13 — LEAVE REQUEST QUERIES",
+      "item": [
+        {
+          "name": "13.01 GET /leave-requests/my — Staff1 (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('is array', function(){ pm.expect(json).to.be.an('array'); });","pm.test('has requests', function(){ pm.expect(json.length).to.be.at.least(2); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "url": {"raw":"{{base_url}}/leave-requests/my","host":["{{base_url}}"],"path":["leave-requests","my"]}
+          }
+        },
+        {
+          "name": "13.02 GET /leave-requests/my — no token (401)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('401 Unauthorized', function(){ pm.response.to.have.status(401); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw":"{{base_url}}/leave-requests/my","host":["{{base_url}}"],"path":["leave-requests","my"]}
+          }
+        },
+        {
+          "name": "13.03 GET /leave-requests/team — Manager1 (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('is array', function(){ pm.expect(json).to.be.an('array'); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_manager1_token}}"}],
+            "url": {"raw":"{{base_url}}/leave-requests/team","host":["{{base_url}}"],"path":["leave-requests","team"]}
+          }
+        },
+        {
+          "name": "13.04 GET /leave-requests/team — Staff role (403)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "url": {"raw":"{{base_url}}/leave-requests/team","host":["{{base_url}}"],"path":["leave-requests","team"]}
+          }
+        },
+        {
+          "name": "13.05 GET /leave-requests/all — Admin (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('is array', function(){ pm.expect(json).to.be.an('array'); });","pm.test('has requests', function(){ pm.expect(json.length).to.be.at.least(3); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "url": {"raw":"{{base_url}}/leave-requests/all","host":["{{base_url}}"],"path":["leave-requests","all"]}
+          }
+        },
+        {
+          "name": "13.06 GET /leave-requests/all — Staff role (403)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "url": {"raw":"{{base_url}}/leave-requests/all","host":["{{base_url}}"],"path":["leave-requests","all"]}
+          }
+        },
+        {
+          "name": "13.07 GET /leave-requests/all — Manager role (403)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_manager1_token}}"}],
+            "url": {"raw":"{{base_url}}/leave-requests/all","host":["{{base_url}}"],"path":["leave-requests","all"]}
+          }
+        },
+        {
+          "name": "13.08 GET /leave-requests/{id} — by ID (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('correct id', function(){ pm.expect(json.id).to.eql(pm.environment.get('leave_request_id')); });","pm.test('has all fields', function(){ pm.expect(json.staffMemberId).to.be.a('string'); pm.expect(json.managerId).to.be.a('string'); pm.expect(json.leaveType).to.be.a('string'); pm.expect(json.status).to.be.a('string'); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "url": {"raw":"{{base_url}}/leave-requests/{{leave_request_id}}","host":["{{base_url}}"],"path":["leave-requests","{{leave_request_id}}"]}
+          }
+        },
+        {
+          "name": "13.09 GET /leave-requests/{id} — not found (404)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('404 Not Found', function(){ pm.response.to.have.status(404); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "url": {"raw":"{{base_url}}/leave-requests/00000000-0000-0000-0000-000000000000","host":["{{base_url}}"],"path":["leave-requests","00000000-0000-0000-0000-000000000000"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "14 — LEAVE REQUEST SEARCH",
+      "item": [
+        {
+          "name": "14.01 POST /leave-requests/my/search — by status PENDING (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('all PENDING', function(){ json.forEach(r => pm.expect(r.status).to.eql('PENDING')); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"status\":\"PENDING\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests/my/search","host":["{{base_url}}"],"path":["leave-requests","my","search"]}
+          }
+        },
+        {
+          "name": "14.02 POST /leave-requests/my/search — no filters (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","var json = pm.response.json();","pm.test('filter required', function(){ pm.expect(json.message).to.include('filter'); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{}"},
+            "url": {"raw":"{{base_url}}/leave-requests/my/search","host":["{{base_url}}"],"path":["leave-requests","my","search"]}
+          }
+        },
+        {
+          "name": "14.03 POST /leave-requests/my/search — invalid status (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","var json = pm.response.json();","pm.test('invalid status msg', function(){ pm.expect(json.message).to.include('Invalid status'); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"status\":\"BANANA\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests/my/search","host":["{{base_url}}"],"path":["leave-requests","my","search"]}
+          }
+        },
+        {
+          "name": "14.04 POST /leave-requests/team/search — by status (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_manager1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"status\":\"PENDING\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests/team/search","host":["{{base_url}}"],"path":["leave-requests","team","search"]}
+          }
+        },
+        {
+          "name": "14.05 POST /leave-requests/team/search — by date range (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_manager1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"from\":\"2026-10-01\",\"to\":\"2026-12-31\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests/team/search","host":["{{base_url}}"],"path":["leave-requests","team","search"]}
+          }
+        },
+        {
+          "name": "14.06 POST /leave-requests/team/search — Staff role (403)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"status\":\"PENDING\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests/team/search","host":["{{base_url}}"],"path":["leave-requests","team","search"]}
+          }
+        },
+        {
+          "name": "14.07 POST /leave-requests/team/search — only 'from' no 'to' (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","var json = pm.response.json();","pm.test('both dates msg', function(){ pm.expect(json.message).to.include('Both'); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_manager1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"from\":\"2026-10-01\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests/team/search","host":["{{base_url}}"],"path":["leave-requests","team","search"]}
+          }
+        },
+        {
+          "name": "14.08 POST /leave-requests/team/search — from after to (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","var json = pm.response.json();","pm.test('from before to msg', function(){ pm.expect(json.message).to.include('on or before'); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_manager1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"from\":\"2026-12-31\",\"to\":\"2026-10-01\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests/team/search","host":["{{base_url}}"],"path":["leave-requests","team","search"]}
+          }
+        },
+        {
+          "name": "14.09 POST /leave-requests/all/search — by staffMemberId (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('all for staff1', function(){ json.forEach(r => pm.expect(r.staffMemberId).to.eql(pm.environment.get('staff1_uid'))); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"staffMemberId\":\"{{staff1_uid}}\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests/all/search","host":["{{base_url}}"],"path":["leave-requests","all","search"]}
+          }
+        },
+        {
+          "name": "14.10 POST /leave-requests/all/search — by managerId (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"managerId\":\"{{manager1_uid}}\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests/all/search","host":["{{base_url}}"],"path":["leave-requests","all","search"]}
+          }
+        },
+        {
+          "name": "14.11 POST /leave-requests/all/search — combined filters (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"status\":\"PENDING\",\"from\":\"2026-10-01\",\"to\":\"2026-12-31\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests/all/search","host":["{{base_url}}"],"path":["leave-requests","all","search"]}
+          }
+        },
+        {
+          "name": "14.12 POST /leave-requests/all/search — Staff role (403)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"status\":\"PENDING\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests/all/search","host":["{{base_url}}"],"path":["leave-requests","all","search"]}
+          }
+        },
+        {
+          "name": "14.13 POST /leave-requests/all/search — no filters (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{}"},
+            "url": {"raw":"{{base_url}}/leave-requests/all/search","host":["{{base_url}}"],"path":["leave-requests","all","search"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "15 — APPROVE / REJECT / CANCEL",
+      "item": [
+        {
+          "name": "15.01 Approve — Manager1 approves Staff1 request (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('APPROVED', function(){ pm.expect(json.status).to.eql('APPROVED'); });","pm.test('has decidedBy', function(){ pm.expect(json.decidedBy).to.eql(pm.environment.get('manager1_uid')); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_manager1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"reason\":\"Approved — enjoy your holiday\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests/{{leave_request_id}}/approve","host":["{{base_url}}"],"path":["leave-requests","{{leave_request_id}}","approve"]}
+          }
+        },
+        {
+          "name": "15.02 Approve — already approved (409 state conflict)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('409 Conflict', function(){ pm.response.to.have.status(409); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_manager1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"reason\":\"Try again\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests/{{leave_request_id}}/approve","host":["{{base_url}}"],"path":["leave-requests","{{leave_request_id}}","approve"]}
+          }
+        },
+        {
+          "name": "15.03 Reject — Manager1 rejects Staff1 request #2 (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('REJECTED', function(){ pm.expect(json.status).to.eql('REJECTED'); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_manager1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"reason\":\"Insufficient team coverage\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests/{{leave_request_id_2}}/reject","host":["{{base_url}}"],"path":["leave-requests","{{leave_request_id_2}}","reject"]}
+          }
+        },
+        {
+          "name": "15.04 Reject — already rejected (409)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('409 Conflict', function(){ pm.response.to.have.status(409); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_manager1_token}}"}],
+            "body": {"mode":"raw","raw":"{}"},
+            "url": {"raw":"{{base_url}}/leave-requests/{{leave_request_id_2}}/reject","host":["{{base_url}}"],"path":["leave-requests","{{leave_request_id_2}}","reject"]}
+          }
+        },
+        {
+          "name": "15.05 Cancel — Staff1 cancels approved request (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('CANCELLED', function(){ pm.expect(json.status).to.eql('CANCELLED'); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"reason\":\"Plans changed\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests/{{leave_request_id}}/cancel","host":["{{base_url}}"],"path":["leave-requests","{{leave_request_id}}","cancel"]}
+          }
+        },
+        {
+          "name": "15.06 Cancel — already cancelled (409)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('409 Conflict', function(){ pm.response.to.have.status(409); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{}"},
+            "url": {"raw":"{{base_url}}/leave-requests/{{leave_request_id}}/cancel","host":["{{base_url}}"],"path":["leave-requests","{{leave_request_id}}","cancel"]}
+          }
+        },
+        {
+          "name": "15.07 Cancel — rejected request (409)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('409 Conflict', function(){ pm.response.to.have.status(409); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{}"},
+            "url": {"raw":"{{base_url}}/leave-requests/{{leave_request_id_2}}/cancel","host":["{{base_url}}"],"path":["leave-requests","{{leave_request_id_2}}","cancel"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "16 — APPROVE/REJECT/CANCEL EDGE CASES",
+      "item": [
+        {
+          "name": "16.01 Approve — wrong manager (403)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });","var json = pm.response.json();","pm.test('not assigned msg', function(){ pm.expect(json.message).to.include('assigned manager'); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_manager1_token}}"}],
+            "body": {"mode":"raw","raw":"{}"},
+            "url": {"raw":"{{base_url}}/leave-requests/{{leave_request_id_3}}/approve","host":["{{base_url}}"],"path":["leave-requests","{{leave_request_id_3}}","approve"]}
+          }
+        },
+        {
+          "name": "16.02 Approve — Staff role (403)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{}"},
+            "url": {"raw":"{{base_url}}/leave-requests/{{leave_request_id_3}}/approve","host":["{{base_url}}"],"path":["leave-requests","{{leave_request_id_3}}","approve"]}
+          }
+        },
+        {
+          "name": "16.03 Approve — no token (401)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('401 Unauthorized', function(){ pm.response.to.have.status(401); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{}"},
+            "url": {"raw":"{{base_url}}/leave-requests/{{leave_request_id_3}}/approve","host":["{{base_url}}"],"path":["leave-requests","{{leave_request_id_3}}","approve"]}
+          }
+        },
+        {
+          "name": "16.04 Approve — not found (404)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('404 Not Found', function(){ pm.response.to.have.status(404); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{}"},
+            "url": {"raw":"{{base_url}}/leave-requests/00000000-0000-0000-0000-000000000000/approve","host":["{{base_url}}"],"path":["leave-requests","00000000-0000-0000-0000-000000000000","approve"]}
+          }
+        },
+        {
+          "name": "16.05 Approve — reason too long (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","var json = pm.response.json();","pm.test('reason length msg', function(){ pm.expect(json.message).to.include('500 characters'); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_manager2_token}}"}],
+            "body": {"mode":"raw","raw":"{\"reason\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests/{{leave_request_id_3}}/approve","host":["{{base_url}}"],"path":["leave-requests","{{leave_request_id_3}}","approve"]}
+          }
+        },
+        {
+          "name": "16.06 Approve — Admin overrides (approves Staff2 req) (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('APPROVED', function(){ pm.expect(json.status).to.eql('APPROVED'); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"reason\":\"Admin approved\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests/{{leave_request_id_3}}/approve","host":["{{base_url}}"],"path":["leave-requests","{{leave_request_id_3}}","approve"]}
+          }
+        },
+        {
+          "name": "16.07 Cancel — not owner, not admin (403)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });","var json = pm.response.json();","pm.test('own requests msg', function(){ pm.expect(json.message).to.include('your own'); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{}"},
+            "url": {"raw":"{{base_url}}/leave-requests/{{leave_request_id_3}}/cancel","host":["{{base_url}}"],"path":["leave-requests","{{leave_request_id_3}}","cancel"]}
+          }
+        },
+        {
+          "name": "16.08 Cancel — Admin can cancel anyone (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('CANCELLED', function(){ pm.expect(json.status).to.eql('CANCELLED'); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"reason\":\"Admin cancelled\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests/{{leave_request_id_3}}/cancel","host":["{{base_url}}"],"path":["leave-requests","{{leave_request_id_3}}","cancel"]}
+          }
+        },
+        {
+          "name": "16.09 Reject — no token (401)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('401 Unauthorized', function(){ pm.response.to.have.status(401); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{}"},
+            "url": {"raw":"{{base_url}}/leave-requests/{{leave_request_id_3}}/reject","host":["{{base_url}}"],"path":["leave-requests","{{leave_request_id_3}}","reject"]}
+          }
+        },
+        {
+          "name": "16.10 Cancel — no token (401)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('401 Unauthorized', function(){ pm.response.to.have.status(401); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{}"},
+            "url": {"raw":"{{base_url}}/leave-requests/{{leave_request_id_3}}/cancel","host":["{{base_url}}"],"path":["leave-requests","{{leave_request_id_3}}","cancel"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "17 — LEAVE ALLOWANCE QUERIES",
+      "item": [
+        {
+          "name": "17.01 GET /leave-allowances/my — Staff1 (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('has entitlement', function(){ pm.expect(json.totalEntitlement).to.be.a('number'); });","pm.test('has remainingDays', function(){ pm.expect(json.remainingDays).to.be.a('number'); });","pm.environment.set('leave_allowance_id', json.id);"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "url": {"raw":"{{base_url}}/leave-allowances/my","host":["{{base_url}}"],"path":["leave-allowances","my"]}
+          }
+        },
+        {
+          "name": "17.02 GET /leave-allowances/my — no token (401)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('401 Unauthorized', function(){ pm.response.to.have.status(401); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw":"{{base_url}}/leave-allowances/my","host":["{{base_url}}"],"path":["leave-allowances","my"]}
+          }
+        },
+        {
+          "name": "17.03 GET /leave-allowances/staff/{id} — Manager (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_manager1_token}}"}],
+            "url": {"raw":"{{base_url}}/leave-allowances/staff/{{staff1_uid}}","host":["{{base_url}}"],"path":["leave-allowances","staff","{{staff1_uid}}"]}
+          }
+        },
+        {
+          "name": "17.04 GET /leave-allowances/staff/{id} — Staff role (403)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "url": {"raw":"{{base_url}}/leave-allowances/staff/{{staff2_uid}}","host":["{{base_url}}"],"path":["leave-allowances","staff","{{staff2_uid}}"]}
+          }
+        },
+        {
+          "name": "17.05 GET /leave-allowances/staff/{id} — not found (404)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('404 Not Found', function(){ pm.response.to.have.status(404); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "url": {"raw":"{{base_url}}/leave-allowances/staff/non-existent-id","host":["{{base_url}}"],"path":["leave-allowances","staff","non-existent-id"]}
+          }
+        },
+        {
+          "name": "17.06 GET /leave-allowances/team — Manager1 (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('is array', function(){ pm.expect(json).to.be.an('array'); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_manager1_token}}"}],
+            "url": {"raw":"{{base_url}}/leave-allowances/team","host":["{{base_url}}"],"path":["leave-allowances","team"]}
+          }
+        },
+        {
+          "name": "17.07 GET /leave-allowances/team — Staff role (403)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "url": {"raw":"{{base_url}}/leave-allowances/team","host":["{{base_url}}"],"path":["leave-allowances","team"]}
+          }
+        },
+        {
+          "name": "17.08 GET /leave-allowances/all — Admin (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('is array', function(){ pm.expect(json).to.be.an('array'); });","pm.test('has allowances', function(){ pm.expect(json.length).to.be.at.least(5); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "url": {"raw":"{{base_url}}/leave-allowances/all","host":["{{base_url}}"],"path":["leave-allowances","all"]}
+          }
+        },
+        {
+          "name": "17.09 GET /leave-allowances/all — Staff role (403)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "url": {"raw":"{{base_url}}/leave-allowances/all","host":["{{base_url}}"],"path":["leave-allowances","all"]}
+          }
+        },
+        {
+          "name": "17.10 GET /leave-allowances/all?department=Networks (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('is array', function(){ pm.expect(json).to.be.an('array'); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "url": {"raw":"{{base_url}}/leave-allowances/all?department=Networks","host":["{{base_url}}"],"path":["leave-allowances","all"],"query":[{"key":"department","value":"Networks"}]}
+          }
+        },
+        {
+          "name": "17.11 GET /leave-allowances/all — no token (401)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('401 Unauthorized', function(){ pm.response.to.have.status(401); });"]}}],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw":"{{base_url}}/leave-allowances/all","host":["{{base_url}}"],"path":["leave-allowances","all"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "18 — AMEND ENTITLEMENT",
+      "item": [
+        {
+          "name": "18.01 PATCH /leave-allowances/{id} — Admin amends (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('entitlement updated', function(){ pm.expect(json.totalEntitlement).to.eql(30); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"newEntitlement\":30}"},
+            "url": {"raw":"{{base_url}}/leave-allowances/{{leave_allowance_id}}","host":["{{base_url}}"],"path":["leave-allowances","{{leave_allowance_id}}"]}
+          }
+        },
+        {
+          "name": "18.02 PATCH /leave-allowances/{id} — 0 entitlement (400 @Min)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"newEntitlement\":0}"},
+            "url": {"raw":"{{base_url}}/leave-allowances/{{leave_allowance_id}}","host":["{{base_url}}"],"path":["leave-allowances","{{leave_allowance_id}}"]}
+          }
+        },
+        {
+          "name": "18.03 PATCH /leave-allowances/{id} — negative (400)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"newEntitlement\":-5}"},
+            "url": {"raw":"{{base_url}}/leave-allowances/{{leave_allowance_id}}","host":["{{base_url}}"],"path":["leave-allowances","{{leave_allowance_id}}"]}
+          }
+        },
+        {
+          "name": "18.04 PATCH /leave-allowances/{id} — Staff role (403)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"newEntitlement\":50}"},
+            "url": {"raw":"{{base_url}}/leave-allowances/{{leave_allowance_id}}","host":["{{base_url}}"],"path":["leave-allowances","{{leave_allowance_id}}"]}
+          }
+        },
+        {
+          "name": "18.05 PATCH /leave-allowances/{id} — Manager role (403)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_manager1_token}}"}],
+            "body": {"mode":"raw","raw":"{\"newEntitlement\":50}"},
+            "url": {"raw":"{{base_url}}/leave-allowances/{{leave_allowance_id}}","host":["{{base_url}}"],"path":["leave-allowances","{{leave_allowance_id}}"]}
+          }
+        },
+        {
+          "name": "18.06 PATCH /leave-allowances/{id} — not found (404)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('404 Not Found', function(){ pm.response.to.have.status(404); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"newEntitlement\":30}"},
+            "url": {"raw":"{{base_url}}/leave-allowances/00000000-0000-0000-0000-000000000000","host":["{{base_url}}"],"path":["leave-allowances","00000000-0000-0000-0000-000000000000"]}
+          }
+        },
+        {
+          "name": "18.07 PATCH /leave-allowances/{id} — no token (401)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('401 Unauthorized', function(){ pm.response.to.have.status(401); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "body": {"mode":"raw","raw":"{\"newEntitlement\":30}"},
+            "url": {"raw":"{{base_url}}/leave-allowances/{{leave_allowance_id}}","host":["{{base_url}}"],"path":["leave-allowances","{{leave_allowance_id}}"]}
+          }
+        },
+        {
+          "name": "18.08 Revert entitlement back to 25",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('back to 25', function(){ pm.expect(json.totalEntitlement).to.eql(25); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"newEntitlement\":25}"},
+            "url": {"raw":"{{base_url}}/leave-allowances/{{leave_allowance_id}}","host":["{{base_url}}"],"path":["leave-allowances","{{leave_allowance_id}}"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "19 — STAFF STATUS TRANSITIONS",
+      "item": [
+        {
+          "name": "19.01 Terminate Staff2 (200)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('TERMINATED', function(){ pm.expect(json.employmentStatus).to.eql('TERMINATED'); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"employmentStatus\":\"TERMINATED\"}"},
+            "url": {"raw":"{{base_url}}/staff/{{staff2_uid}}","host":["{{base_url}}"],"path":["staff","{{staff2_uid}}"]}
+          }
+        },
+        {
+          "name": "19.02 Terminated staff submits leave (403)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });","var json = pm.response.json();","pm.test('terminated msg', function(){ pm.expect(json.message).to.include('terminated'); });"]}}],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff2_token}}"}],
+            "body": {"mode":"raw","raw":"{\"startDate\":\"2027-03-01\",\"endDate\":\"2027-03-05\",\"leaveType\":\"ANNUAL\"}"},
+            "url": {"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}
+          }
+        },
+        {
+          "name": "19.03 Reactivate terminated staff (409 invariant)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('409 Conflict', function(){ pm.response.to.have.status(409); });"]}}],
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],
+            "body": {"mode":"raw","raw":"{\"employmentStatus\":\"ACTIVE\"}"},
+            "url": {"raw":"{{base_url}}/staff/{{staff2_uid}}","host":["{{base_url}}"],"path":["staff","{{staff2_uid}}"]}
+          }
+        }
+      ]
+    }
+  ]
 }
