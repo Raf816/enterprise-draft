@@ -94,7 +94,7 @@ public class SecurityConfig {
                 // OAuth2 Resource Server — validates JWTs and converts them to Authentication objects
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter))
-                        // Uses FirebaseJwtAuthenticationConverter to extract role claims
+                        .authenticationEntryPoint(unauthorisedAccessLogger)
                 )
 
                 // Custom exception handling — use our logger for 401 and 403 responses

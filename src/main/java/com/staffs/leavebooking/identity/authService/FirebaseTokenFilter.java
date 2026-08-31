@@ -126,8 +126,11 @@ public class FirebaseTokenFilter extends OncePerRequestFilter {
                 log.warn("Firebase token verification failed: {}", e.getMessage());
                 // Clear any existing security context (defensive)
                 SecurityContextHolder.clearContext();
-                // Return 401 Unauthorized immediately — don't continue the filter chain
+                // Return 401 Unauthorized with a clean JSON error body
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write(
+                        "{\"status\":401,\"error\":\"Unauthorized\",\"message\":\"Invalid or expired authentication token. Please login again.\"}");
                 return;
             }
         }

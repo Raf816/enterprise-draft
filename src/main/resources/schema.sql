@@ -2,7 +2,7 @@
 -- LEAVE MANAGEMENT CONTEXT (CORE)
 -- ============================================================
 
-CREATE TABLE leave_allowance (
+CREATE TABLE IF NOT EXISTS leave_allowance (
     id                   VARCHAR(36)  PRIMARY KEY,
     staff_member_id      VARCHAR(36)  NOT NULL,
     manager_id           VARCHAR(36)  NOT NULL,
@@ -17,10 +17,10 @@ CREATE TABLE leave_allowance (
     CONSTRAINT uq_allowance_staff_year UNIQUE (staff_member_id, business_year_start)
 );
 
-CREATE INDEX idx_leave_allowance_staff ON leave_allowance(staff_member_id);
-CREATE INDEX idx_leave_allowance_manager ON leave_allowance(manager_id);
+CREATE INDEX IF NOT EXISTS idx_leave_allowance_staff ON leave_allowance(staff_member_id);
+CREATE INDEX IF NOT EXISTS idx_leave_allowance_manager ON leave_allowance(manager_id);
 
-CREATE TABLE leave_request (
+CREATE TABLE IF NOT EXISTS leave_request (
     id                   VARCHAR(36)  PRIMARY KEY,
     staff_member_id      VARCHAR(36)  NOT NULL,
     manager_id           VARCHAR(36)  NOT NULL,
@@ -37,15 +37,15 @@ CREATE TABLE leave_request (
     cancellation_reason  VARCHAR(500)
 );
 
-CREATE INDEX idx_leave_request_staff ON leave_request(staff_member_id);
-CREATE INDEX idx_leave_request_manager ON leave_request(manager_id);
-CREATE INDEX idx_leave_request_status ON leave_request(status);
+CREATE INDEX IF NOT EXISTS idx_leave_request_staff ON leave_request(staff_member_id);
+CREATE INDEX IF NOT EXISTS idx_leave_request_manager ON leave_request(manager_id);
+CREATE INDEX IF NOT EXISTS idx_leave_request_status ON leave_request(status);
 
 -- ============================================================
 -- STAFF MANAGEMENT CONTEXT (SUPPORTING)
 -- ============================================================
 
-CREATE TABLE staff_member (
+CREATE TABLE IF NOT EXISTS staff_member (
     id                        VARCHAR(36)  PRIMARY KEY,
     first_name                VARCHAR(50)  NOT NULL,
     surname                   VARCHAR(50)  NOT NULL,
@@ -60,13 +60,13 @@ CREATE TABLE staff_member (
     employment_status         VARCHAR(20)  NOT NULL
 );
 
-CREATE INDEX idx_staff_member_manager ON staff_member(line_manager_id);
+CREATE INDEX IF NOT EXISTS idx_staff_member_manager ON staff_member(line_manager_id);
 
 -- ============================================================
 -- COMMON (EVENT INFRASTRUCTURE)
 -- ============================================================
 
-CREATE TABLE event_store (
+CREATE TABLE IF NOT EXISTS event_store (
     id              INT AUTO_INCREMENT PRIMARY KEY,
     occurred_on     DATE          NOT NULL,
     event_body      VARCHAR(65000) NOT NULL,
@@ -76,8 +76,8 @@ CREATE TABLE event_store (
     source_context  VARCHAR(100)
 );
 
-CREATE INDEX idx_event_store_type ON event_store(event_type);
-CREATE INDEX idx_event_store_status ON event_store(status);
+CREATE INDEX IF NOT EXISTS idx_event_store_type ON event_store(event_type);
+CREATE INDEX IF NOT EXISTS idx_event_store_status ON event_store(status);
 
 -- Spring Modulith event publication registry (required for @TransactionalEventListener)
 CREATE TABLE IF NOT EXISTS event_publication (
