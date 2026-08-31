@@ -63,7 +63,7 @@ public class SecurityConfig {
     /** Adds security headers (Server obfuscation, X-Frame-Options, etc.) to all responses */
     private final SecurityHeadersFilter securityHeadersFilter;
 
-    /** Combined 401/403 handler — logs unauthorized access and returns JSON error responses */
+    /** Combined 401/403 handler — logs unauthorised access and returns JSON error responses */
     private final UnauthorisedAccessLogger unauthorisedAccessLogger;
 
     /**

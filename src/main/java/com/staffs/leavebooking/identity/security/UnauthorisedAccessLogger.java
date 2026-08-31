@@ -71,7 +71,7 @@ public class UnauthorisedAccessLogger implements AuthenticationEntryPoint, Acces
         String method = request.getMethod();
         String uri = request.getRequestURI();
 
-        // Log the unauthorized access attempt (WARN level for security monitoring)
+        // Log the unauthorised access attempt (WARN level for security monitoring)
         log.warn("UNAUTHORISED ACCESS [401] | IP: {} | {} {} | Reason: {}",
                 clientIp, method, uri, authException.getMessage());
 
