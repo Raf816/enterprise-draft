@@ -756,7 +756,7 @@ public class SecurityConfig {
 
 | Endpoint | Rate Limit | Window | Status on Exceed |
 |---|---|---|---|
-| POST `/auth/login` | 5 requests | per minute per IP | 429 Too Many Requests |
+| POST `/auth/login` | 20 requests | per minute per IP | 429 Too Many Requests |
 
 ### Implementation (Bucket4j)
 
@@ -766,8 +766,8 @@ public class SecurityConfig {
  * Protects against brute-force password attacks.
  *
  * <p>Uses Bucket4j (token-bucket algorithm):
- * - Each IP gets a bucket with 5 tokens
- * - Tokens refill at 5 per minute
+ * - Each IP gets a bucket with 20 tokens
+ * - Tokens refill at 20 per minute
  * - When empty, returns 429 until tokens refill
  *
  * <p><strong>Why only login?</strong> The brief says "limit the number of requests

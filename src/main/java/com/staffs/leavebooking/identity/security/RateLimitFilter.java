@@ -24,12 +24,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * (Lecture 9 — Security, Brute-Force Protection).
  *
  * <p><strong>Brief requirement:</strong> "The system will limit the number of requests
- * from a specific end point." This filter limits each IP address to 5 login attempts
+ * from a specific end point." This filter limits each IP address to 20 login attempts
  * per minute on the POST /auth/login endpoint.
  *
- * <p><strong>Token bucket algorithm:</strong> Each IP gets a "bucket" with 5 tokens.
- * Each request consumes one token. Tokens refill at a rate of 5 per minute.
- * When the bucket is empty (5 requests in under a minute), the 6th request
+ * <p><strong>Token bucket algorithm:</strong> Each IP gets a "bucket" with 20 tokens.
+ * Each request consumes one token. Tokens refill at a rate of 20 per minute.
+ * When the bucket is empty (20 requests in under a minute), the 21st request
  * is rejected with 429 Too Many Requests.
  *
  * <p><strong>Why only /auth/login?</strong> Login is the most common target for
@@ -51,7 +51,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class RateLimitFilter extends OncePerRequestFilter {
 
     /** Maximum number of login requests allowed per IP per refill period */
-    private static final int MAX_REQUESTS = 5;
+    private static final int MAX_REQUESTS = 20;
 
     /** How often the bucket refills to full capacity */
     private static final Duration REFILL_DURATION = Duration.ofMinutes(1);
@@ -125,16 +125,16 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     /**
      * Creates a new token bucket for a given IP address.
-     * The bucket starts full (5 tokens) and refills completely every minute.
+     * The bucket starts full (20 tokens) and refills completely every minute.
      *
-     * <p><strong>Bandwidth.classic:</strong> "greedy" refill means all 5 tokens
-     * are restored at once every minute (not gradually 1 per 12 seconds).
+     * <p><strong>Bandwidth.classic:</strong> "greedy" refill means all 20 tokens
+     * are restored at once every minute (not gradually 1 per 3 seconds).
      *
      * @param key the IP address (unused in bucket creation, but required by computeIfAbsent)
      * @return a new Bucket configured with the rate limit
      */
     private Bucket createNewBucket(String key) {
-        // Create a bandwidth limit: 5 requests per 1 minute, greedy refill
+        // Create a bandwidth limit: 20 requests per 1 minute, greedy refill
         Bandwidth limit = Bandwidth.classic(MAX_REQUESTS, Refill.greedy(MAX_REQUESTS, REFILL_DURATION));
         return Bucket.builder().addLimit(limit).build();
     }

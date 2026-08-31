@@ -65,10 +65,10 @@ class RateLimitFilterTest {
     class LoginRateLimiting {
 
         @Test
-        @DisplayName("Should allow first 5 POST login requests")
-        void shouldAllowFirst5Requests() throws ServletException, IOException {
-            // Act & Assert — 5 requests should all pass
-            for (int i = 0; i < 5; i++) {
+        @DisplayName("Should allow first 20 POST login requests")
+        void shouldAllowFirst20Requests() throws ServletException, IOException {
+            // Act & Assert — 20 requests should all pass
+            for (int i = 0; i < 20; i++) {
                 MockHttpServletRequest request = new MockHttpServletRequest("POST", "/auth/login");
                 request.setRemoteAddr("192.168.1.1");
                 MockHttpServletResponse response = new MockHttpServletResponse();
@@ -78,41 +78,41 @@ class RateLimitFilterTest {
                 assertThat(response.getStatus()).isEqualTo(200);
             }
 
-            verify(filterChain, times(5)).doFilter(any(), any());
+            verify(filterChain, times(20)).doFilter(any(), any());
         }
 
         @Test
-        @DisplayName("Should return 429 on 6th POST login request from same IP")
-        void shouldReturn429OnSixthRequest() throws ServletException, IOException {
-            // Arrange — exhaust the bucket with 5 requests
-            for (int i = 0; i < 5; i++) {
+        @DisplayName("Should return 429 on 21st POST login request from same IP")
+        void shouldReturn429On21stRequest() throws ServletException, IOException {
+            // Arrange — exhaust the bucket with 20 requests
+            for (int i = 0; i < 20; i++) {
                 MockHttpServletRequest request = new MockHttpServletRequest("POST", "/auth/login");
                 request.setRemoteAddr("10.0.0.1");
                 MockHttpServletResponse response = new MockHttpServletResponse();
                 filter.doFilterInternal(request, response, filterChain);
             }
 
-            // Act — 6th request
-            MockHttpServletRequest sixthRequest = new MockHttpServletRequest("POST", "/auth/login");
-            sixthRequest.setRemoteAddr("10.0.0.1");
-            MockHttpServletResponse sixthResponse = new MockHttpServletResponse();
-            filter.doFilterInternal(sixthRequest, sixthResponse, filterChain);
+            // Act — 21st request
+            MockHttpServletRequest blockedRequest = new MockHttpServletRequest("POST", "/auth/login");
+            blockedRequest.setRemoteAddr("10.0.0.1");
+            MockHttpServletResponse blockedResponse = new MockHttpServletResponse();
+            filter.doFilterInternal(blockedRequest, blockedResponse, filterChain);
 
             // Assert
-            assertThat(sixthResponse.getStatus()).isEqualTo(429);
-            assertThat(sixthResponse.getContentAsString()).contains("Rate limit exceeded");
-            assertThat(sixthResponse.getContentAsString()).contains("Too Many Requests");
-            assertThat(sixthResponse.getContentType()).isEqualTo("application/json");
+            assertThat(blockedResponse.getStatus()).isEqualTo(429);
+            assertThat(blockedResponse.getContentAsString()).contains("Rate limit exceeded");
+            assertThat(blockedResponse.getContentAsString()).contains("Too Many Requests");
+            assertThat(blockedResponse.getContentType()).isEqualTo("application/json");
 
-            // Filter chain should NOT be called for the 6th request
-            verify(filterChain, times(5)).doFilter(any(), any());
+            // Filter chain should NOT be called for the 21st request
+            verify(filterChain, times(20)).doFilter(any(), any());
         }
 
         @Test
         @DisplayName("Should rate limit per IP — different IPs have separate buckets")
         void shouldRateLimitPerIp() throws ServletException, IOException {
             // Arrange — exhaust bucket for IP 1
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 20; i++) {
                 MockHttpServletRequest request = new MockHttpServletRequest("POST", "/auth/login");
                 request.setRemoteAddr("192.168.1.100");
                 MockHttpServletResponse response = new MockHttpServletResponse();
@@ -133,7 +133,7 @@ class RateLimitFilterTest {
         @DisplayName("Should use X-Forwarded-For header for client IP when present")
         void shouldUseXForwardedForHeader() throws ServletException, IOException {
             // Arrange — exhaust bucket for forwarded IP
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 20; i++) {
                 MockHttpServletRequest request = new MockHttpServletRequest("POST", "/auth/login");
                 request.setRemoteAddr("proxy-server");
                 request.addHeader("X-Forwarded-For", "real-client-ip, proxy-1");
@@ -141,7 +141,7 @@ class RateLimitFilterTest {
                 filter.doFilterInternal(request, response, filterChain);
             }
 
-            // Act — 6th request with same forwarded IP
+            // Act — 21st request with same forwarded IP
             MockHttpServletRequest sixthRequest = new MockHttpServletRequest("POST", "/auth/login");
             sixthRequest.setRemoteAddr("proxy-server");
             sixthRequest.addHeader("X-Forwarded-For", "real-client-ip, proxy-1");

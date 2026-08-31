@@ -249,7 +249,7 @@ com.staffs.leavebooking/
 │       ├── SecurityConfig.java           @EnableWebSecurity, @EnableMethodSecurity
 │       ├── FirebaseJwtAuthenticationConverter.java  JWT claims → GrantedAuthority
 │       ├── Role.java                     enum (STAFF, MANAGER, ADMIN) with ROLE_ prefix
-│       ├── RateLimitFilter.java          Bucket4j — 5 req/min on /auth/login
+│       ├── RateLimitFilter.java          Bucket4j — 20 req/min on /auth/login
 │       ├── SecurityHeadersFilter.java    Removes Server/X-Powered-By, adds HSTS
 │       └── UnauthorisedAccessLogger.java Logs all 401/403 with IP, user, endpoint
 │

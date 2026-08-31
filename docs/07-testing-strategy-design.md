@@ -309,6 +309,6 @@ mvn test -Dtest="com.staffs.leavebooking.leavemanagement.domain.LeaveRequestTest
 | Event store cleanup job unit tests | ~6 |
 | Integration tests (@DataJpaTest) | 14 |
 | **Total** | **451** |
-| Postman API tests | ~55 requests across 6 folders |
+| Postman API tests | 138 requests across 8 folders |
 
 *(Confirmed: 451 run, 0 failures, 0 errors, 1 skipped — BUILD SUCCESS)*

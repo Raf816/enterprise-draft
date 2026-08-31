@@ -336,17 +336,15 @@ These items were identified during an exhaustive line-by-line audit of both the 
 | 3 (RESOLVED) | ~~Admin filtering params~~ | ~~10 minutes code~~ | ✅ Implemented — POST `/all/search` with staffMemberId/managerId filters |
 | 4 (RESOLVED) | ~~PUT/DELETE justification in report~~ | ~~Already documented~~ | ✅ Fully justified in docs/04 section 13 |
 | 5 (RESOLVED) | ~~Date range filter on /team~~ | ~~20 minutes code~~ | ✅ Implemented — POST `/team/search` with from/to date range |
-| 6 (DEFERRED) | **Rate limit 429 Postman test** | 30 min code + collection | Low risk — code works, unit tested. Increase limit to 20/min, add 429 demo |
+| 6 (RESOLVED) | ~~Rate limit 429 Postman test~~ | ~~30 min~~ | ✅ Increased to 20/min, 429 test added to both collections, unit tests updated |
 
 ---
 
-### GAP 6: Rate Limit (429) Not Demonstrated in Postman Collection — DEFERRED
+### GAP 6: Rate Limit (429) Demonstrated in Postman Collection — RESOLVED
 
 | Item | Detail |
 |------|--------|
-| **What we have** | `RateLimitFilter` uses Bucket4j token-bucket algorithm: 5 POST requests per IP per minute on `/auth/login`. Code works, unit tests pass. But the Postman collection does not include a test that triggers the 429 response. |
-| **Problem** | The current limit of 5 per minute conflicts with the Postman collection flow. The 5 happy-path logins (admin, manager1, manager2, staff1, staff2) already exhaust the bucket. Any subsequent login edge case test (wrong password, non-existent user, empty body) running within the same minute would get 429 instead of the expected 400/401 — causing false failures in the Collection Runner. |
-| **Proposed fix (when revisiting)** | (1) Increase `MAX_REQUESTS` from 5 to 20 per minute — a realistic production value (most APIs use 10-30 for login). This gives headroom for the collection runner (5 happy logins + edge case logins = ~11 total, well within 20). (2) Add a rate-limit test subfolder that fires 21 rapid login requests, asserting the 21st returns 429 with the correct JSON body (`{"status":429,"error":"Too Many Requests","message":"Rate limit exceeded..."}`). |
-| **File to change** | `src/main/java/com/staffs/leavebooking/identity/security/RateLimitFilter.java` — change `MAX_REQUESTS = 5` to `MAX_REQUESTS = 20` and `REFILL_DURATION = Duration.ofMinutes(1)`. Then add the Postman test requests to both collections. Update the `RateLimitFilterTest` to match the new limit. |
-| **Impact if not done** | The rate limiting feature works and is unit tested (451 tests pass), but the marker doesn't see it demonstrated in the Postman collection. Low risk — the code and tests prove it works. |
-| **Status** | ⏸️ DEFERRED — noted for revisit if time permits before deadline |
+| **What we had** | `RateLimitFilter` used Bucket4j token-bucket algorithm with 5 POST requests per IP per minute on `/auth/login`. Code worked, unit tests passed, but the Postman collection did not include a test triggering the 429 response. The limit of 5 also conflicted with the Postman collection flow — the 5 happy-path logins exhausted the bucket, causing edge case login tests to get 429 instead of expected 400/401. |
+| **Fix applied** | (1) Increased `MAX_REQUESTS` from 5 to 20 per minute — a realistic production value (most APIs use 10-30 for login endpoints). Gives headroom for the collection runner (5 happy logins + edge case logins = ~11 total, well within 20). (2) Added a rate limit test to both Postman collections in folder 1 Edge Cases. The automated version uses a pre-request script (`pm.sendRequest` fires 10 dummy login requests to reach 20 total consumed, then the actual request is the 21st → 429). Asserts status 429, `"Rate limit exceeded"` message, and `"Too Many Requests"` error. (3) Updated `RateLimitFilterTest` — all 4 tests updated from 5→20 (shouldAllowFirst20Requests, shouldReturn429On21stRequest, shouldRateLimitPerIp, shouldUseXForwardedForHeader). |
+| **Files changed** | `RateLimitFilter.java` (MAX_REQUESTS 5→20 + all Javadoc), `RateLimitFilterTest.java` (all loops and assertions 5→20), both Postman collections (+1 request each, now 138 total). |
+| **Status** | ✅ RESOLVED (2026-08-31) |

@@ -339,7 +339,7 @@ GET /leave-requests/all  [Authorization: Bearer <JWT>]
 ```
 
 ### Security Features:
-- Rate limiting (5 req/min on /auth/login per IP) via Bucket4j
+- Rate limiting (20 req/min on /auth/login per IP) via Bucket4j
 - Server header obfuscation (removes Server, X-Powered-By; adds HSTS, nosniff, DENY)
 - Unauthorised access logging (logs all 401/403 with IP, user, endpoint, reason)
 - Windows-ROOT SSL trust for corporate SSL inspection compatibility
