@@ -45,3 +45,9 @@ src/main/resources/serviceAccountKey.json
 
 # H2 file-based database (persists across restarts)
 data/
+
+# Temp build output files
+build_output.txt
+build_result.txt
+mvn_out.txt
+mvn_err.txt
