@@ -164,7 +164,7 @@ docker rm -f leave-rabbitmq
 
 ### Unit Tests (Task 12 â€” COMPLETE)
 
-- **451+ tests, 0 failures, 1 skipped** (the skipped test is the Spring Boot context loader which needs Firebase)
+- **467 tests, 0 failures, 1 skipped** (the skipped test is the Spring Boot context loader which needs Firebase)
 - Run: `mvn test`
 - Runtime: ~2-3 seconds
 - No external dependencies needed (pure Java domain tests + mapper tests)
@@ -190,7 +190,7 @@ docker rm -f leave-rabbitmq
 |------|-----------|
 | 2026-08-21 | Lecture material loaded (Lectures 1-9) |
 | 2026-08-24 | Tasks 1-11 completed (full implementation) |
-| 2026-08-24 | Task 12: Unit tests created (451+ tests, all passing) |
+| 2026-08-24 | Task 12: Unit tests created (467 tests, all passing) |
 | 2026-08-25 | Design docs (01-05) enhanced to first-class standard |
 | 2026-08-25 | Environment setup: Firebase, RabbitMQ (Docker), compilation fixes |
 | 2026-08-25 | Identified corporate network limitation (Zscaler blocks Google OAuth2) |
@@ -222,7 +222,7 @@ docker rm -f leave-rabbitmq
 | **Cause** | @SpringBootTest loads the FULL application context including Firebase, RabbitMQ, and Security which require external connectivity |
 | **Attempted fixes** | (1) @Profile(!test) on FirebaseConfig/SecurityConfig (2) TestSecurityConfig with mocked beans (3) Exclude RabbitAutoConfiguration via properties. None fully resolved transitive bean failures. |
 | **Fix** | Switched to @DataJpaTest + @Import approach. Only loads the JPA slice (repos, entities, H2). Imports exactly the beans needed: LeaveRequestApplicationService, LeaveAllowanceApplicationService, DomainEventManager, EventStoreService, JacksonAutoConfiguration |
-| **Result** | 14 integration tests, 0 failures. Context loads in ~6 seconds. No Firebase, RabbitMQ, or Security beans instantiated. |
+| **Result** | ~23 integration tests, 0 failures. Context loads in ~6 seconds. No Firebase, RabbitMQ, or Security beans instantiated. |
 | **Status** | FIXED |
 
 ### 8.2 @TransactionalEventListener not firing in tests
@@ -270,7 +270,7 @@ These items were identified during an exhaustive line-by-line audit of both the 
 | **Mark scheme criterion** | Testing Decisions (/30): "API (if used) is **comprehensively tested** using an appropriate tool. **Follows best practice.**" |
 | **Guidance says** | "Coverage of **ALL** end points – considering both valid data (which might have different roles to take into consideration) as well as invalid data." |
 | **Resolution** | Comprehensive Postman collections created: automated at `postman/Leave-Booking-System.postman_collection.json`, manual at `postman/Leave-Booking-System-MANUAL.postman_collection.json`, with environment file `Leave-Booking-System.postman_environment.json`. |
-| **Coverage** | 8 domain-based folders with Edge Cases subfolders, 137 requests total covering all 26 endpoints: (1) Auth: Registration & Login — register 5 users + login all + edge cases (blank/invalid/duplicate/empty); (2) Auth: Role Check, Find User & Password — role-check, find-by-email, change password + edge cases (401/403/404); (3) Staff Management: Setup & Queries — PATCH 5 skeletons, GET all/by-id, POST search + edge cases (RBAC 403, 404 not-found, invalid status BANANA→400, no filters→400, POST /staff validation: missing fields, future hireDate, digits in name domain VO, >50 chars, empty body); (4) Staff Management: Updates & Transitions — terminate + edge cases (reactivate terminated→409, terminated submits leave→403); (5) Leave Requests: Submit — auto-resolve manager from lineManagerId, Staff2 submit + edge cases (missing fields, past dates, end<start, reason >500, date overlap→409, no token, empty body, no line manager→400, insufficient balance→400); (6) Leave Requests: Approve, Reject & Cancel — approve/reject/cancel happy paths, admin override + edge cases (already-approved→409, already-rejected→409, already-cancelled→409, cancel-rejected→409, wrong manager→403, staff role→403, not-owner→403, reason >500, 404 not-found, no-token 401); (7) Leave Requests: Queries & Search — GET my/team/all/{id}, POST search by status/date-range/staffMemberId/managerId + edge cases (RBAC 403, 404, no filters→400, invalid status→400, single date→400, from>to→400, combined staffMemberId+managerId→400, person filters on /my/search→400, person filters on /team/search→400); (8) Leave Allowances — GET my/staff/team/all/dept-filter, PATCH amend/revert + edge cases (401, 403 staff/manager, 404, @Min 0→400, negative→400). |
+| **Coverage** | 8 domain-based folders with Edge Cases subfolders, 137 requests total covering all 26 endpoints: (1) Auth: Registration & Login — register 5 users + login all + edge cases (blank/invalid/duplicate/empty); (2) Auth: Role Check, Find User & Password — role-check, find-by-email, change password + edge cases (401/403/404); (3) Staff Management: Setup & Queries — PATCH 5 skeletons, GET all/by-id, POST search + edge cases (RBAC 403, 404 not-found, invalid status BANANA→400, no filters→400, POST /staff validation: missing fields, future hireDate, digits in name domain VO, >50 chars, empty body); (4) Staff Management: Updates & Transitions — terminate + edge cases (reactivate terminated→409, terminated submits leave→403); (5) Leave Requests: Submit — auto-resolve manager from lineManagerId, Staff2 submit + edge cases (missing fields, past dates, end<start, reason >500, date overlap→409, no token, empty body); (6) Leave Requests: Approve, Reject & Cancel — approve/reject/cancel happy paths, admin override + edge cases (already-approved→409, already-rejected→409, already-cancelled→409, cancel-rejected→409, wrong manager→403, staff role→403, not-owner→403, reason >500, 404 not-found, no-token 401); (7) Leave Requests: Queries & Search — GET my/team/all/{id}, POST search by status/date-range/staffMemberId/managerId + edge cases (RBAC 403, 404, no filters→400, invalid status→400, single date→400, from>to→400, combined staffMemberId+managerId→400, person filters on /my/search→400, person filters on /team/search→400); (8) Leave Allowances — GET my/staff/team/all/dept-filter, PATCH amend/revert + edge cases (401, 403 staff/manager, 404, @Min 0→400, negative→400). |
 | **Test scripts** | Every request in the automated collection has `pm.test()` assertions verifying status codes, response structure, and business rules. Login scripts auto-save JWT tokens via `pm.environment.set()` for use in subsequent requests. Manual collection uses PASTE_*_TOKEN placeholders with no scripts. |
 | **Status** | ✅ IMPLEMENTED AND RESTRUCTURED (2026-08-31) — domain-based folders matching bounded contexts |
 

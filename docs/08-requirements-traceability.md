@@ -65,7 +65,7 @@ This document maps every requirement from the assignment brief to its implementa
 |-----------|--------|----------|
 | Comprehensive automated unit testing | ✅ 321 unit tests | All domain objects, mappers, query handlers, app services, listeners, EventStoreService, controllers, identity |
 | Follows best practice | ✅ | AAA pattern, @DisplayName, @Nested, Object Mother, FIRST properties — documented in `docs/07-testing-strategy-design.md` |
-| Automated integration testing | ✅ 14 integration tests | `@DataJpaTest` + `@Import` — service→domain→repository→H2 |
+| Automated integration testing | ✅ ~23 integration tests | `@DataJpaTest` + `@Import` — service→domain→repository→H2. Includes `AtomicAllowanceConsistencyIntegrationTest` (real commit/rollback) and `DateOverlapQueryIntegrationTest` (JPQL overlap proof). |
 | API testing (Postman) | ⬜ Task 14 pending | Collections to cover all endpoints with valid/invalid data per role |
 | Coverage of all endpoints | Partially ✅ | Controller tests verify HTTP mapping. Postman will add full valid/invalid/role testing. |
 

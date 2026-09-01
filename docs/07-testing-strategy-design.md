@@ -181,9 +181,10 @@ class LeaveRequestIntegrationTest { ... }
 
 ### 3.4 Event Listener Consideration
 
-The local allowance event listeners use `@TransactionalEventListener(BEFORE_COMMIT)` (synchronous, same transaction). In `@DataJpaTest`, the listeners fire within the test transaction, so allowance updates are visible during assertions. For atomic consistency proof, `AtomicAllowanceConsistencyIntegrationTest` uses `@Transactional(propagation = NOT_SUPPORTED)` with `TransactionTemplate` to create real independent transactions that commit or roll back naturally. We also:
+The local allowance event listeners use `@TransactionalEventListener(BEFORE_COMMIT)` (synchronous, same transaction). However, `@DataJpaTest` wraps each test in a rollback-only transaction that never reaches the commit phase — so `BEFORE_COMMIT` listeners do not fire during standard `@DataJpaTest` tests. Instead we:
 1. Test the **service methods** that listeners call (reserveDays, etc.) — proves the logic
 2. Test the **listeners themselves** with Mockito — proves correct delegation
+3. Test **atomic commit/rollback** in `AtomicAllowanceConsistencyIntegrationTest` — uses `@Transactional(propagation = NOT_SUPPORTED)` with `TransactionTemplate` for real independent transactions
 3. Together: complete proof that the event flow works
 
 ---
@@ -288,7 +289,7 @@ mvn test -Dtest="com.staffs.leavebooking.leavemanagement.domain.LeaveRequestTest
 | Lecture 2: Test VOs and Entities | All domain objects comprehensively tested |
 | Lecture 7: Event flows | Integration tests prove service flows; unit tests prove listener delegation |
 | Lecture 9: Postman testing | Comprehensive collection with JWT management (`pm.globals.set`) — `postman/` folder |
-| K22: Unit testing as a development technique | 451 tests across all architectural layers |
+| K22: Unit testing as a development technique | 467 tests across all architectural layers |
 
 ---
 
@@ -311,7 +312,7 @@ mvn test -Dtest="com.staffs.leavebooking.leavemanagement.domain.LeaveRequestTest
 | **Total** | **451** |
 | Postman API tests | 138 requests across 8 folders |
 
-*(Confirmed: 451 run, 0 failures, 0 errors, 1 skipped — BUILD SUCCESS)*
+*(Confirmed: 468 run, 0 failures, 0 errors, 1 skipped — BUILD SUCCESS)*
 
 ---
 

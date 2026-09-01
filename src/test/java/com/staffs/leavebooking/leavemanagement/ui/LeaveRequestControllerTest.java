@@ -423,6 +423,9 @@ class LeaveRequestControllerTest {
             // Arrange — staff is ACTIVE with lineManagerId "mgr-1"
             when(staffFacade.findStaffMemberByIdInternal("staff-1"))
                     .thenReturn(createTestStaffDTO("staff-1", "ACTIVE"));
+            // Manager exists and is ACTIVE
+            when(staffFacade.findStaffMemberByIdInternal("mgr-1"))
+                    .thenReturn(createTestStaffDTO("mgr-1", "ACTIVE"));
             // No overlapping requests
             when(facade.findMyRequests("staff-1")).thenReturn(java.util.List.of());
             // Sufficient allowance (25 available)
@@ -523,6 +526,58 @@ class LeaveRequestControllerTest {
                             .content(objectMapper.writeValueAsString(body)))
                     .andExpect(status().isBadRequest());
 
+            verify(facade, never()).submitLeaveRequest(any());
+        }
+
+        @Test
+        @DisplayName("Should return 400 when assigned manager no longer exists")
+        @WithMockUser(username = "orphan-user")
+        void shouldReturn400WhenManagerNotFound() throws Exception {
+            // Arrange — staff has lineManagerId "deleted-mgr" but that person no longer exists
+            when(staffFacade.findStaffMemberByIdInternal("orphan-user"))
+                    .thenReturn(new com.staffs.leavebooking.staffmanagement.application.dto.StaffMemberDTO(
+                            "orphan-user", "Test", "User", "test@test.com",
+                            "Engineering", "deleted-mgr", LocalDate.of(2022, 6, 1),
+                            "Developer", LocalDate.of(2022, 6, 1),
+                            "L4", "FULL_TIME", "ACTIVE"));
+            when(staffFacade.findStaffMemberByIdInternal("deleted-mgr"))
+                    .thenThrow(new RuntimeException("Not found"));
+            var body = new SubmitLeaveRequestBody(
+                    LocalDate.now().plusDays(7), LocalDate.now().plusDays(11), "ANNUAL", "Holiday");
+
+            mockMvc.perform(post("/leave-requests")
+                            .with(csrf())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(body)))
+                    .andExpect(status().isBadRequest());
+            verify(facade, never()).submitLeaveRequest(any());
+        }
+
+        @Test
+        @DisplayName("Should return 400 when assigned manager is TERMINATED")
+        @WithMockUser(username = "term-mgr-user")
+        void shouldReturn400WhenManagerTerminated() throws Exception {
+            // Arrange — staff has lineManagerId "term-mgr" who is TERMINATED
+            when(staffFacade.findStaffMemberByIdInternal("term-mgr-user"))
+                    .thenReturn(new com.staffs.leavebooking.staffmanagement.application.dto.StaffMemberDTO(
+                            "term-mgr-user", "Test", "User", "test@test.com",
+                            "Engineering", "term-mgr", LocalDate.of(2022, 6, 1),
+                            "Developer", LocalDate.of(2022, 6, 1),
+                            "L4", "FULL_TIME", "ACTIVE"));
+            when(staffFacade.findStaffMemberByIdInternal("term-mgr"))
+                    .thenReturn(new com.staffs.leavebooking.staffmanagement.application.dto.StaffMemberDTO(
+                            "term-mgr", "Old", "Manager", "old@test.com",
+                            "Engineering", null, LocalDate.of(2020, 1, 1),
+                            "Manager", LocalDate.of(2020, 1, 1),
+                            "L6", "FULL_TIME", "TERMINATED"));
+            var body = new SubmitLeaveRequestBody(
+                    LocalDate.now().plusDays(7), LocalDate.now().plusDays(11), "ANNUAL", "Holiday");
+
+            mockMvc.perform(post("/leave-requests")
+                            .with(csrf())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(body)))
+                    .andExpect(status().isBadRequest());
             verify(facade, never()).submitLeaveRequest(any());
         }
     }

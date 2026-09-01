@@ -357,7 +357,7 @@ Because the domain layer has **zero framework dependencies**, domain classes can
 - No mocking of framework components
 - Millisecond execution time
 
-This is demonstrated in our test suite (451+ tests, < 2 seconds total):
+This is demonstrated in our test suite (467 tests, < 3 seconds total):
 
 ```java
 // Domain test — pure Java, no Spring, no mocks
@@ -827,7 +827,7 @@ The Identity module deliberately does **not** follow the DDD layered structure:
 Unit tests do **not** require Firebase or RabbitMQ — they test domain logic in pure Java:
 
 ```bash
-# Run all unit tests (451+ tests, ~2 seconds)
+# Run all tests (467 tests, ~3 seconds)
 mvn test
 
 # Run only domain tests
@@ -876,7 +876,7 @@ src/test/java/com/staffs/leavebooking/
         └── StaffMemberJpaToDTOMapperTest.java
 ```
 
-**Total: 451+ tests | 0 failures | < 2 seconds runtime**
+**Total: 467 tests | 0 failures | < 3 seconds runtime**
 
 ---
 
