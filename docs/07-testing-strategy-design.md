@@ -10,7 +10,7 @@
 
 ```
            ┌─────────────┐
-           │   API Tests  │  ← Postman collections (Task 14)
+           │   API Tests  │  ← Postman collections (139 requests)
            │  (Manual/E2E)│     Full HTTP, JWT, role-based
            └──────┬───────┘
               ┌───┴────────────┐
@@ -267,7 +267,7 @@ mvn test -Dtest="!com.staffs.leavebooking.integration.*"
 
 ### Integration tests only:
 ```bash
-mvn test -Dtest="com.staffs.leavebooking.integration.LeaveRequestIntegrationTest"
+mvn test -Dtest="com.staffs.leavebooking.integration.*"
 ```
 
 ### Single test class:

@@ -194,8 +194,8 @@ docker rm -f leave-rabbitmq
 | 2026-08-25 | Design docs (01-05) enhanced to first-class standard |
 | 2026-08-25 | Environment setup: Firebase, RabbitMQ (Docker), compilation fixes |
 | 2026-08-25 | Identified corporate network limitation (Zscaler blocks Google OAuth2) |
-| 2026-08-26 | Task 13: Integration tests (14 tests, @DataJpaTest) |
-| TBD | Task 14: Postman collections |
+| 2026-08-26 | Task 13: Integration tests (23 tests, @DataJpaTest) |
+| 2026-08-31 | Task 14: Postman collections (139 requests per collection, all 26 endpoints) |
 | 2026-09-21 | **Submission deadline** |
 
 ---
