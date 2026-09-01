@@ -293,7 +293,7 @@ mvn test -Dtest="com.staffs.leavebooking.leavemanagement.domain.LeaveRequestTest
 | Lecture 2: Test VOs and Entities | All domain objects comprehensively tested |
 | Lecture 7: Event flows | Integration tests prove service flows; unit tests prove listener delegation |
 | Lecture 9: Postman testing | Comprehensive collection with JWT management (`pm.globals.set`) — `postman/` folder |
-| K22: Unit testing as a development technique | 468 discovered, 467 passed, 1 skipped — across all architectural layers |
+| K22: Unit testing as a development technique | 467 tests, 0 failures — across all architectural layers |
 
 ---
 
@@ -313,10 +313,10 @@ mvn test -Dtest="com.staffs.leavebooking.leavemanagement.domain.LeaveRequestTest
 | Identity (AuthController + FirebaseAuthService) unit tests | ~48 |
 | Event store cleanup job unit tests | ~6 |
 | Integration tests (@DataJpaTest) | 23 |
-| **Confirmed total (mvn clean verify)** | **468 discovered, 467 passed, 1 skipped** |
+| **Confirmed total (mvn clean verify)** | **467 run, 0 failures, 0 errors, 0 skipped** |
 | Postman API tests | 139 requests across 8 folders |
 
-*(Confirmed: 468 discovered, 0 failures, 0 errors, 1 skipped — BUILD SUCCESS)*
+*(Confirmed: 467 run, 0 failures, 0 errors, 0 skipped — BUILD SUCCESS)*
 
 ---
 

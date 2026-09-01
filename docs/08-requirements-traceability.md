@@ -96,7 +96,7 @@ This document maps every requirement from the assignment brief to its implementa
 | Architectural requirements | 10/10 (100%) |
 | Total unit tests | 444 |
 | Total integration tests | 23 |
-| Total tests | 467 (468 discovered, 1 skipped) |
+| Total tests | 467 (0 failures, 0 skipped) |
 | Test classes | 50 |
 | Design documents | 8 |
 | Bounded contexts | 3 (Leave Management, Staff Management, Identity) |
