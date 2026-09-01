@@ -354,6 +354,16 @@ The `identity.authService` package (33%) contains `FirebaseAuthService` which ma
 
 These are external cloud API calls that cannot execute in a unit test environment. The service is mocked in `@WebMvcTest` controller tests, which verifies the controller → service delegation but not the service's internal Firebase logic. This is standard practice — external service integrations are tested via Postman against the live running application, not in unit tests.
 
+### Why Facade Packages Show 0%
+
+The `com.staffs.leavebooking.leavemanagement` (0%) and `com.staffs.leavebooking.staffmanagement` (0%) packages each contain a single class — the facade (`LeaveManagementFacade`, `StaffManagementFacade`). These are thin delegation layers where every method is 1-2 lines: apply `@PreAuthorize`, delegate to a handler, return the result. They show 0% because:
+
+- **`@WebMvcTest` controller tests** mock the facade entirely via `@MockBean` — the real facade code never executes.
+- **Unit tests for handlers/services** test below the facade — they call the handler directly, not through the facade.
+- **Postman tests** exercise the facades end-to-end against the live application, but JaCoCo only measures automated test coverage.
+
+The real business logic lives in the handlers (88%) and domain (99-100%) which the facades delegate to. The facades themselves contain no logic beyond the `@PreAuthorize` annotation and the delegation call. Adding facade-level integration tests would bump the number but would only test that delegation works — not any additional business logic.
+
 ### How to View
 
 ```bash
