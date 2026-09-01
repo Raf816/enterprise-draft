@@ -223,7 +223,7 @@ pm.globals.set("jwt_admin_token", response.accessToken);
 | Decision | Reason |
 |----------|--------|
 | Identity module testing | Firebase is external — `FirebaseAuthService` is mocked via `@MockBean`. AuthController and security filters have ~48 unit tests. Postman tests cover end-to-end with real JWT tokens. |
-| @WebMvcTest for controllers | LeaveRequestController, LeaveAllowanceController, StaffController, and AuthController are tested with @WebMvcTest + MockMvc + @WithMockUser. Tests verify HTTP mapping, status codes, JSON structure, and facade delegation. Postman collections will add end-to-end coverage with real JWT tokens. |
+| @WebMvcTest for controllers | LeaveRequestController, LeaveAllowanceController, StaffController, and AuthController are tested with @WebMvcTest + MockMvc + @WithMockUser. Tests verify HTTP mapping, status codes, JSON structure, and facade delegation. Postman collections provide end-to-end coverage with real JWT tokens. |
 | Mockito for handlers/services | Isolates the class under test. Proves coordination logic without needing a database. |
 | @DataJpaTest for integration | Proves the full service→domain→persistence pipeline works with real SQL without loading Firebase/RabbitMQ. |
 | Test listeners separately (not via events) | Allowance listeners are BEFORE_COMMIT (synchronous). Unit tests prove delegation. Integration test proves atomic commit/rollback. |
@@ -293,13 +293,13 @@ mvn test -Dtest="com.staffs.leavebooking.leavemanagement.domain.LeaveRequestTest
 | Lecture 2: Test VOs and Entities | All domain objects comprehensively tested |
 | Lecture 7: Event flows | Integration tests prove service flows; unit tests prove listener delegation |
 | Lecture 9: Postman testing | Comprehensive collection with JWT management (`pm.globals.set`) — `postman/` folder |
-| K22: Unit testing as a development technique | 467 tests across all architectural layers |
+| K22: Unit testing as a development technique | 468 discovered, 467 passed, 1 skipped — across all architectural layers |
 
 ---
 
 ## 9. Test Counts
 
-| Category | Count |
+| Category (selected breakdown — approximate) | Count |
 |----------|-------|
 | Domain unit tests (common + leave + staff) | ~184 |
 | Mapper unit tests | ~41 |
@@ -313,10 +313,10 @@ mvn test -Dtest="com.staffs.leavebooking.leavemanagement.domain.LeaveRequestTest
 | Identity (AuthController + FirebaseAuthService) unit tests | ~48 |
 | Event store cleanup job unit tests | ~6 |
 | Integration tests (@DataJpaTest) | 23 |
-| **Total** | **467** |
+| **Confirmed total (mvn clean verify)** | **468 discovered, 467 passed, 1 skipped** |
 | Postman API tests | 139 requests across 8 folders |
 
-*(Confirmed: 468 run, 0 failures, 0 errors, 1 skipped — BUILD SUCCESS)*
+*(Confirmed: 468 discovered, 0 failures, 0 errors, 1 skipped — BUILD SUCCESS)*
 
 ---
 

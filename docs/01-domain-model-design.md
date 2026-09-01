@@ -1128,7 +1128,7 @@ class LeaveRequestTest {
 }
 ```
 
-**Test coverage:** 467 tests across 50+ test classes covering all value objects, aggregates, state machines, invariants, mapper logic, application services, notification publishers/consumers, security filters, event store cleanup, POST search endpoints, PENDING_SETUP flow, unified PATCH staff endpoint, Firebase user creation on POST /staff, password change, ownership checks on approve/reject/cancel, and staff search.
+**Test coverage:** 468 test cases discovered (467 passed, 1 skipped) across 50+ test classes covering all value objects, aggregates, state machines, invariants, mapper logic, application services, notification publishers/consumers, security filters, event store cleanup, POST search endpoints, PENDING_SETUP flow, unified PATCH staff endpoint, Firebase user creation on POST /staff, password change, ownership checks on approve/reject/cancel, and staff search.
 
 ---
 
