@@ -663,7 +663,7 @@ public class LeaveRequestController {
             StaffMemberDTO staff = staffFacade.findStaffMemberByIdInternal(staffMemberId);
             if (staff.lineManagerId() != null && !staff.lineManagerId().isBlank()) {
                 String managerId = staff.lineManagerId();
-                // Verify the assigned manager still exists and is active
+                // Verify the assigned manager still exists and is not terminated
                 try {
                     StaffMemberDTO manager = staffFacade.findStaffMemberByIdInternal(managerId);
                     if ("TERMINATED".equals(manager.employmentStatus())) {

@@ -185,7 +185,8 @@ The local allowance event listeners use `@TransactionalEventListener(BEFORE_COMM
 1. Test the **service methods** that listeners call (reserveDays, etc.) — proves the logic
 2. Test the **listeners themselves** with Mockito — proves correct delegation
 3. Test **atomic commit/rollback** in `AtomicAllowanceConsistencyIntegrationTest` — uses `@Transactional(propagation = NOT_SUPPORTED)` with `TransactionTemplate` for real independent transactions
-3. Together: complete proof that the event flow works
+
+Together these three approaches provide complete proof that the event flow works.
 
 ---
 
@@ -199,11 +200,14 @@ Test the full HTTP request/response cycle including:
 - Error responses (401, 403, 404, 400)
 - End-to-end event flows (POST /staff → RabbitMQ → leave_allowance created)
 
-### 4.2 Collections (Task 14 — Pending)
-- Identity (register/login)
-- Leave Requests (submit/approve/reject/cancel)
+### 4.2 Collections (Implemented)
+- 8 domain-based folders with Edge Cases subfolders
+- 139 requests per collection (automated + manual)
+- Identity (register/login/role-check/find-user/password)
+- Staff Management (skeleton setup, queries, search, POST /staff, PATCH)
+- Leave Requests (submit, approve/reject/cancel, queries, search)
 - Leave Allowances (view/amend)
-- Staff Members (CRUD)
+- Comprehensive edge cases: 401, 403, 404, 400 validation, 409 state conflicts
 
 ### 4.3 Token Management
 ```javascript
@@ -218,7 +222,7 @@ pm.globals.set("jwt_admin_token", response.accessToken);
 
 | Decision | Reason |
 |----------|--------|
-| No Identity module tests | Firebase is external — mocking the full Firebase SDK adds complexity with little value. Postman tests cover this layer. |
+| Identity module testing | Firebase is external — `FirebaseAuthService` is mocked via `@MockBean`. AuthController and security filters have ~48 unit tests. Postman tests cover end-to-end with real JWT tokens. |
 | @WebMvcTest for controllers | LeaveRequestController, LeaveAllowanceController, StaffController, and AuthController are tested with @WebMvcTest + MockMvc + @WithMockUser. Tests verify HTTP mapping, status codes, JSON structure, and facade delegation. Postman collections will add end-to-end coverage with real JWT tokens. |
 | Mockito for handlers/services | Isolates the class under test. Proves coordination logic without needing a database. |
 | @DataJpaTest for integration | Proves the full service→domain→persistence pipeline works with real SQL without loading Firebase/RabbitMQ. |
@@ -308,9 +312,9 @@ mvn test -Dtest="com.staffs.leavebooking.leavemanagement.domain.LeaveRequestTest
 | Security filter unit tests (RateLimitFilter, SecurityHeaders, UnauthorisedAccessLogger, FirebaseTokenFilter) | ~28 |
 | Identity (AuthController + FirebaseAuthService) unit tests | ~48 |
 | Event store cleanup job unit tests | ~6 |
-| Integration tests (@DataJpaTest) | 14 |
-| **Total** | **451** |
-| Postman API tests | 138 requests across 8 folders |
+| Integration tests (@DataJpaTest) | 23 |
+| **Total** | **467** |
+| Postman API tests | 139 requests across 8 folders |
 
 *(Confirmed: 468 run, 0 failures, 0 errors, 1 skipped — BUILD SUCCESS)*
 

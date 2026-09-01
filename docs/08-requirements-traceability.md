@@ -66,8 +66,8 @@ This document maps every requirement from the assignment brief to its implementa
 | Comprehensive automated unit testing | ✅ 321 unit tests | All domain objects, mappers, query handlers, app services, listeners, EventStoreService, controllers, identity |
 | Follows best practice | ✅ | AAA pattern, @DisplayName, @Nested, Object Mother, FIRST properties — documented in `docs/07-testing-strategy-design.md` |
 | Automated integration testing | ✅ ~23 integration tests | `@DataJpaTest` + `@Import` — service→domain→repository→H2. Includes `AtomicAllowanceConsistencyIntegrationTest` (real commit/rollback) and `DateOverlapQueryIntegrationTest` (JPQL overlap proof). |
-| API testing (Postman) | ⬜ Task 14 pending | Collections to cover all endpoints with valid/invalid data per role |
-| Coverage of all endpoints | Partially ✅ | Controller tests verify HTTP mapping. Postman will add full valid/invalid/role testing. |
+| API testing (Postman) | ✅ Implemented | 139 requests per collection (automated + manual) covering all 26 endpoints with valid/invalid data per role |
+| Coverage of all endpoints | ✅ | Controller tests verify HTTP mapping. Postman collections provide full end-to-end coverage with real JWT tokens. |
 
 ---
 
@@ -94,13 +94,13 @@ This document maps every requirement from the assignment brief to its implementa
 | Manager requirements implemented | 4/4 (100%) |
 | Admin requirements implemented | 5/5 (100%) |
 | Architectural requirements | 10/10 (100%) |
-| Total unit tests | 437 |
-| Total integration tests | 14 |
-| Total tests | 451 |
-| Test classes | 44 |
+| Total unit tests | 444 |
+| Total integration tests | 23 |
+| Total tests | 467 (468 discovered, 1 skipped) |
+| Test classes | 50 |
 | Design documents | 8 |
 | Bounded contexts | 3 (Leave Management, Staff Management, Identity) |
 | Domain events (local) | 4 |
 | Domain events (remote) | 2 |
 | API endpoints | ~20 |
-| Remaining work | Task 14: Postman collections |
+| Remaining work | Report writing |
