@@ -190,7 +190,7 @@ docker rm -f leave-rabbitmq
 |------|-----------|
 | 2026-08-21 | Lecture material loaded (Lectures 1-9) |
 | 2026-08-24 | Tasks 1-11 completed (full implementation) |
-| 2026-08-24 | Task 12: Unit tests created (467 tests, all passing) |
+| 2026-08-24 | Task 12: Unit tests created (444 unit tests + 23 integration tests = 467 total) |
 | 2026-08-25 | Design docs (01-05) enhanced to first-class standard |
 | 2026-08-25 | Environment setup: Firebase, RabbitMQ (Docker), compilation fixes |
 | 2026-08-25 | Identified corporate network limitation (Zscaler blocks Google OAuth2) |

@@ -2,7 +2,7 @@
 
 **Module:** COMP60047 Enterprise Application Development
 **Assignment:** Scenario 1 — Leave Booking System
-**Last Updated:** 2026-08-26
+**Last Updated:** 2026-09-01
 
 ---
 
@@ -15,10 +15,10 @@
            └──────┬───────┘
               ┌───┴────────────┐
               │ Integration    │  ← @DataJpaTest + @Import
-              │ Tests (14)     │     Service → Domain → H2
+              │ Tests (23)     │     Service → Domain → H2
               └──────┬─────────┘
          ┌───────────┴──────────────┐
-         │    Unit Tests (239+)     │  ← Plain JUnit 5 + Mockito
+         │    Unit Tests (444)      │  ← Plain JUnit 5 + Mockito
          │  Domain, Mappers,        │     No Spring context, fast
          │  Handlers, Listeners,    │
          │  Services                │
