@@ -17,7 +17,7 @@ import java.time.LocalDate;
  * {@link com.staffs.leavebooking.leavemanagement.domain.LeaveRequest#reject(String, String)}
  * — the command method that transitions a request from PENDING to REJECTED.
  *
- * <p><strong>Consumed by:</strong> A {@code @TransactionalEventListener(AFTER_COMMIT)} that calls
+ * <p><strong>Consumed by:</strong> A {@code @TransactionalEventListener(BEFORE_COMMIT)} that calls
  * {@link com.staffs.leavebooking.leavemanagement.domain.LeaveAllowance#releasePendingDays(int)}
  * to return the reserved days from the "pending" bucket back to "available" on the
  * staff member's allowance.
@@ -31,7 +31,7 @@ import java.time.LocalDate;
  * 2. ApplicationService saves LeaveRequest to repository
  * 3. ApplicationService extracts events and passes them to DomainEventManager
  * 4. DomainEventManager persists event to event_store (status: LOCAL) and publishes via Spring
- * 5. @TransactionalEventListener receives event AFTER_COMMIT
+ * 5. @TransactionalEventListener receives event BEFORE_COMMIT (same transaction)
  * 6. Listener calls LeaveAllowance.releasePendingDays(event.numberOfDays())
  * </pre>
  *

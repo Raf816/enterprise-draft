@@ -10,8 +10,10 @@ package com.staffs.leavebooking.common.events;
  *   <li>The application service extracts events and passes them to {@link DomainEventManager}</li>
  *   <li>{@link DomainEventManager} persists the event to the event store (status: LOCAL)
  *       and publishes it via Spring's {@code ApplicationEventPublisher}</li>
- *   <li>A {@code @TransactionalEventListener(AFTER_COMMIT)} in the SAME bounded context
- *       receives the event and performs a side effect (e.g., updating LeaveAllowance days)</li>
+ *   <li>A {@code @TransactionalEventListener(BEFORE_COMMIT)} in the SAME bounded context
+ *       receives the event synchronously within the producing transaction and performs
+ *       the side effect (e.g., updating LeaveAllowance days). If it fails, the entire
+ *       transaction rolls back.</li>
  * </ol>
  *
  * <p><strong>Local events in this system (all in Leave Management):</strong>

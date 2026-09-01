@@ -42,15 +42,16 @@ import static org.junit.jupiter.api.Assertions.*;
  *   <li>LeaveAllowance operations (reserve/confirm/release/credit) work correctly</li>
  *   <li>Idempotency guards work (duplicate allowance prevention)</li>
  *   <li>Event store captures domain events during command execution</li>
- *   <li><strong>BEFORE_COMMIT listeners</strong> atomically update allowances within the
- *       same transaction as the leave request — insufficient balance rolls back both</li>
  * </ul>
  *
  * <p><strong>Transaction design:</strong> The four allowance listeners use
  * {@code @TransactionalEventListener(BEFORE_COMMIT)}, so they fire synchronously within
- * the producing transaction. This means the allowance update is atomic with the leave
- * request save. Tests that need to verify committed state use {@link TransactionTemplate}
- * to control transaction boundaries explicitly.
+ * the producing transaction. However, {@code @DataJpaTest} wraps each test in a rollback-only
+ * transaction that never reaches the commit phase, so BEFORE_COMMIT listeners do not fire
+ * in these tests. The allowance update logic is tested by calling
+ * {@link LeaveAllowanceApplicationService} directly (which is exactly what the listeners do).
+ * Atomic commit/rollback behaviour is proven in the separate
+ * {@link AtomicAllowanceConsistencyIntegrationTest} which uses real independent transactions.
  */
 @DataJpaTest
 @Import({

@@ -17,7 +17,7 @@ import java.time.LocalDate;
  * {@link com.staffs.leavebooking.leavemanagement.domain.LeaveRequest#approve(String, String)}
  * — the command method that transitions a request from PENDING to APPROVED.
  *
- * <p><strong>Consumed by:</strong> A {@code @TransactionalEventListener(AFTER_COMMIT)} that calls
+ * <p><strong>Consumed by:</strong> A {@code @TransactionalEventListener(BEFORE_COMMIT)} that calls
  * {@link com.staffs.leavebooking.leavemanagement.domain.LeaveAllowance#confirmDays(int)}
  * to move days from the "pending" bucket to the "used" bucket on the staff member's allowance.
  *
@@ -30,7 +30,7 @@ import java.time.LocalDate;
  * 2. ApplicationService saves LeaveRequest to repository
  * 3. ApplicationService extracts events and passes them to DomainEventManager
  * 4. DomainEventManager persists event to event_store (status: LOCAL) and publishes via Spring
- * 5. @TransactionalEventListener receives event AFTER_COMMIT
+ * 5. @TransactionalEventListener receives event BEFORE_COMMIT (same transaction)
  * 6. Listener calls LeaveAllowance.confirmDays(event.numberOfDays())
  * </pre>
  *

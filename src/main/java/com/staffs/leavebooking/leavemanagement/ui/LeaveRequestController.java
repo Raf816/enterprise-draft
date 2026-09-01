@@ -662,7 +662,23 @@ public class LeaveRequestController {
         try {
             StaffMemberDTO staff = staffFacade.findStaffMemberByIdInternal(staffMemberId);
             if (staff.lineManagerId() != null && !staff.lineManagerId().isBlank()) {
-                return staff.lineManagerId();
+                String managerId = staff.lineManagerId();
+                // Verify the assigned manager still exists and is active
+                try {
+                    StaffMemberDTO manager = staffFacade.findStaffMemberByIdInternal(managerId);
+                    if ("TERMINATED".equals(manager.employmentStatus())) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                "Your assigned line manager's account has been terminated. " +
+                                "Please contact an administrator to update your line manager assignment.");
+                    }
+                } catch (ResponseStatusException e) {
+                    throw e;
+                } catch (Exception e) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                            "Your assigned line manager (ID: " + managerId + ") no longer exists. " +
+                            "Please contact an administrator to update your line manager assignment.");
+                }
+                return managerId;
             }
         } catch (ResponseStatusException e) {
             throw e;

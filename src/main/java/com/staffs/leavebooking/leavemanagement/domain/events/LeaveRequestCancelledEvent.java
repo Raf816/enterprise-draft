@@ -36,7 +36,7 @@ import java.time.LocalDate;
  * 2. ApplicationService saves LeaveRequest to repository
  * 3. ApplicationService extracts events and passes them to DomainEventManager
  * 4. DomainEventManager persists event to event_store (status: LOCAL) and publishes via Spring
- * 5. @TransactionalEventListener receives event AFTER_COMMIT
+ * 5. @TransactionalEventListener receives event BEFORE_COMMIT (same transaction)
  * 6. Listener checks wasPreviouslyApproved:
  *      - true  → LeaveAllowance.creditBackDays(numberOfDays)
  *      - false → LeaveAllowance.releasePendingDays(numberOfDays)
