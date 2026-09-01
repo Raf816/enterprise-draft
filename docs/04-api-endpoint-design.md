@@ -420,8 +420,7 @@ curl -X PATCH http://localhost:8900/leave-allowances/allow-001 \
   "currentRole": "Graduate Engineer",
   "startDateOfCurrentRole": "2026-09-01",
   "jobLevel": "L3",
-  "employmentType": "FULL_TIME",
-  "defaultLeaveEntitlement": 25
+  "employmentType": "FULL_TIME"
 }
 ```
 
@@ -480,8 +479,7 @@ curl -X POST http://localhost:8900/staff \
     "email":"alex@company.com","department":"Engineering",
     "lineManagerId":"mgr-001","hireDate":"2026-09-01",
     "currentRole":"Graduate","startDateOfCurrentRole":"2026-09-01",
-    "jobLevel":"L3","employmentType":"FULL_TIME",
-    "defaultLeaveEntitlement":25
+    "jobLevel":"L3","employmentType":"FULL_TIME"
   }'
 
 # Update department + assign manager (triggers StaffMemberUpdatedEvent)
@@ -694,7 +692,7 @@ public class LeaveManagementFacade {
 | POST `/leave-requests/team/search` | ✗ | ✓ (own team) | ✓ (all) | Filtered search of team requests (status + date range) |
 | GET `/leave-requests/all` | ✗ | ✗ | ✓ | Company-wide |
 | POST `/leave-requests/all/search` | ✗ | ✗ | ✓ | Filtered search (status, staffMemberId, managerId, date range) |
-| GET `/leave-requests/{id}` | ✓ (own) | ✓ (team) | ✓ | Ownership check in service |
+| GET `/leave-requests/{id}` | ✓ | ✓ | ✓ | Any authenticated user (write ops enforce ownership) |
 | POST `/leave-requests` | ✓ | ✓ | ✓ | staffMemberId from JWT |
 | PATCH `.../approve` | ✗ | ✓ (assigned) | ✓ | Only assigned manager or admin |
 | PATCH `.../reject` | ✗ | ✓ (assigned) | ✓ | Only assigned manager or admin |

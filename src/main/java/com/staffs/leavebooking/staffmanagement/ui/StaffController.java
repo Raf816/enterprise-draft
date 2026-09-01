@@ -13,6 +13,7 @@ import com.staffs.leavebooking.staffmanagement.application.dto.StaffSearchCriter
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -52,11 +53,21 @@ public class StaffController {
 
     /**
      * GET /staff/{id} — view a single staff member.
+     * Managers can only view their own team members. Admins can view anyone.
      */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public StaffMemberDTO getStaffMemberById(@PathVariable String id) {
-        return facade.findStaffMemberById(id);
+    public StaffMemberDTO getStaffMemberById(@PathVariable String id, Authentication authentication) {
+        StaffMemberDTO staff = facade.findStaffMemberById(id);
+        // Managers can only view their own team members — admins bypass
+        if (!isAdmin(authentication)) {
+            String requesterId = authentication.getName();
+            if (!requesterId.equals(staff.lineManagerId())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "You can only view staff members assigned to your team.");
+            }
+        }
+        return staff;
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -223,4 +234,13 @@ public class StaffController {
             String employmentStatus,
             String role               // Updates Firebase custom claim (STAFF, MANAGER, ADMIN)
     ) {}
+
+    // ─────────────────────────────────────────────────────────────────
+    // PRIVATE HELPERS
+    // ─────────────────────────────────────────────────────────────────
+
+    private boolean isAdmin(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+    }
 }

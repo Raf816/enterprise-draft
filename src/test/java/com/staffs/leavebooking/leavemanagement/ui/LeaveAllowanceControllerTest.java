@@ -3,6 +3,8 @@ package com.staffs.leavebooking.leavemanagement.ui;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.staffs.leavebooking.leavemanagement.LeaveManagementFacade;
 import com.staffs.leavebooking.leavemanagement.application.dto.LeaveAllowanceDTO;
+import com.staffs.leavebooking.staffmanagement.StaffManagementFacade;
+import com.staffs.leavebooking.staffmanagement.application.dto.StaffMemberDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -14,6 +16,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -38,6 +41,9 @@ class LeaveAllowanceControllerTest {
 
     @MockBean
     private LeaveManagementFacade facade;
+
+    @MockBean
+    private StaffManagementFacade staffFacade;
 
     @Nested
     @DisplayName("GET /leave-allowances/my")
@@ -67,7 +73,11 @@ class LeaveAllowanceControllerTest {
         @DisplayName("Should return allowance for a specific staff member")
         @WithMockUser(username = "mgr-1", roles = "MANAGER")
         void shouldReturnAllowanceForStaff() throws Exception {
-            // Arrange
+            // Arrange — staff-1 is managed by mgr-1
+            when(staffFacade.findStaffMemberByIdInternal("staff-1"))
+                    .thenReturn(new StaffMemberDTO("staff-1", "James", "Wilson", "j@test.com",
+                            "Engineering", "mgr-1", LocalDate.now(), "Dev", LocalDate.now(),
+                            "MID", "FULL_TIME", "ACTIVE"));
             when(facade.findAllowanceForStaffMember("staff-1"))
                     .thenReturn(createTestAllowanceDTO("allow-1", "staff-1"));
 
@@ -75,6 +85,21 @@ class LeaveAllowanceControllerTest {
             mockMvc.perform(get("/leave-allowances/staff/staff-1"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.staffMemberId").value("staff-1"));
+        }
+
+        @Test
+        @DisplayName("Should return 403 when manager tries to view staff outside their team")
+        @WithMockUser(username = "mgr-1", roles = "MANAGER")
+        void shouldReturn403ForNonTeamMember() throws Exception {
+            // Arrange — staff-2 is managed by mgr-2, not mgr-1
+            when(staffFacade.findStaffMemberByIdInternal("staff-2"))
+                    .thenReturn(new StaffMemberDTO("staff-2", "Phil", "Jones", "p@test.com",
+                            "Digital", "mgr-2", LocalDate.now(), "Dev", LocalDate.now(),
+                            "MID", "FULL_TIME", "ACTIVE"));
+
+            // Act & Assert
+            mockMvc.perform(get("/leave-allowances/staff/staff-2"))
+                    .andExpect(status().isForbidden());
         }
     }
 

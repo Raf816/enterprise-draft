@@ -432,6 +432,11 @@
               "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],"body":{"mode":"raw","raw":"{\"managerId\":\"non-existent-manager-id\",\"startDate\":\"2027-01-10\",\"endDate\":\"2027-01-12\",\"leaveType\":\"ANNUAL\"}"},"url":{"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}}
             },
             {
+              "name": "Submit: wrong lineManager (400)",
+              "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","pm.test('not assigned line manager', function(){ pm.expect(pm.response.json().message).to.include('assigned line manager'); });"]}}],
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],"body":{"mode":"raw","raw":"{\"managerId\":\"{{manager2_uid}}\",\"startDate\":\"2027-04-01\",\"endDate\":\"2027-04-03\",\"leaveType\":\"ANNUAL\"}"},"url":{"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}}
+            },
+            {
               "name": "Submit: date overlap with existing PENDING (409)",
               "event": [{"listen":"test","script":{"exec":["pm.test('409 Conflict', function(){ pm.response.to.have.status(409); });","pm.test('overlap msg', function(){ pm.expect(pm.response.json().message).to.include('overlap'); });"]}}],
               "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],"body":{"mode":"raw","raw":"{\"startDate\":\"2026-10-03\",\"endDate\":\"2026-10-07\",\"leaveType\":\"ANNUAL\"}"},"url":{"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}}

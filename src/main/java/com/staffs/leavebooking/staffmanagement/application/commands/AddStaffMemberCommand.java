@@ -25,7 +25,6 @@ import java.time.LocalDate;
  * @param startDateOfCurrentRole when the current role started (required)
  * @param jobLevel               the seniority level (optional)
  * @param employmentType         the contract type: FULL_TIME, PART_TIME, CONTRACT (required)
- * @param defaultLeaveEntitlement annual leave days (0 or negative defaults to 25)
  * @param password               optional password for Firebase (defaults to Password123!)
  * @param role                   optional role for Firebase custom claim (defaults to STAFF)
  */
@@ -61,8 +60,6 @@ public record AddStaffMemberCommand(
 
         @NotBlank(message = "Employment type is required")
         String employmentType,
-
-        int defaultLeaveEntitlement,    // 0 or negative defaults to 25 in the service
 
         String password,                // Optional — defaults to Password123!
         String role                     // Optional — defaults to STAFF

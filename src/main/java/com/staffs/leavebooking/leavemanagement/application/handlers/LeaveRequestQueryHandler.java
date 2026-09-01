@@ -141,9 +141,9 @@ public class LeaveRequestQueryHandler {
      * <p><strong>Filter routing:</strong> Routes to the appropriate repository method
      * based on which criteria fields are populated:
      * <ul>
-     *   <li>status + date range → {@code findByStaffMemberIdAndStatusAndStartDateBetween}</li>
+     *   <li>status + date range → {@code findByStaffMemberIdAndStatusAndDateOverlap}</li>
      *   <li>status only → {@code findByStaffMemberIdAndStatus}</li>
-     *   <li>date range only → {@code findByStaffMemberIdAndStartDateBetween}</li>
+     *   <li>date range only → {@code findByStaffMemberIdAndDateOverlap}</li>
      *   <li>no filters → {@code findByStaffMemberId} (fallback to basic query)</li>
      * </ul>
      *
@@ -163,14 +163,14 @@ public class LeaveRequestQueryHandler {
         // Route to the appropriate repository method based on which filters are set
         if (status != null && hasDateRange) {
             // Both status and date range filters — most specific query
-            results = leaveRequestRepository.findByStaffMemberIdAndStatusAndStartDateBetween(
+            results = leaveRequestRepository.findByStaffMemberIdAndStatusAndDateOverlap(
                     staffMemberId, status, criteria.from(), criteria.to());
         } else if (status != null) {
             // Status filter only — e.g., "show my PENDING requests"
             results = leaveRequestRepository.findByStaffMemberIdAndStatus(staffMemberId, status);
         } else if (hasDateRange) {
             // Date range filter only — e.g., "show my requests in September"
-            results = leaveRequestRepository.findByStaffMemberIdAndStartDateBetween(
+            results = leaveRequestRepository.findByStaffMemberIdAndDateOverlap(
                     staffMemberId, criteria.from(), criteria.to());
         } else {
             // No filters — fallback to basic query (same as GET /my)
@@ -190,9 +190,9 @@ public class LeaveRequestQueryHandler {
      * <p><strong>Filter routing:</strong> Routes to the appropriate repository method
      * based on which criteria fields are populated:
      * <ul>
-     *   <li>status + date range → {@code findByManagerIdAndStatusAndStartDateBetween}</li>
+     *   <li>status + date range → {@code findByManagerIdAndStatusAndDateOverlap}</li>
      *   <li>status only → {@code findByManagerIdAndStatus}</li>
-     *   <li>date range only → {@code findByManagerIdAndStartDateBetween}</li>
+     *   <li>date range only → {@code findByManagerIdAndDateOverlap}</li>
      *   <li>no filters → {@code findByManagerId} (fallback to basic query)</li>
      * </ul>
      *
@@ -211,14 +211,14 @@ public class LeaveRequestQueryHandler {
         // Route to the appropriate repository method based on which filters are set
         if (status != null && hasDateRange) {
             // Both status and date range filters — most specific query
-            results = leaveRequestRepository.findByManagerIdAndStatusAndStartDateBetween(
+            results = leaveRequestRepository.findByManagerIdAndStatusAndDateOverlap(
                     managerId, status, criteria.from(), criteria.to());
         } else if (status != null) {
             // Status filter only — e.g., "show pending team requests"
             results = leaveRequestRepository.findByManagerIdAndStatus(managerId, status);
         } else if (hasDateRange) {
             // Date range filter only — e.g., "show team requests in Q4"
-            results = leaveRequestRepository.findByManagerIdAndStartDateBetween(
+            results = leaveRequestRepository.findByManagerIdAndDateOverlap(
                     managerId, criteria.from(), criteria.to());
         } else {
             // No filters — fallback to basic query (same as GET /team)
@@ -270,14 +270,14 @@ public class LeaveRequestQueryHandler {
         if (staffId != null) {
             if (status != null && hasDateRange) {
                 // Staff + status + date range — most specific staff-scoped query
-                results = leaveRequestRepository.findByStaffMemberIdAndStatusAndStartDateBetween(
+                results = leaveRequestRepository.findByStaffMemberIdAndStatusAndDateOverlap(
                         staffId, status, criteria.from(), criteria.to());
             } else if (status != null) {
                 // Staff + status — e.g., "show this person's APPROVED requests"
                 results = leaveRequestRepository.findByStaffMemberIdAndStatus(staffId, status);
             } else if (hasDateRange) {
                 // Staff + date range — e.g., "show this person's requests in Q3"
-                results = leaveRequestRepository.findByStaffMemberIdAndStartDateBetween(
+                results = leaveRequestRepository.findByStaffMemberIdAndDateOverlap(
                         staffId, criteria.from(), criteria.to());
             } else {
                 // Staff only — show all requests for this person
@@ -288,14 +288,14 @@ public class LeaveRequestQueryHandler {
         else if (mgrId != null) {
             if (status != null && hasDateRange) {
                 // Manager + status + date range — most specific manager-scoped query
-                results = leaveRequestRepository.findByManagerIdAndStatusAndStartDateBetween(
+                results = leaveRequestRepository.findByManagerIdAndStatusAndDateOverlap(
                         mgrId, status, criteria.from(), criteria.to());
             } else if (status != null) {
                 // Manager + status — e.g., "show this manager's PENDING team requests"
                 results = leaveRequestRepository.findByManagerIdAndStatus(mgrId, status);
             } else if (hasDateRange) {
                 // Manager + date range — e.g., "show this manager's team requests in Q4"
-                results = leaveRequestRepository.findByManagerIdAndStartDateBetween(
+                results = leaveRequestRepository.findByManagerIdAndDateOverlap(
                         mgrId, criteria.from(), criteria.to());
             } else {
                 // Manager only — show all requests for this manager's team
@@ -306,14 +306,14 @@ public class LeaveRequestQueryHandler {
         else {
             if (status != null && hasDateRange) {
                 // Status + date range — e.g., "show all PENDING requests in September"
-                results = leaveRequestRepository.findByStatusAndStartDateBetween(
+                results = leaveRequestRepository.findByStatusAndDateOverlap(
                         status, criteria.from(), criteria.to());
             } else if (status != null) {
                 // Status only — e.g., "show all PENDING requests company-wide"
                 results = leaveRequestRepository.findByStatus(status);
             } else if (hasDateRange) {
                 // Date range only — e.g., "show all requests in Q3 company-wide"
-                results = leaveRequestRepository.findByStartDateBetween(criteria.from(), criteria.to());
+                results = leaveRequestRepository.findByDateOverlap(criteria.from(), criteria.to());
             } else {
                 // No filters at all — return everything (same as GET /all)
                 results = StreamSupport.stream(leaveRequestRepository.findAll().spliterator(), false)

@@ -3,10 +3,13 @@ package com.staffs.leavebooking.leavemanagement.ui;
 import com.staffs.leavebooking.leavemanagement.LeaveManagementFacade;
 import com.staffs.leavebooking.leavemanagement.application.commands.AmendEntitlementCommand;
 import com.staffs.leavebooking.leavemanagement.application.dto.LeaveAllowanceDTO;
+import com.staffs.leavebooking.staffmanagement.StaffManagementFacade;
+import com.staffs.leavebooking.staffmanagement.application.dto.StaffMemberDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -46,6 +49,9 @@ public class LeaveAllowanceController {
 
     /** Leave Management facade — the single entry point for all leave operations in this bounded context. */
     private final LeaveManagementFacade facade;
+
+    /** Staff Management facade — used for team ownership checks (cross-context Open Host Service call). */
+    private final StaffManagementFacade staffFacade;
 
     // ─────────────────────────────────────────────────────────────────
     // QUERIES
@@ -90,8 +96,10 @@ public class LeaveAllowanceController {
      */
     @GetMapping("/staff/{staffMemberId}") // Maps HTTP GET /leave-allowances/staff/{staffMemberId}
     @ResponseStatus(HttpStatus.OK)        // Returns 200 OK on success
-    public LeaveAllowanceDTO getAllowanceForStaff(@PathVariable String staffMemberId) {
-        // Delegate directly to facade — RBAC enforced at facade level (MANAGER or ADMIN)
+    public LeaveAllowanceDTO getAllowanceForStaff(@PathVariable String staffMemberId,
+                                                  Authentication authentication) {
+        // Managers can only view their own team's allowances — admins can view anyone's
+        verifyTeamMemberOrAdmin(staffMemberId, authentication);
         return facade.findAllowanceForStaffMember(staffMemberId);
     }
 
@@ -201,4 +209,41 @@ public class LeaveAllowanceController {
             @jakarta.validation.constraints.Min(value = 1, message = "Entitlement must be at least 1 day")
             int newEntitlement
     ) {}
+
+    // ─────────────────────────────────────────────────────────────────
+    // PRIVATE HELPERS
+    // ─────────────────────────────────────────────────────────────────
+
+    /**
+     * Verifies that the authenticated manager is the line manager of the target staff member,
+     * or that the user is an admin (admins bypass the check).
+     *
+     * <p>Prevents managers from viewing allowances for staff outside their assigned team.
+     *
+     * @param staffMemberId  the staff member whose allowance is being accessed
+     * @param authentication the authenticated user's security context
+     * @throws ResponseStatusException 403 if the manager is not the staff member's line manager
+     */
+    private void verifyTeamMemberOrAdmin(String staffMemberId, Authentication authentication) {
+        if (isAdmin(authentication)) return;
+
+        try {
+            StaffMemberDTO staff = staffFacade.findStaffMemberByIdInternal(staffMemberId);
+            String requesterId = authentication.getName();
+            if (!requesterId.equals(staff.lineManagerId())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "You can only view allowances for your own team members.");
+            }
+        } catch (ResponseStatusException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Staff member not found: " + staffMemberId);
+        }
+    }
+
+    private boolean isAdmin(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+    }
 }

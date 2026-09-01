@@ -312,3 +312,52 @@ mvn test -Dtest="com.staffs.leavebooking.leavemanagement.domain.LeaveRequestTest
 | Postman API tests | 138 requests across 8 folders |
 
 *(Confirmed: 451 run, 0 failures, 0 errors, 1 skipped — BUILD SUCCESS)*
+
+---
+
+## 10. JaCoCo Code Coverage
+
+JaCoCo is configured in `pom.xml` (prepare-agent + report in test phase). After `mvn clean verify`, the report is at `target/site/jacoco/index.html`.
+
+### Coverage Summary (as of 2026-08-31)
+
+| Metric | Coverage |
+|--------|----------|
+| **Instruction coverage** | **78%** (1,522 of 7,171 missed) |
+| **Branch coverage** | **61%** (179 of 468 missed) |
+| **Line coverage** | **78%** (359 of 1,612 missed) |
+| **Method coverage** | **78%** (92 of 409 missed) |
+| **Class coverage** | **91%** (9 of 104 missed) |
+
+### Coverage by Package
+
+| Package | Instructions | Branches | Notes |
+|---------|-------------|----------|-------|
+| `leavemanagement.domain` | 99% | 99% | Near-perfect — core DDD domain logic fully tested |
+| `staffmanagement.domain` | 99% | 100% | Near-perfect — aggregate, VOs, state machine |
+| `common.domain` | 93% | 88% | Value objects, supertypes, guard clauses |
+| `leavemanagement.application.listeners` | 94-100% | — | All 4 leave event listeners + notification publishers |
+| `leavemanagement.application.handlers` | 88% | 72% | Query handlers and application services |
+| `leavemanagement.application.mappers` | 94% | n/a | JPA ↔ domain ↔ DTO mappers |
+| `staffmanagement.ui` | 73% | 52% | Controller layer (edge case paths reduce coverage) |
+| `leavemanagement.ui` | 79% | 61% | Controller layer with ownership checks |
+| `identity.security` | 73% | 66% | Security filters (RateLimit, Headers, Token) |
+| `identity` | 57% | 36% | AuthController (Firebase mocked in tests) |
+| `identity.authService` | 33% | 27% | **Lowest** — `FirebaseAuthService` calls real Firebase SDK which is mocked in tests. The actual HTTP calls to Firebase Identity Toolkit and Admin SDK cannot run without a live Firebase project. |
+
+### Why Identity Coverage Is Low
+
+The `identity.authService` package (33%) contains `FirebaseAuthService` which makes real HTTP calls to:
+- Firebase Identity Toolkit REST API (`identitytoolkit.googleapis.com`) for login
+- Firebase Admin SDK (`FirebaseAuth.getInstance().createUser()`) for registration
+- Firebase Admin SDK for password changes and role updates
+
+These are external cloud API calls that cannot execute in a unit test environment. The service is mocked in `@WebMvcTest` controller tests, which verifies the controller → service delegation but not the service's internal Firebase logic. This is standard practice — external service integrations are tested via Postman against the live running application, not in unit tests.
+
+### How to View
+
+```bash
+mvn clean verify
+# Then open in browser:
+# target/site/jacoco/index.html
+```

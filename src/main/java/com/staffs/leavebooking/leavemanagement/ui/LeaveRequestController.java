@@ -282,8 +282,8 @@ public class LeaveRequestController {
         // Resolve managerId — if not provided, use the staff member's assigned lineManagerId
         String managerId = resolveManagerId(staffMemberId, body.managerId());
 
-        // Validate that the managerId references a real staff member
-        verifyManagerExists(managerId);
+        // Validate that the managerId references a real staff member and is the assigned line manager
+        verifyManagerExists(managerId, staffMemberId);
 
         // Check for date overlap with existing PENDING or APPROVED requests
         verifyNoDateOverlap(staffMemberId, body.startDate(), body.endDate());
@@ -649,18 +649,33 @@ public class LeaveRequestController {
     }
 
     /**
-     * Validates that the managerId references a real staff member in the system.
-     * Prevents leave requests being assigned to non-existent managers.
+     * Validates that the managerId references a real staff member in the system
+     * and is the staff member's assigned line manager.
      *
      * @param managerId the manager UUID to validate
-     * @throws ResponseStatusException 400 if the manager doesn't exist
+     * @param staffMemberId the staff member submitting the request
+     * @throws ResponseStatusException 400 if the manager doesn't exist or isn't the assigned line manager
      */
-    private void verifyManagerExists(String managerId) {
+    private void verifyManagerExists(String managerId, String staffMemberId) {
         try {
             staffFacade.findStaffMemberByIdInternal(managerId);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Manager not found: " + managerId + ". Please provide a valid manager ID.");
+        }
+
+        // Verify the manager is the staff member's assigned line manager
+        try {
+            StaffMemberDTO staff = staffFacade.findStaffMemberByIdInternal(staffMemberId);
+            if (staff.lineManagerId() != null && !managerId.equals(staff.lineManagerId())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "The provided manager ID does not match your assigned line manager. " +
+                        "Leave requests must be directed to your assigned line manager.");
+            }
+        } catch (ResponseStatusException e) {
+            throw e;
+        } catch (Exception e) {
+            // Staff record lookup failed — already verified in verifyStaffIsActive, so shouldn't happen
         }
     }
 

@@ -61,7 +61,7 @@ class StaffApplicationServiceTest {
             AddStaffMemberCommand command = new AddStaffMemberCommand(
                     "James", "Wilson", "james@company.com", "Engineering",
                     "mgr-1", LocalDate.of(2022, 6, 1), "Software Engineer",
-                    LocalDate.of(2022, 6, 1), "L4", "FULL_TIME", 25, null, null);
+                    LocalDate.of(2022, 6, 1), "L4", "FULL_TIME", null, null);
             when(staffMemberRepository.existsByEmail("james@company.com")).thenReturn(false);
 
             // Act
@@ -75,16 +75,16 @@ class StaffApplicationServiceTest {
         }
 
         @Test
-        @DisplayName("Should default entitlement to 25 when not provided (zero)")
-        void shouldDefaultEntitlementTo25() {
-            // Arrange — entitlement = 0 (not provided)
+        @DisplayName("Should always create staff with default 25-day entitlement")
+        void shouldAlwaysUseDefaultEntitlement() {
+            // Arrange
             AddStaffMemberCommand command = new AddStaffMemberCommand(
                     "James", "Wilson", "james@company.com", "Engineering",
                     "mgr-1", LocalDate.of(2022, 6, 1), "Software Engineer",
-                    LocalDate.of(2022, 6, 1), "L4", "FULL_TIME", 0, null, null);
+                    LocalDate.of(2022, 6, 1), "L4", "FULL_TIME", null, null);
             when(staffMemberRepository.existsByEmail("james@company.com")).thenReturn(false);
 
-            // Act — should not throw (defaults to 25 internally)
+            // Act — should create with 25-day default entitlement
             assertDoesNotThrow(() -> staffApplicationService.addNewStaffMember(command));
             verify(staffMemberRepository).save(any(StaffMemberJpa.class));
         }
@@ -95,7 +95,7 @@ class StaffApplicationServiceTest {
             AddStaffMemberCommand command = new AddStaffMemberCommand(
                     "James", "Wilson", "existing@company.com", "Engineering",
                     "mgr-1", LocalDate.of(2022, 6, 1), "Software Engineer",
-                    LocalDate.of(2022, 6, 1), "L4", "FULL_TIME", 25, null, null);
+                    LocalDate.of(2022, 6, 1), "L4", "FULL_TIME", null, null);
             when(staffMemberRepository.existsByEmail("existing@company.com")).thenReturn(true);
 
             assertThrows(DataIntegrityViolationException.class,

@@ -1,5 +1,7 @@
 package com.staffs.leavebooking.leavemanagement.application.listeners;
 
+import com.staffs.leavebooking.common.events.DomainEventManager;
+import com.staffs.leavebooking.common.events.Event;
 import com.staffs.leavebooking.common.events.ManagerNotificationEvent;
 import com.staffs.leavebooking.leavemanagement.domain.events.LeaveRequestSubmittedEvent;
 import com.staffs.leavebooking.leavemanagement.infrastructure.entities.LeaveRequestJpa;
@@ -11,9 +13,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,7 +29,7 @@ class ManagerNotificationPublisherTest {
     private LeaveRequestRepository leaveRequestRepository;
 
     @Mock
-    private ApplicationEventPublisher eventPublisher;
+    private DomainEventManager domainEventManager;
 
     @InjectMocks
     private ManagerNotificationPublisher publisher;
@@ -38,7 +40,7 @@ class ManagerNotificationPublisherTest {
     private static final int NUMBER_OF_DAYS = 5;
 
     @Test
-    @DisplayName("Should publish ManagerNotificationEvent when leave request is submitted")
+    @DisplayName("Should publish ManagerNotificationEvent via DomainEventManager when leave request is submitted")
     void shouldPublishManagerNotificationOnSubmit() {
         // Arrange
         LeaveRequestSubmittedEvent submittedEvent = new LeaveRequestSubmittedEvent(
@@ -57,11 +59,16 @@ class ManagerNotificationPublisherTest {
         // Act
         publisher.onLeaveRequestSubmitted(submittedEvent);
 
-        // Assert
-        ArgumentCaptor<ManagerNotificationEvent> captor = ArgumentCaptor.forClass(ManagerNotificationEvent.class);
-        verify(eventPublisher).publishEvent(captor.capture());
+        // Assert — verify DomainEventManager was called with the notification event
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<List<Event>> captor = ArgumentCaptor.forClass(List.class);
+        verify(domainEventManager).manageDomainEvents(eq("ManagerNotificationPublisher"), captor.capture());
 
-        ManagerNotificationEvent notification = captor.getValue();
+        List<Event> events = captor.getValue();
+        assertThat(events).hasSize(1);
+        assertThat(events.get(0)).isInstanceOf(ManagerNotificationEvent.class);
+
+        ManagerNotificationEvent notification = (ManagerNotificationEvent) events.get(0);
         assertThat(notification.managerId()).isEqualTo(MANAGER_ID);
         assertThat(notification.staffMemberId()).isEqualTo(STAFF_MEMBER_ID);
         assertThat(notification.leaveRequestId()).isEqualTo(LEAVE_REQUEST_ID);
@@ -85,6 +92,6 @@ class ManagerNotificationPublisherTest {
         publisher.onLeaveRequestSubmitted(submittedEvent);
 
         // Assert
-        verify(eventPublisher, never()).publishEvent(any());
+        verify(domainEventManager, never()).manageDomainEvents(any(), any());
     }
 }

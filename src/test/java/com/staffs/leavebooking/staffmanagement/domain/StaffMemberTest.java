@@ -65,7 +65,7 @@ class StaffMemberTest {
             // Act
             StaffMember staff = StaffMember.createNew(
                     id, name, email, "Engineering", "manager-id-123",
-                    hireDate, "Developer", roleStart, "L4", EmploymentType.FULL_TIME, 25);
+                    hireDate, "Developer", roleStart, "L4", EmploymentType.FULL_TIME);
 
             // Assert
             assertEquals(id, staff.id());
@@ -78,7 +78,6 @@ class StaffMemberTest {
             assertEquals(roleStart, staff.startDateOfCurrentRole());
             assertEquals("L4", staff.jobLevel());
             assertEquals(EmploymentType.FULL_TIME, staff.employmentType());
-            assertEquals(25, staff.defaultLeaveEntitlement());
         }
 
         @Test
@@ -96,7 +95,7 @@ class StaffMemberTest {
                             "Engineering", "mgr-id",
                             futureDate, "Dev",
                             LocalDate.of(2024, 1, 1), "L4",
-                            EmploymentType.FULL_TIME, 25));
+                            EmploymentType.FULL_TIME));
             assertEquals(StaffMember.HIRE_DATE_IN_FUTURE, ex.getMessage());
         }
 
@@ -111,41 +110,10 @@ class StaffMemberTest {
                     "Engineering", "mgr-id",
                     LocalDate.now(), "Dev",
                     LocalDate.of(2024, 1, 1), "L4",
-                    EmploymentType.FULL_TIME, 25);
+                    EmploymentType.FULL_TIME);
 
             // Assert
             assertEquals(LocalDate.now(), staff.hireDate());
-        }
-
-        @Test
-        @DisplayName("Should reject zero leave entitlement")
-        void shouldRejectZeroEntitlement() {
-            // Act & Assert
-            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                    () -> StaffMember.createNew(
-                            Identity.generateId(),
-                            new FullName("John", "Doe"),
-                            new Email("john@company.com"),
-                            "Engineering", "mgr-id",
-                            LocalDate.of(2023, 1, 1), "Dev",
-                            LocalDate.of(2024, 1, 1), "L4",
-                            EmploymentType.FULL_TIME, 0));
-            assertEquals(StaffMember.ENTITLEMENT_MUST_BE_POSITIVE, ex.getMessage());
-        }
-
-        @Test
-        @DisplayName("Should reject negative leave entitlement")
-        void shouldRejectNegativeEntitlement() {
-            // Act & Assert
-            assertThrows(IllegalArgumentException.class,
-                    () -> StaffMember.createNew(
-                            Identity.generateId(),
-                            new FullName("John", "Doe"),
-                            new Email("john@company.com"),
-                            "Engineering", "mgr-id",
-                            LocalDate.of(2023, 1, 1), "Dev",
-                            LocalDate.of(2024, 1, 1), "L4",
-                            EmploymentType.FULL_TIME, -5));
         }
 
         @Test
@@ -158,7 +126,7 @@ class StaffMemberTest {
                             "Engineering", "mgr-id",
                             LocalDate.of(2023, 1, 1), "Dev",
                             LocalDate.of(2024, 1, 1), "L4",
-                            EmploymentType.FULL_TIME, 25));
+                            EmploymentType.FULL_TIME));
         }
 
         @Test
@@ -171,7 +139,7 @@ class StaffMemberTest {
                             "Engineering", "mgr-id",
                             LocalDate.of(2023, 1, 1), "Dev",
                             LocalDate.of(2024, 1, 1), "L4",
-                            EmploymentType.FULL_TIME, 25));
+                            EmploymentType.FULL_TIME));
         }
 
         @Test
@@ -185,7 +153,7 @@ class StaffMemberTest {
                             "   ", "mgr-id",
                             LocalDate.of(2023, 1, 1), "Dev",
                             LocalDate.of(2024, 1, 1), "L4",
-                            EmploymentType.FULL_TIME, 25));
+                            EmploymentType.FULL_TIME));
             assertEquals(StaffMember.DEPARTMENT_REQUIRED, ex.getMessage());
         }
 
@@ -197,7 +165,7 @@ class StaffMemberTest {
                     "Engineering", "manager-id-123",
                     LocalDate.of(2023, 6, 1), "Developer",
                     LocalDate.of(2024, 1, 1), "L4",
-                    EmploymentType.FULL_TIME, 25);
+                    EmploymentType.FULL_TIME);
         }
     }
 
@@ -237,7 +205,6 @@ class StaffMemberTest {
             assertEquals("Pending Setup", staff.currentRole());
             assertNull(staff.jobLevel());
             assertEquals(EmploymentType.FULL_TIME, staff.employmentType());
-            assertEquals(25, staff.defaultLeaveEntitlement());
         }
 
         @Test

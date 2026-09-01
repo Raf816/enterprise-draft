@@ -177,9 +177,9 @@ com.staffs.leavebooking/
 │   │       ├── LeaveRequestCancelledListener.java  @TransactionalEventListener → credit/release
 │   │       ├── StaffMemberAddedListener.java       @RabbitListener → createAllowance
 │   │       ├── StaffMemberUpdatedListener.java     @RabbitListener → updateStaffDetails
-│   │       ├── ManagerNotificationPublisher.java   @TransactionalEventListener → publishes ManagerNotificationEvent
+│   │       ├── ManagerNotificationPublisher.java   @TransactionalEventListener → @Transactional → routes via DomainEventManager
 │   │       ├── ManagerNotificationConsumer.java    @RabbitListener → logs manager alert for pending request
-│   │       ├── StaffNotificationPublisher.java     @TransactionalEventListener → publishes StaffNotificationEvent
+│   │       ├── StaffNotificationPublisher.java     @TransactionalEventListener → @Transactional → routes via DomainEventManager
 │   │       └── StaffNotificationConsumer.java      @RabbitListener → logs staff alert for decision
 │   ├── domain/                           HIDDEN — pure business logic (zero framework imports)
 │   │   ├── LeaveRequest.java             Aggregate Root (state machine + events)

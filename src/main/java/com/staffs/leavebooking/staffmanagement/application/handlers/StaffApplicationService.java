@@ -128,13 +128,11 @@ public class StaffApplicationService {
         // Wrap the string ID as a typed Identity<StaffMember>
         Identity<StaffMember> id = Identity.of(staffId);
 
-        // Use the command's entitlement if positive, otherwise default to 25 days
-        int entitlement = command.defaultLeaveEntitlement() > 0
-                ? command.defaultLeaveEntitlement()
-                : StaffMember.DEFAULT_LEAVE_ENTITLEMENT;
+        // All staff start with the default 25-day entitlement.
+        // Admin can amend via PATCH /leave-allowances/{id} after activation.
 
         // Create the domain aggregate via the write-path factory method
-        // This validates all business rules (hire date, entitlement, required fields)
+        // This validates all business rules (hire date, required fields)
         StaffMember staffMember = StaffMember.createNew(
                 id,
                 new FullName(command.firstName(), command.surname()),  // Value object creation
@@ -145,8 +143,7 @@ public class StaffApplicationService {
                 command.currentRole(),
                 command.startDateOfCurrentRole(),
                 command.jobLevel(),
-                parseEmploymentType(command.employmentType()),         // String → enum conversion
-                entitlement
+                parseEmploymentType(command.employmentType())          // String → enum conversion
         );
 
         // Map domain aggregate → JPA entity and save to database

@@ -1,5 +1,7 @@
 package com.staffs.leavebooking.leavemanagement.application.listeners;
 
+import com.staffs.leavebooking.common.events.DomainEventManager;
+import com.staffs.leavebooking.common.events.Event;
 import com.staffs.leavebooking.common.events.StaffNotificationEvent;
 import com.staffs.leavebooking.leavemanagement.domain.events.LeaveRequestApprovedEvent;
 import com.staffs.leavebooking.leavemanagement.domain.events.LeaveRequestCancelledEvent;
@@ -12,11 +14,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,7 +27,7 @@ import static org.mockito.Mockito.verify;
 class StaffNotificationPublisherTest {
 
     @Mock
-    private ApplicationEventPublisher eventPublisher;
+    private DomainEventManager domainEventManager;
 
     @InjectMocks
     private StaffNotificationPublisher publisher;
@@ -39,7 +42,7 @@ class StaffNotificationPublisherTest {
     class OnApproved {
 
         @Test
-        @DisplayName("Should publish StaffNotificationEvent with APPROVED decision")
+        @DisplayName("Should publish StaffNotificationEvent with APPROVED decision via DomainEventManager")
         void shouldPublishApprovedNotification() {
             // Arrange
             LeaveRequestApprovedEvent approvedEvent = new LeaveRequestApprovedEvent(
@@ -49,10 +52,11 @@ class StaffNotificationPublisherTest {
             publisher.onLeaveRequestApproved(approvedEvent);
 
             // Assert
-            ArgumentCaptor<StaffNotificationEvent> captor = ArgumentCaptor.forClass(StaffNotificationEvent.class);
-            verify(eventPublisher).publishEvent(captor.capture());
+            @SuppressWarnings("unchecked")
+            ArgumentCaptor<List<Event>> captor = ArgumentCaptor.forClass(List.class);
+            verify(domainEventManager).manageDomainEvents(eq("StaffNotificationPublisher"), captor.capture());
 
-            StaffNotificationEvent notification = captor.getValue();
+            StaffNotificationEvent notification = (StaffNotificationEvent) captor.getValue().get(0);
             assertThat(notification.staffMemberId()).isEqualTo(STAFF_MEMBER_ID);
             assertThat(notification.leaveRequestId()).isEqualTo(LEAVE_REQUEST_ID);
             assertThat(notification.decision()).isEqualTo("APPROVED");
@@ -67,7 +71,7 @@ class StaffNotificationPublisherTest {
     class OnRejected {
 
         @Test
-        @DisplayName("Should publish StaffNotificationEvent with REJECTED decision")
+        @DisplayName("Should publish StaffNotificationEvent with REJECTED decision via DomainEventManager")
         void shouldPublishRejectedNotification() {
             // Arrange
             LeaveRequestRejectedEvent rejectedEvent = new LeaveRequestRejectedEvent(
@@ -77,10 +81,11 @@ class StaffNotificationPublisherTest {
             publisher.onLeaveRequestRejected(rejectedEvent);
 
             // Assert
-            ArgumentCaptor<StaffNotificationEvent> captor = ArgumentCaptor.forClass(StaffNotificationEvent.class);
-            verify(eventPublisher).publishEvent(captor.capture());
+            @SuppressWarnings("unchecked")
+            ArgumentCaptor<List<Event>> captor = ArgumentCaptor.forClass(List.class);
+            verify(domainEventManager).manageDomainEvents(eq("StaffNotificationPublisher"), captor.capture());
 
-            StaffNotificationEvent notification = captor.getValue();
+            StaffNotificationEvent notification = (StaffNotificationEvent) captor.getValue().get(0);
             assertThat(notification.staffMemberId()).isEqualTo(STAFF_MEMBER_ID);
             assertThat(notification.leaveRequestId()).isEqualTo(LEAVE_REQUEST_ID);
             assertThat(notification.decision()).isEqualTo("REJECTED");
@@ -94,7 +99,7 @@ class StaffNotificationPublisherTest {
     class OnCancelled {
 
         @Test
-        @DisplayName("Should publish StaffNotificationEvent with CANCELLED decision")
+        @DisplayName("Should publish StaffNotificationEvent with CANCELLED decision via DomainEventManager")
         void shouldPublishCancelledNotification() {
             // Arrange
             LeaveRequestCancelledEvent cancelledEvent = new LeaveRequestCancelledEvent(
@@ -105,10 +110,11 @@ class StaffNotificationPublisherTest {
             publisher.onLeaveRequestCancelled(cancelledEvent);
 
             // Assert
-            ArgumentCaptor<StaffNotificationEvent> captor = ArgumentCaptor.forClass(StaffNotificationEvent.class);
-            verify(eventPublisher).publishEvent(captor.capture());
+            @SuppressWarnings("unchecked")
+            ArgumentCaptor<List<Event>> captor = ArgumentCaptor.forClass(List.class);
+            verify(domainEventManager).manageDomainEvents(eq("StaffNotificationPublisher"), captor.capture());
 
-            StaffNotificationEvent notification = captor.getValue();
+            StaffNotificationEvent notification = (StaffNotificationEvent) captor.getValue().get(0);
             assertThat(notification.staffMemberId()).isEqualTo(STAFF_MEMBER_ID);
             assertThat(notification.leaveRequestId()).isEqualTo(LEAVE_REQUEST_ID);
             assertThat(notification.decision()).isEqualTo("CANCELLED");

@@ -1,18 +1,21 @@
 package com.staffs.leavebooking.leavemanagement.application.listeners;
 
+import com.staffs.leavebooking.common.events.DomainEventManager;
+import com.staffs.leavebooking.common.events.Event;
 import com.staffs.leavebooking.common.events.ManagerNotificationEvent;
 import com.staffs.leavebooking.leavemanagement.domain.events.LeaveRequestSubmittedEvent;
 import com.staffs.leavebooking.leavemanagement.infrastructure.entities.LeaveRequestJpa;
 import com.staffs.leavebooking.leavemanagement.infrastructure.repositories.LeaveRequestRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Two-stage notification bridge that converts a <strong>local</strong>
@@ -76,58 +79,48 @@ public class ManagerNotificationPublisher {
     /** Repository used to look up the full LeaveRequest entity for data enrichment (manager ID, dates, reason). */
     private final LeaveRequestRepository leaveRequestRepository;
 
-    /** Spring's in-process event publisher — used to raise the remote ManagerNotificationEvent. */
-    private final ApplicationEventPublisher eventPublisher;
+    /** Domain event manager — persists events to event_store and publishes via Spring (within a transaction). */
+    private final DomainEventManager domainEventManager;
 
     /**
      * Handles a local {@link LeaveRequestSubmittedEvent} by looking up the full leave
      * request details and publishing a remote {@link ManagerNotificationEvent} so the
      * assigned manager is notified about the pending request.
      *
-     * <p><strong>Flow:</strong></p>
-     * <ol>
-     *   <li>Log the incoming event for traceability.</li>
-     *   <li>Query {@link LeaveRequestRepository} to retrieve the full leave request entity
-     *       (needed for the manager ID, start/end dates, and reason — fields not carried
-     *       by the lean local event).</li>
-     *   <li>Construct a {@link ManagerNotificationEvent} with all fields needed by the
-     *       notification consumer (today's date, manager ID, staff ID, request dates,
-     *       number of days, and reason).</li>
-     *   <li>Publish the remote event via {@link ApplicationEventPublisher} — this is
-     *       intercepted by
-     *       {@link com.staffs.leavebooking.common.events.RemoteOutboxListener RemoteOutboxListener}
-     *       and routed to RabbitMQ.</li>
-     *   <li>If the leave request is not found (edge case), the {@code ifPresent} guard
-     *       silently skips the notification — no exception is thrown.</li>
-     * </ol>
+     * <p><strong>Fix (2026-08-31):</strong> Previously published the notification event
+     * directly via {@code ApplicationEventPublisher}, bypassing {@link DomainEventManager}.
+     * This meant the event was never persisted to the event_store and
+     * {@link com.staffs.leavebooking.common.events.RemoteOutboxListener RemoteOutboxListener}
+     * (which uses {@code @TransactionalEventListener(AFTER_COMMIT)}) had no active
+     * transaction to bind to — so the notification was silently dropped. Now routes
+     * through {@link DomainEventManager} within a {@code @Transactional} boundary,
+     * ensuring the event is stored, gets a database ID via {@code withId()}, and
+     * {@code RemoteOutboxListener} has a transaction to hook into.
      *
      * @param event the local domain event carrying the leave request ID, staff member ID,
      *              and number of days; published after the leave request submission is committed
      */
     @Async  // Executes on a separate thread pool so the HTTP response is not blocked
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT) // Only fires after the source transaction commits successfully
+    @Transactional // Opens a new transaction so RemoteOutboxListener's @TransactionalEventListener can bind to it
     public void onLeaveRequestSubmitted(LeaveRequestSubmittedEvent event) {
-        // Log the intent to publish a manager notification for this leave request
         log.info("Publishing manager notification for leave request {} by staff {}",
                 event.leaveRequestId(), event.staffMemberId());
 
-        // Look up the full leave request entity to enrich the notification with manager ID, dates, and reason
-        // The local event is intentionally lean, so we need the repository to get the additional fields
         leaveRequestRepository.findById(event.leaveRequestId()).ifPresent(request -> {
-            // Construct the remote notification event with all the data the manager consumer needs
             ManagerNotificationEvent notification = new ManagerNotificationEvent(
-                    LocalDate.now(),             // The date the notification was generated
-                    request.getManagerId(),      // The manager who needs to be notified about this request
-                    event.staffMemberId(),       // The staff member who submitted the leave request
-                    "Staff Member",              // Simplified — in production would look up the staff member's actual name
-                    event.leaveRequestId(),      // The ID of the leave request (for reference in the notification)
-                    request.getStartDate(),      // The first day of the requested leave period
-                    request.getEndDate(),        // The last day of the requested leave period
-                    event.numberOfDays(),        // Total number of leave days being requested
-                    request.getReason()          // The reason the staff member provided for the leave
+                    LocalDate.now(),
+                    request.getManagerId(),
+                    event.staffMemberId(),
+                    "Staff Member",
+                    event.leaveRequestId(),
+                    request.getStartDate(),
+                    request.getEndDate(),
+                    event.numberOfDays(),
+                    request.getReason()
             );
-            // Publish the remote event — RemoteOutboxListener will intercept this and route it to RabbitMQ
-            eventPublisher.publishEvent(notification);
+            // Route through DomainEventManager — persists to event_store and publishes within this transaction
+            domainEventManager.manageDomainEvents("ManagerNotificationPublisher", List.of(notification));
         });
     }
 }

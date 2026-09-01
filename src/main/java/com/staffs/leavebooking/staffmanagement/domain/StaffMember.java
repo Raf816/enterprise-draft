@@ -62,7 +62,6 @@ public class StaffMember extends AggregateRoot<StaffMember> {
     public static final String EMPLOYMENT_TYPE_REQUIRED = "Employment type is required";
     public static final String EMPLOYMENT_STATUS_REQUIRED = "Employment status is required";
     public static final String CANNOT_REACTIVATE_TERMINATED = "A terminated staff member cannot be reactivated";
-    public static final String ENTITLEMENT_MUST_BE_POSITIVE = "Default leave entitlement must be a positive number";
 
     /** Default annual leave entitlement in days (used when not specified) */
     public static final int DEFAULT_LEAVE_ENTITLEMENT = 25;
@@ -139,21 +138,17 @@ public class StaffMember extends AggregateRoot<StaffMember> {
     public static StaffMember createNew(Identity<StaffMember> id, FullName fullName, Email email,
                                          String department, String lineManagerId, LocalDate hireDate,
                                          String currentRole, LocalDate startDateOfCurrentRole,
-                                         String jobLevel, EmploymentType employmentType,
-                                         int defaultLeaveEntitlement) {
+                                         String jobLevel, EmploymentType employmentType) {
         // Business rule: hire date cannot be in the future
         if (hireDate.isAfter(LocalDate.now())) {
             throw new IllegalArgumentException(HIRE_DATE_IN_FUTURE);
         }
-        // Business rule: leave entitlement must be a positive number
-        if (defaultLeaveEntitlement <= 0) {
-            throw new IllegalArgumentException(ENTITLEMENT_MUST_BE_POSITIVE);
-        }
 
-        // Create with PENDING_SETUP status — admin activates later
+        // All staff start with the default 25-day entitlement.
+        // Admin can amend via PATCH /leave-allowances/{id} after activation.
         return new StaffMember(id, fullName, email, department, lineManagerId,
                 hireDate, currentRole, startDateOfCurrentRole, jobLevel,
-                employmentType, EmploymentStatus.PENDING_SETUP, defaultLeaveEntitlement);
+                employmentType, EmploymentStatus.PENDING_SETUP, DEFAULT_LEAVE_ENTITLEMENT);
     }
 
     /**

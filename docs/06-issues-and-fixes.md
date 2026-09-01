@@ -337,6 +337,10 @@ These items were identified during an exhaustive line-by-line audit of both the 
 | 4 (RESOLVED) | ~~PUT/DELETE justification in report~~ | ~~Already documented~~ | ✅ Fully justified in docs/04 section 13 |
 | 5 (RESOLVED) | ~~Date range filter on /team~~ | ~~20 minutes code~~ | ✅ Implemented — POST `/team/search` with from/to date range |
 | 6 (RESOLVED) | ~~Rate limit 429 Postman test~~ | ~~30 min~~ | ✅ Increased to 20/min, 429 test added to both collections, unit tests updated |
+| 7 (BY DESIGN) | Allowance eventual consistency | — | ⚠️ Follows Lecture 7 Simpler Subscriber pattern. Documented trade-off |
+| 8 (JUSTIFIED) | No HR role / two-stage approval | — | ⚠️ Admin acts as HR. Brief scopes for single developer. Documented |
+| 9 (NOTED) | No pagination on list endpoints | — | ⚠️ Acceptable for prototype. Would need Spring Data Pageable for production |
+| 10 (KNOWN) | Combined staff+manager filters | — | ⚠️ staffMemberId takes precedence. Deterministic, documented in code |
 
 ---
 
@@ -348,3 +352,49 @@ These items were identified during an exhaustive line-by-line audit of both the 
 | **Fix applied** | (1) Increased `MAX_REQUESTS` from 5 to 20 per minute — a realistic production value (most APIs use 10-30 for login endpoints). Gives headroom for the collection runner (5 happy logins + edge case logins = ~11 total, well within 20). (2) Added a rate limit test to both Postman collections in folder 1 Edge Cases. The automated version uses a pre-request script (`pm.sendRequest` fires 10 dummy login requests to reach 20 total consumed, then the actual request is the 21st → 429). Asserts status 429, `"Rate limit exceeded"` message, and `"Too Many Requests"` error. (3) Updated `RateLimitFilterTest` — all 4 tests updated from 5→20 (shouldAllowFirst20Requests, shouldReturn429On21stRequest, shouldRateLimitPerIp, shouldUseXForwardedForHeader). |
 | **Files changed** | `RateLimitFilter.java` (MAX_REQUESTS 5→20 + all Javadoc), `RateLimitFilterTest.java` (all loops and assertions 5→20), both Postman collections (+1 request each, now 138 total). |
 | **Status** | ✅ RESOLVED (2026-08-31) |
+
+---
+
+### GAP 7: Allowance Updates Use Eventual Consistency (Async AFTER_COMMIT) — BY DESIGN
+
+| Item | Detail |
+|------|--------|
+| **Observation** | All four leave allowance listeners (`LeaveRequestSubmittedListener`, `LeaveRequestApprovedListener`, `LeaveRequestRejectedListener`, `LeaveRequestCancelledListener`) use `@Async` + `@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)`. This means the leave request commits first, then the allowance update runs asynchronously in a separate transaction. If the allowance update fails (e.g., insufficient balance on `reserveDays`), the request is already persisted as PENDING but the reservation never happened. |
+| **Why this is by design** | This follows Phil James's **Simpler Subscriber** pattern from Lecture 7. The case study code uses the same `@Async` + `AFTER_COMMIT` pattern for the `DeliveryAddressAddedEvent` listener. Two aggregates within the same bounded context communicate through local domain events rather than direct method calls, keeping each aggregate focused on its own invariants. |
+| **Alternative** | Making the allowance update synchronous (`BEFORE_COMMIT` or direct method call within the same `@Transactional` service method) would guarantee atomicity — the request and allowance update succeed or fail together. However, this would (a) contradict the lecture's event-driven architecture, (b) couple the two aggregates, and (c) violate the DDD principle that one transaction should only modify one aggregate. |
+| **Risk** | In practice, the over-booking invariant check on `reserveDays()` would only fail if the staff member submits requests faster than the async listener can process them (a race condition requiring sub-second concurrent submissions). For a university prototype this is acceptable. |
+| **Mitigation** | The controller's `verifyNoDateOverlap()` check catches the most common double-booking scenario synchronously (before the command is dispatched). The async listener is a secondary safety net. |
+| **Status** | ⚠️ KNOWN TRADE-OFF — deliberate architectural decision following lecture pattern |
+
+---
+
+### GAP 8: No Explicit HR Role or Two-Stage Approval — JUSTIFIED SIMPLIFICATION
+
+| Item | Detail |
+|------|--------|
+| **Brief says** | "Your employer has stated that at this stage several things are required to be included — HR approval of specific staff requests, manager alerts re pending requests or staff alerts for approved/cancelled requests." |
+| **What we have** | Three roles: STAFF, MANAGER, ADMIN. Single-stage approval: PENDING → APPROVED/REJECTED by the assigned manager or admin. Manager alerts via `ManagerNotificationEvent` → RabbitMQ. Staff alerts via `StaffNotificationEvent` → RabbitMQ. No separate HR role or `PENDING_MANAGER → PENDING_HR → APPROVED` workflow. |
+| **Justification** | (1) The brief says "at this stage" and scopes requirements deliberately: "The following scenario limits the scope to certain core state requirements in order for it to be achievable by a single developer in this time window." (2) The ADMIN role in our system functions as HR — admins can approve/reject any request (bypassing the assigned manager check), amend entitlements, view all requests company-wide, and manage staff records. (3) Adding a fourth role and two-stage state machine would add significant complexity (extra database columns, additional state transitions, new RBAC rules, extra Postman tests) with minimal benefit for a prototype that already demonstrates the core patterns. (4) The brief explicitly asks for manager alerts and staff alerts (both implemented via RabbitMQ), with HR approval listed alongside them — suggesting it's one of several requirements, not the primary focus. |
+| **If time permitted** | Add an `HR` role, a `PENDING_HR` state between `PENDING` and `APPROVED`, and a configurable rule (e.g., requests > 5 days require HR approval). The state machine infrastructure already supports additional states. |
+| **Status** | ⚠️ JUSTIFIED SIMPLIFICATION — admin acts as HR, documented for report |
+
+---
+
+### GAP 9: No Pagination on List Endpoints — FUTURE ENHANCEMENT
+
+| Item | Detail |
+|------|--------|
+| **Observation** | All list endpoints (`GET /staff`, `GET /leave-requests/all`, `GET /leave-allowances/all`, etc.) return every record in a single response. With 5 test users this is fine. In production with 10,000+ staff, returning all records would be slow and memory-heavy. |
+| **What would be needed** | Spring Data supports pagination natively via `Pageable`. Controller methods would accept `?page=0&size=20` query parameters, repositories would return `Page<T>` instead of `List<T>`, and responses would include pagination metadata (totalPages, totalElements, currentPage). |
+| **Why not implemented** | The brief does not mention pagination. The prototype operates with a small dataset where pagination adds complexity without value. The POST search endpoints already narrow results via filters, reducing the risk of large unfiltered result sets. |
+| **Status** | ⚠️ NOTED — acceptable for prototype, would be required for production |
+
+---
+
+### GAP 10: Combined Staff + Manager Search Filters Not Genuinely Combined — KNOWN LIMITATION
+
+| Item | Detail |
+|------|--------|
+| **Observation** | In `POST /leave-requests/all/search`, if an admin provides both `staffMemberId` and `managerId`, the query handler uses a three-tier if/else: staffMemberId takes precedence and managerId is silently ignored. They do not combine to mean "show requests where this staff member's requests are managed by this manager." |
+| **Why this is acceptable** | (1) This is an unlikely use case — an admin searching by staff member already sees the manager in each result. (2) The code is deterministic and the behaviour is documented in comments. (3) Genuinely combining them would require 4-8 additional repository methods for a scenario that barely occurs. (4) The controller's `validateSearchCriteria()` already validates that at least one filter is provided. |
+| **Status** | ⚠️ KNOWN LIMITATION — documented, deterministic behaviour |

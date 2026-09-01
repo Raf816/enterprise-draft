@@ -172,8 +172,7 @@ class StaffControllerTest {
                         "currentRole": "Software Engineer",
                         "startDateOfCurrentRole": "2022-06-01",
                         "jobLevel": "L4",
-                        "employmentType": "FULL_TIME",
-                        "defaultLeaveEntitlement": 25
+                        "employmentType": "FULL_TIME"
                     }
                     """;
 

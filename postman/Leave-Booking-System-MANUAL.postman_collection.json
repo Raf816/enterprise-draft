@@ -356,6 +356,10 @@
               "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"managerId\":\"non-existent-manager-id\",\"startDate\":\"2027-01-10\",\"endDate\":\"2027-01-12\",\"leaveType\":\"ANNUAL\"}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
             },
             {
+              "name": "Submit: wrong lineManager (400) — use a valid UID who isn't your manager",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"managerId\": \"PASTE_MANAGER2_UID\",\n  \"startDate\": \"2027-04-01\",\n  \"endDate\": \"2027-04-03\",\n  \"leaveType\": \"ANNUAL\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
+            },
+            {
               "name": "Submit: date overlap with existing PENDING (409)",
               "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"startDate\":\"2026-10-03\",\"endDate\":\"2026-10-07\",\"leaveType\":\"ANNUAL\"}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
             },

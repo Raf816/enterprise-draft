@@ -215,7 +215,7 @@ class LeaveRequestQueryHandlerTest {
             // Arrange
             LocalDate from = LocalDate.of(2026, 9, 1);
             LocalDate to = LocalDate.of(2026, 9, 30);
-            when(leaveRequestRepository.findByManagerIdAndStartDateBetween("mgr-1", from, to))
+            when(leaveRequestRepository.findByManagerIdAndDateOverlap("mgr-1", from, to))
                     .thenReturn(List.of(createJpa("req-1", "staff-1", "mgr-1")));
 
             var criteria = new LeaveRequestSearchCriteria(null, null, null, from, to);
@@ -233,7 +233,7 @@ class LeaveRequestQueryHandlerTest {
             // Arrange
             LocalDate from = LocalDate.of(2026, 9, 1);
             LocalDate to = LocalDate.of(2026, 12, 31);
-            when(leaveRequestRepository.findByManagerIdAndStatusAndStartDateBetween("mgr-1", "PENDING", from, to))
+            when(leaveRequestRepository.findByManagerIdAndStatusAndDateOverlap("mgr-1", "PENDING", from, to))
                     .thenReturn(List.of(createJpa("req-1", "staff-1", "mgr-1")));
 
             var criteria = new LeaveRequestSearchCriteria("pending", null, null, from, to);
@@ -324,7 +324,7 @@ class LeaveRequestQueryHandlerTest {
             // Arrange
             LocalDate from = LocalDate.of(2026, 1, 1);
             LocalDate to = LocalDate.of(2026, 6, 30);
-            when(leaveRequestRepository.findByStartDateBetween(from, to))
+            when(leaveRequestRepository.findByDateOverlap(from, to))
                     .thenReturn(List.of(createJpa("req-1", "staff-1", "mgr-1")));
 
             var criteria = new LeaveRequestSearchCriteria(null, null, null, from, to);
