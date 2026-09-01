@@ -96,7 +96,7 @@ public class LeaveRequestApplicationService {
         LeaveRequest leaveRequest = LeaveRequest.submitNew(
                 newId,                                          // Generated UUID wrapped in Identity
                 command.staffMemberId(),                        // Who is requesting leave (from JWT)
-                command.managerId(),                            // Who will approve/reject (from request body)
+                command.managerId(),                            // Who will approve/reject (resolved from staff record)
                 parseLeaveType(command.leaveType()),            // Parse string to LeaveType enum
                 new DateRange(command.startDate(), command.endDate()), // Value object for the date range
                 command.reason()                                // Optional reason for the request

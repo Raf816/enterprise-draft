@@ -528,6 +528,10 @@
               "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"status\":\"PENDING\"}"},"url":{"raw":"http://localhost:8900/leave-requests/team/search","host":["http://localhost:8900"],"path":["leave-requests","team","search"]}}
             },
             {
+              "name": "POST /team/search: managerId filter rejected (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"status\": \"PENDING\",\n  \"managerId\": \"PASTE_MANAGER2_UID\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests/team/search","host":["http://localhost:8900"],"path":["leave-requests","team","search"]}}
+            },
+            {
               "name": "POST /team/search: only 'from' no 'to' (400)",
               "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_MANAGER1_TOKEN"}],"body":{"mode":"raw","raw":"{\"from\":\"2026-10-01\"}"},"url":{"raw":"http://localhost:8900/leave-requests/team/search","host":["http://localhost:8900"],"path":["leave-requests","team","search"]}}
             },

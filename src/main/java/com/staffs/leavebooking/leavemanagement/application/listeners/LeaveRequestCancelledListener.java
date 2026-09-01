@@ -17,7 +17,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
  * <p>This class implements the <strong>Simpler Subscriber</strong> pattern from Lecture 7.
  * When a leave request is cancelled, the LeaveRequest aggregate publishes a
  * {@link LeaveRequestCancelledEvent} as a local domain event. This listener reacts
- * asynchronously, returning the days to the staff member's allowance. The key complexity
+ * synchronously (BEFORE_COMMIT), returning the days to the staff member's allowance. The key complexity
  * here is that a cancellation can apply to either an <em>approved</em> or a <em>pending</em>
  * request, and the allowance adjustment differs for each case:</p>
  * <ul>

@@ -219,7 +219,7 @@ public class LeaveRequestController {
      * POST /leave-requests/all/search — Admin: search all requests company-wide with optional filters.
      *
      * <p><strong>Supported filters:</strong> {@code status}, {@code staffMemberId}, {@code managerId},
-     * {@code from}, {@code to} — all optional, any combination.
+     * {@code from}, {@code to} — all optional. staffMemberId and managerId are mutually exclusive.
      *
      * <p>This satisfies the brief requirement: "View all outstanding leave requests
      * filtered by staff member, manager's team or across the company."
@@ -233,7 +233,7 @@ public class LeaveRequestController {
      * {"staffMemberId": "abc-123", "status": "APPROVED", "from": "2026-09-01", "to": "2026-09-30"}
      * </pre>
      *
-     * @param criteria the search criteria JSON body with any combination of optional filters
+     * @param criteria the search criteria JSON body with optional filters (staffMemberId and managerId are mutually exclusive)
      * @return list of matching leave requests as DTOs
      * @throws ResponseStatusException 400 if no filters are provided
      * @see LeaveManagementFacade#searchAllRequests(LeaveRequestSearchCriteria)
@@ -714,10 +714,10 @@ public class LeaveRequestController {
      * Calculates working days from the date range and compares to the allowance's availableDays
      * (totalEntitlement - daysUsed - daysPending).
      *
-     * <p><strong>Why synchronous:</strong> The async event listener also enforces this invariant,
-     * but it runs after the transaction commits. This synchronous check catches insufficient
-     * balance BEFORE the leave request is persisted, preventing orphaned PENDING requests
-     * that could never have their allowance reserved.
+     * <p><strong>Why synchronous:</strong> The BEFORE_COMMIT event listener also enforces
+     * this invariant atomically within the same transaction. This synchronous controller
+     * check catches insufficient balance early and provides a cleaner 400 error message
+     * rather than letting the BEFORE_COMMIT listener cause a transaction rollback.
      *
      * @param staffMemberId the staff member submitting the request
      * @param startDate the requested start date

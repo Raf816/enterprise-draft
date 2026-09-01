@@ -17,9 +17,9 @@ import org.springframework.transaction.event.TransactionalEventListener;
  * <p>This class implements the <strong>Simpler Subscriber</strong> pattern from Lecture 7.
  * Rather than coupling the LeaveRequest aggregate directly to the LeaveAllowance aggregate,
  * the LeaveRequest publishes a {@link LeaveRequestSubmittedEvent} as a local domain event,
- * and this listener reacts asynchronously to update the LeaveAllowance in a separate
- * transaction. This preserves the single-responsibility of each aggregate and keeps
- * the write model cohesive within the Leave Management bounded context.</p>
+ * and this listener reacts synchronously (BEFORE_COMMIT) to update the LeaveAllowance
+ * within the same transaction. This preserves the single-responsibility of each aggregate
+ * while guaranteeing atomic consistency between the leave request and allowance.</p>
  *
  * <h3>How It Fits</h3>
  * <ul>
@@ -69,7 +69,7 @@ public class LeaveRequestSubmittedListener {
      * </ol>
      *
      * @param event the local domain event carrying the staff member's ID and the number of
-     *              leave days to reserve; published after the leave request entity is committed
+     *              leave days to reserve; published within the producing transaction before commit
      */
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT) // Fires WITHIN the source transaction — rollback on failure
     public void handle(LeaveRequestSubmittedEvent event) {

@@ -1132,9 +1132,9 @@ Controller -> Facade : findRequestById(id)
 Facade --> Controller : LeaveRequestDTO
 Controller --> Client : 201 Created\n{id, staffMemberId, status:"PENDING",\nstartDate, endDate, ...}
 
-== After Commit (Asynchronous) ==
+== Before Commit (Synchronous — same transaction) ==
 
-Listener <- DEM : @TransactionalEventListener\n(AFTER_COMMIT)\nLeaveRequestSubmittedEvent
+Listener <- DEM : @TransactionalEventListener\n(BEFORE_COMMIT)\nLeaveRequestSubmittedEvent
 Listener -> LAAS : reserveDays(staffMemberId,\nnumberOfDays)
 LAAS -> LA : reserveDays(days)
 note right of LA : Enforces invariant:\ndaysUsed + daysPending + days\n<= totalEntitlement

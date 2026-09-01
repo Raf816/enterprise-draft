@@ -17,7 +17,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
  * <p>This class implements the <strong>Simpler Subscriber</strong> pattern from Lecture 7.
  * When a manager approves a leave request, the LeaveRequest aggregate publishes a
  * {@link LeaveRequestApprovedEvent} as a local domain event. This listener reacts
- * asynchronously, moving the requested days from the {@code daysPending} bucket into the
+ * synchronously (BEFORE_COMMIT), moving the requested days from the {@code daysPending} bucket into the
  * {@code daysUsed} bucket on the staff member's LeaveAllowance. This decouples the
  * approval workflow from the allowance-tracking aggregate, keeping each aggregate
  * focused on its own invariants within the Leave Management bounded context.</p>

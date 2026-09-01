@@ -229,9 +229,9 @@ docker rm -f leave-rabbitmq
 
 | Item | Detail |
 |------|--------|
-| **Observation** | Event listeners annotated with @TransactionalEventListener(AFTER_COMMIT) + @Async never fire during @DataJpaTest |
-| **Cause** | @DataJpaTest wraps each test in a transaction that rolls back (never commits). AFTER_COMMIT listeners only fire after commit. |
-| **Resolution** | Test the allowance update logic by calling LeaveAllowanceApplicationService directly (reserveDays, confirmDays, etc.) which is exactly what the listeners do. This proves the service logic is correct without needing the event wiring. |
+| **Observation** | Allowance listeners now use `@TransactionalEventListener(BEFORE_COMMIT)` and fire synchronously within the test transaction. The `AtomicAllowanceConsistencyIntegrationTest` class uses `@Transactional(propagation = NOT_SUPPORTED)` with `TransactionTemplate` to prove real commit/rollback behaviour. |
+| **Cause** | Standard `@DataJpaTest` wraps each test in a transaction that rolls back. BEFORE_COMMIT listeners fire within that transaction, so allowance updates are visible during the test. For atomic consistency proof, the separate test class disables the automatic test transaction. |
+| **Resolution** | Existing tests call services directly. New `AtomicAllowanceConsistencyIntegrationTest` imports real `LeaveRequestSubmittedListener` and proves atomic commit/rollback with independent transactions. |
 | **Status** | BY DESIGN (not a bug) |
 
 ### 8.3 ObjectMapper bean missing in @DataJpaTest
@@ -363,7 +363,7 @@ These items were identified during an exhaustive line-by-line audit of both the 
 | **Fix applied** | Changed all four listeners (`LeaveRequestSubmittedListener`, `LeaveRequestApprovedListener`, `LeaveRequestRejectedListener`, `LeaveRequestCancelledListener`) from `@Async` + `AFTER_COMMIT` to synchronous `@TransactionalEventListener(BEFORE_COMMIT)`. Removed `@Async`. The allowance update now fires within the same transaction as the leave request save. If the allowance check fails, the entire transaction rolls back — no orphaned PENDING request. |
 | **Architecture** | The design now follows a clean separation: internal business invariants (allowance consistency) are atomic via `BEFORE_COMMIT`, while external notifications (manager/staff alerts via RabbitMQ) remain asynchronous via `@Async` + `AFTER_COMMIT` + `@Transactional`. This ensures no notification is sent for a failed operation. |
 | **Supplementary check** | The controller's `verifyAllowanceSufficiency()` remains as a supplementary early validation that provides a cleaner 400 error message. The `BEFORE_COMMIT` listener is the real consistency guarantee. |
-| **Integration test** | New `AtomicAllowanceConsistency` nested class in `LeaveRequestIntegrationTest` with `TransactionTemplate`: (1) successful submit commits request + reserves daysPending atomically; (2) insufficient allowance rolls back — no request persisted, allowance unchanged. |
+| **Integration test** | Separate `AtomicAllowanceConsistencyIntegrationTest` class with `@Transactional(propagation = NOT_SUPPORTED)` and `TransactionTemplate`: (1) successful submit commits request + reserves daysPending atomically; (2) insufficient allowance throws `IllegalStateException` → transaction rolls back → no request persisted, allowance unchanged. |
 | **Status** | ✅ RESOLVED (2026-08-31) |
 
 ---

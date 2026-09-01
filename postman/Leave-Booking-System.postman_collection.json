@@ -642,6 +642,11 @@
               "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],"body":{"mode":"raw","raw":"{\"status\":\"PENDING\"}"},"url":{"raw":"{{base_url}}/leave-requests/team/search","host":["{{base_url}}"],"path":["leave-requests","team","search"]}}
             },
             {
+              "name": "POST /team/search: managerId filter rejected (400)",
+              "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","pm.test('not accepted msg', function(){ pm.expect(pm.response.json().message).to.include('not accepted'); });"]}}],
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_manager1_token}}"}],"body":{"mode":"raw","raw":"{\"status\":\"PENDING\",\"managerId\":\"{{manager2_uid}}\"}"},"url":{"raw":"{{base_url}}/leave-requests/team/search","host":["{{base_url}}"],"path":["leave-requests","team","search"]}}
+            },
+            {
               "name": "POST /team/search: only 'from' no 'to' (400)",
               "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","pm.test('both dates', function(){ pm.expect(pm.response.json().message).to.include('Both'); });"]}}],
               "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_manager1_token}}"}],"body":{"mode":"raw","raw":"{\"from\":\"2026-10-01\"}"},"url":{"raw":"{{base_url}}/leave-requests/team/search","host":["{{base_url}}"],"path":["leave-requests","team","search"]}}

@@ -277,6 +277,19 @@ class LeaveRequestControllerTest {
                             .content(objectMapper.writeValueAsString(criteria)))
                     .andExpect(status().isBadRequest());
         }
+
+        @Test
+        @DisplayName("Should return 400 when managerId filter is provided")
+        @WithMockUser(username = "mgr-1")
+        void shouldRejectManagerIdFilter() throws Exception {
+            var criteria = new LeaveRequestSearchCriteria("PENDING", null, "mgr-2", null, null);
+
+            mockMvc.perform(post("/leave-requests/team/search")
+                            .with(csrf())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(criteria)))
+                    .andExpect(status().isBadRequest());
+        }
     }
 
     @Nested
@@ -481,6 +494,34 @@ class LeaveRequestControllerTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(body)))
                     .andExpect(status().isForbidden());
+
+            verify(facade, never()).submitLeaveRequest(any());
+        }
+
+        @Test
+        @DisplayName("Should return 400 when staff has no line manager assigned")
+        @WithMockUser(username = "no-mgr-user")
+        void shouldReturn400WhenNoLineManager() throws Exception {
+            // Arrange — staff is ACTIVE but has no lineManagerId
+            when(staffFacade.findStaffMemberByIdInternal("no-mgr-user"))
+                    .thenReturn(new com.staffs.leavebooking.staffmanagement.application.dto.StaffMemberDTO(
+                            "no-mgr-user", "Test", "User", "test@test.com",
+                            "Engineering", null, LocalDate.of(2022, 6, 1),
+                            "Developer", LocalDate.of(2022, 6, 1),
+                            "L4", "FULL_TIME", "ACTIVE"));
+            var body = new SubmitLeaveRequestBody(
+                    LocalDate.now().plusDays(7),
+                    LocalDate.now().plusDays(11),
+                    "ANNUAL",
+                    "Holiday"
+            );
+
+            // Act & Assert
+            mockMvc.perform(post("/leave-requests")
+                            .with(csrf())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(body)))
+                    .andExpect(status().isBadRequest());
 
             verify(facade, never()).submitLeaveRequest(any());
         }

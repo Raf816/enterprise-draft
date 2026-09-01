@@ -181,7 +181,7 @@ class LeaveRequestIntegrationTest { ... }
 
 ### 3.4 Event Listener Consideration
 
-The local event listeners use `@TransactionalEventListener(AFTER_COMMIT)` + `@Async`. In `@DataJpaTest`, the test transaction never commits (it rolls back), so these listeners never fire. Instead we:
+The local allowance event listeners use `@TransactionalEventListener(BEFORE_COMMIT)` (synchronous, same transaction). In `@DataJpaTest`, the listeners fire within the test transaction, so allowance updates are visible during assertions. For atomic consistency proof, `AtomicAllowanceConsistencyIntegrationTest` uses `@Transactional(propagation = NOT_SUPPORTED)` with `TransactionTemplate` to create real independent transactions that commit or roll back naturally. We also:
 1. Test the **service methods** that listeners call (reserveDays, etc.) — proves the logic
 2. Test the **listeners themselves** with Mockito — proves correct delegation
 3. Together: complete proof that the event flow works
@@ -221,7 +221,7 @@ pm.globals.set("jwt_admin_token", response.accessToken);
 | @WebMvcTest for controllers | LeaveRequestController, LeaveAllowanceController, StaffController, and AuthController are tested with @WebMvcTest + MockMvc + @WithMockUser. Tests verify HTTP mapping, status codes, JSON structure, and facade delegation. Postman collections will add end-to-end coverage with real JWT tokens. |
 | Mockito for handlers/services | Isolates the class under test. Proves coordination logic without needing a database. |
 | @DataJpaTest for integration | Proves the full service→domain→persistence pipeline works with real SQL without loading Firebase/RabbitMQ. |
-| Test listeners separately (not via events) | @TransactionalEventListener(AFTER_COMMIT) won't fire in test transactions. Direct invocation proves the delegation. |
+| Test listeners separately (not via events) | Allowance listeners are BEFORE_COMMIT (synchronous). Unit tests prove delegation. Integration test proves atomic commit/rollback. |
 | Object Mother over Test Data Builder | Simpler for our use case. Mother methods create valid objects; tests only override what they're testing. |
 
 ---

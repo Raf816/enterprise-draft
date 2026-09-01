@@ -246,12 +246,13 @@ public class LeaveManagementFacade {
      * Searches all leave requests company-wide with optional filters (admin only).
      *
      * <p><strong>Supported filters:</strong> {@code status}, {@code staffMemberId},
-     * {@code managerId}, {@code from}, {@code to} — all optional, any combination.
+     * {@code managerId}, {@code from}, {@code to} — all optional. staffMemberId and
+     * managerId are mutually exclusive (controller rejects when both provided).
      * This single method replaces the need for separate filter endpoints and satisfies
      * the brief requirement: "View all outstanding leave requests filtered by staff member,
      * manager's team or across the company."
      *
-     * @param criteria the search criteria containing any combination of optional filters
+     * @param criteria the search criteria (staffMemberId and managerId are mutually exclusive)
      * @return list of matching leave requests as DTOs
      * @see LeaveRequestQueryHandler#searchAll(LeaveRequestSearchCriteria)
      * @see LeaveRequestSearchCriteria

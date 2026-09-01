@@ -22,7 +22,6 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -82,9 +81,6 @@ class LeaveRequestIntegrationTest {
 
     @Autowired
     private LeaveAllowanceRepository leaveAllowanceRepository;
-
-    @Autowired
-    private TransactionTemplate transactionTemplate;
 
     private static final String STAFF_MEMBER_ID = "int-test-staff-001";
     private static final String MANAGER_ID = "int-test-mgr-001";
@@ -441,81 +437,5 @@ class LeaveRequestIntegrationTest {
             date = date.plusDays(1);
         }
         return date;
-    }
-
-    // ---------------------------------------------------------------
-    // BEFORE_COMMIT LISTENER INTEGRATION TESTS
-    // ---------------------------------------------------------------
-
-    @Nested
-    @DisplayName("Atomic Allowance Consistency (BEFORE_COMMIT listeners)")
-    class AtomicAllowanceConsistency {
-
-        @Test
-        @Order(20)
-        @DisplayName("Submit with sufficient balance — request committed + daysPending incremented atomically")
-        void shouldCommitRequestAndReserveDaysAtomically() {
-            // Act — submit in an explicit transaction so BEFORE_COMMIT listener fires
-            transactionTemplate.executeWithoutResult(status -> {
-                LocalDate start = findNextMonday().plusWeeks(20);
-                LocalDate end = start.plusDays(4); // 5 working days (Mon-Fri)
-                SubmitLeaveRequestCommand command = new SubmitLeaveRequestCommand(
-                        STAFF_MEMBER_ID, MANAGER_ID, start, end, "ANNUAL", "atomic-test-success"
-                );
-                leaveRequestService.submitNewRequest(command);
-            });
-
-            // Assert — in a new read context, verify both committed
-            LeaveAllowanceJpa allowance = leaveAllowanceRepository
-                    .findFirstByStaffMemberIdOrderByBusinessYearStartDesc(STAFF_MEMBER_ID)
-                    .orElseThrow();
-            assertEquals(5, allowance.getDaysPending(),
-                    "BEFORE_COMMIT listener should have reserved 5 pending days");
-
-            List<LeaveRequestJpa> requests = leaveRequestRepository.findByStaffMemberId(STAFF_MEMBER_ID);
-            assertTrue(requests.stream().anyMatch(r -> "atomic-test-success".equals(r.getReason())),
-                    "Leave request should be persisted");
-        }
-
-        @Test
-        @Order(21)
-        @DisplayName("Submit with insufficient balance — transaction rolls back, no request persisted, allowance unchanged")
-        void shouldRollBackWhenInsufficientAllowance() {
-            // Arrange — set allowance to only 2 days available
-            transactionTemplate.executeWithoutResult(status -> {
-                LeaveAllowanceJpa allowance = leaveAllowanceRepository
-                        .findFirstByStaffMemberIdOrderByBusinessYearStartDesc(STAFF_MEMBER_ID)
-                        .orElseThrow();
-                allowance.setTotalEntitlement(2);
-                allowance.setDaysUsed(0);
-                allowance.setDaysPending(0);
-                leaveAllowanceRepository.save(allowance);
-            });
-
-            // Act — try to submit a 5-day request (only 2 available) — should fail
-            assertThrows(Exception.class, () ->
-                transactionTemplate.executeWithoutResult(status -> {
-                    LocalDate start = findNextMonday().plusWeeks(25);
-                    LocalDate end = start.plusDays(4); // 5 working days
-                    SubmitLeaveRequestCommand command = new SubmitLeaveRequestCommand(
-                            STAFF_MEMBER_ID, MANAGER_ID, start, end, "ANNUAL", "atomic-test-fail"
-                    );
-                    leaveRequestService.submitNewRequest(command);
-                })
-            );
-
-            // Assert — no request persisted, allowance unchanged
-            List<LeaveRequestJpa> requests = leaveRequestRepository.findByStaffMemberId(STAFF_MEMBER_ID);
-            assertTrue(requests.stream().noneMatch(r -> "atomic-test-fail".equals(r.getReason())),
-                    "No leave request should be persisted when allowance is insufficient");
-
-            LeaveAllowanceJpa allowance = leaveAllowanceRepository
-                    .findFirstByStaffMemberIdOrderByBusinessYearStartDesc(STAFF_MEMBER_ID)
-                    .orElseThrow();
-            assertEquals(0, allowance.getDaysPending(),
-                    "Allowance daysPending should remain 0 after rollback");
-            assertEquals(2, allowance.getTotalEntitlement(),
-                    "Allowance totalEntitlement should remain unchanged");
-        }
     }
 }

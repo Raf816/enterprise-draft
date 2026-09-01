@@ -116,6 +116,18 @@ class DateOverlapQueryIntegrationTest {
 
             assertThat(results).hasSize(4);
         }
+
+        @Test
+        @DisplayName("Should filter by manager + status + date overlap")
+        void shouldFindByManagerAndStatusAndOverlap() {
+            // APPROVED + overlapping for this manager = span-start + span-all = 2
+            List<LeaveRequestJpa> results = repository.findByManagerIdAndStatusAndDateOverlap(
+                    MANAGER_ID, "APPROVED", SEARCH_FROM, SEARCH_TO);
+
+            assertThat(results).hasSize(2);
+            assertThat(results).extracting(LeaveRequestJpa::getId)
+                    .containsExactlyInAnyOrder("span-start", "span-all");
+        }
     }
 
     @Nested

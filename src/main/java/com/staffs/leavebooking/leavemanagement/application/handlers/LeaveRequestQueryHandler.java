@@ -233,13 +233,13 @@ public class LeaveRequestQueryHandler {
      * Searches all requests company-wide with optional filters (admin only).
      *
      * <p>Used by POST /leave-requests/all/search. Supports filtering by staffMemberId,
-     * managerId, status, and date range in any combination.
+     * managerId, status, and date range. staffMemberId and managerId are mutually exclusive.
      *
      * <p><strong>Filter routing:</strong> staffMemberId and managerId are mutually exclusive
      * (the controller rejects requests with both). The handler routes to the appropriate
      * query tier based on which filter is present:
      *
-     * <p><strong>Two-tier routing:</strong>
+     * <p><strong>Three-tier routing:</strong>
      * <ol>
      *   <li>If staffMemberId is set → routes to staff-member-scoped queries</li>
      *   <li>Else if managerId is set → routes to manager-scoped queries</li>
@@ -247,7 +247,7 @@ public class LeaveRequestQueryHandler {
      * </ol>
      * Within each tier, further routing happens based on status and date range filters.
      *
-     * @param criteria the search criteria containing any combination of optional filters
+     * @param criteria the search criteria (staffMemberId and managerId mutually exclusive, validated by controller)
      * @return list of matching leave requests as DTOs
      * @see LeaveRequestSearchCriteria for the full set of available filters
      */
