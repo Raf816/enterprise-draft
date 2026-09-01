@@ -4,7 +4,6 @@ import com.staffs.leavebooking.leavemanagement.application.handlers.LeaveAllowan
 import com.staffs.leavebooking.leavemanagement.domain.events.LeaveRequestSubmittedEvent;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -35,11 +34,11 @@ import org.springframework.transaction.event.TransactionalEventListener;
  * </ul>
  *
  * <h3>Transaction Safety</h3>
- * <p>{@code @TransactionalEventListener(AFTER_COMMIT)} ensures this listener only fires
- * after the leave-request submission transaction has successfully committed. If the
- * submission rolls back (e.g. validation failure), this method is never invoked.
- * {@code @Async} offloads execution to a separate thread so the original HTTP response
- * is not blocked by the allowance update.</p>
+ * <p>{@code @TransactionalEventListener(BEFORE_COMMIT)} ensures this listener fires
+ * within the same transaction as the leave request submission. If the allowance
+ * reservation fails (e.g., insufficient balance), the entire transaction rolls back —
+ * the leave request is never persisted as PENDING. This guarantees atomic consistency
+ * between the leave request and allowance aggregates.</p>
  *
  * @see LeaveRequestSubmittedEvent
  * @see LeaveAllowanceApplicationService#reserveDays(String, int)
@@ -72,8 +71,7 @@ public class LeaveRequestSubmittedListener {
      * @param event the local domain event carrying the staff member's ID and the number of
      *              leave days to reserve; published after the leave request entity is committed
      */
-    @Async  // Executes on a separate thread pool so the HTTP response is not blocked
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT) // Only fires after the source transaction commits successfully
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT) // Fires WITHIN the source transaction — rollback on failure
     public void handle(LeaveRequestSubmittedEvent event) {
         // Log the incoming event for operational traceability and debugging
         log.info("LeaveRequestSubmittedEvent received — reserving {} days for staff {}",

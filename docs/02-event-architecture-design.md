@@ -12,7 +12,7 @@ The system uses two categories of domain events, following the patterns from Lec
 
 | Category | Scope | Mechanism | Transaction Boundary | Pattern (Lecture 7, p.10) |
 |---|---|---|---|---|
-| **Local Events** | Within a single bounded context (Leave Management) | Spring `ApplicationEventPublisher` + `@TransactionalEventListener(AFTER_COMMIT)` | Same DB, committed before listener fires | **Store-and-Forward (Simpler Subscriber)** |
+| **Local Events** | Within a single bounded context (Leave Management) | Spring `ApplicationEventPublisher` + `@TransactionalEventListener(BEFORE_COMMIT)` | Same DB, same transaction — atomic with producer | **Store-and-Forward (Simpler Subscriber)** |
 | **Remote Events** | Cross-context (Staff Management → Leave Management) | RabbitMQ via `RabbitTemplate.convertAndSend` + `@RabbitListener` | Separate transactions, eventual consistency | **Remote Subscriber + Outbox** |
 
 Phil's Lecture 7 defines three event dispatch patterns (Vaughn Vernon):
@@ -512,19 +512,20 @@ All local event listeners use the same pattern from Lecture 7:
  * <p><strong>Lecture 7 annotations explained:</strong>
  * <ul>
  *   <li>{@code @Component} — registered as a Spring bean</li>
- *   <li>{@code @Async} — executes on a separate thread (non-blocking)</li>
- *   <li>{@code @TransactionalEventListener(phase = AFTER_COMMIT)} — fires ONLY
- *       after the producing transaction commits. If the LeaveRequest save fails,
- *       no event is dispatched — preventing inconsistency.</li>
+ *   <li>{@code @TransactionalEventListener(phase = BEFORE_COMMIT)} — fires WITHIN
+ *       the producing transaction. If the allowance update fails, the entire
+ *       transaction (including the leave request save) rolls back — atomic consistency.</li>
  * </ul>
  *
- * <p><strong>Why AFTER_COMMIT (not BEFORE_COMMIT or @EventListener)?</strong>
+ * <p><strong>Why BEFORE_COMMIT for allowance listeners?</strong>
  * <ul>
- *   <li>{@code @EventListener} fires DURING the transaction — listener failure
- *       would roll back the producer (undesirable)</li>
- *   <li>{@code BEFORE_COMMIT} has the same problem — still within the transaction</li>
- *   <li>{@code AFTER_COMMIT} ensures producer data is safely persisted before
- *       any side effects run</li>
+ *   <li>Allowance reservation/confirmation is a <strong>business invariant</strong> —
+ *       a leave request must not persist without the corresponding allowance update</li>
+ *   <li>{@code BEFORE_COMMIT} ensures the listener runs within the producer's
+ *       transaction — if it fails, everything rolls back atomically</li>
+ *   <li>Remote notification publishers (manager/staff alerts) remain
+ *       {@code @Async @TransactionalEventListener(AFTER_COMMIT)} since they are
+ *       external side effects, not internal business invariants</li>
  * </ul>
  */
 @Component
@@ -534,8 +535,7 @@ public class LeaveRequestSubmittedListener {
 
     private final LeaveAllowanceApplicationService leaveAllowanceService;
 
-    @Async
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void handle(LeaveRequestSubmittedEvent event) {
         log.info("Handling LeaveRequestSubmittedEvent for staff: {}, days: {}",
                 event.staffMemberId(), event.numberOfDays());
@@ -561,8 +561,7 @@ public class LeaveRequestCancelledListener {
 
     private final LeaveAllowanceApplicationService leaveAllowanceService;
 
-    @Async
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void handle(LeaveRequestCancelledEvent event) {
         if (event.wasPreviouslyApproved()) {
             // Was APPROVED → need to credit back daysUsed
@@ -948,7 +947,7 @@ AppSvc -> LR : clearDomainEvents()
 
 == COMMIT → HTTP 201 returned to client ==
 
-SEP -> Listener : @TransactionalEventListener(AFTER_COMMIT)\n@Async (separate thread)
+SEP -> Listener : @TransactionalEventListener(BEFORE_COMMIT)\n(synchronous, same transaction)
 Listener -> AllocSvc : reserveDays(staffMemberId, numberOfDays)
 AllocSvc -> LA : leaveAllowance.reserveDays(5)
 note right of LA
@@ -1140,10 +1139,11 @@ The naïve approach (publish to RabbitMQ inside the transaction) creates a **dua
 - Topic supports wildcards (`staff.member.*`) for extensibility
 - Demonstrates understanding of multiple exchange types (mark scheme: "a very good range of design patterns identified and justified")
 
-### Why @TransactionalEventListener(AFTER_COMMIT) and not @EventListener?
-- `@EventListener` fires **during** the transaction — if the listener fails, it rolls back the producer's data
-- `AFTER_COMMIT` ensures the producer's data is safely persisted before side effects run
-- This is the correct pattern for both local inter-aggregate communication and outbox triggering
+### Why @TransactionalEventListener(BEFORE_COMMIT) for allowance listeners?
+- `@EventListener` fires **during** the transaction unconditionally — no Spring control over timing
+- `BEFORE_COMMIT` fires within the transaction just before commit — if the listener fails, the entire transaction rolls back. This is correct for business invariants like allowance consistency
+- Remote notification publishers use `AFTER_COMMIT` because they are external side effects (RabbitMQ messages) that should only fire after successful commit
+- This is the correct separation: **internal invariants are BEFORE_COMMIT (atomic), external notifications are AFTER_COMMIT (eventual)**
 
 ### Why store local events in event_store too?
 - **Auditability:** every state change is recorded with full JSON payload

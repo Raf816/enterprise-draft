@@ -27,8 +27,8 @@ import java.util.List;
  * <p>This class demonstrates the <strong>two-stage event bridge</strong> pattern covered
  * in Lecture 8. It listens for a local domain event (raised in-process by the LeaveRequest
  * aggregate), enriches it with additional data (manager ID, dates) by querying the
- * repository, and then publishes a remote notification event via Spring's
- * {@link ApplicationEventPublisher}. The
+ * repository, and then publishes a remote notification event via
+ * {@link com.staffs.leavebooking.common.events.DomainEventManager DomainEventManager}. The
  * {@link com.staffs.leavebooking.common.events.RemoteOutboxListener RemoteOutboxListener}
  * intercepts the remote event, persists it to the outbox, and the
  * {@link com.staffs.leavebooking.common.events.RabbitOutboxRouter RabbitOutboxRouter}

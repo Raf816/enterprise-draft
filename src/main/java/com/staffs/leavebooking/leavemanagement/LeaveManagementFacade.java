@@ -389,6 +389,15 @@ public class LeaveManagementFacade {
     }
 
     /**
+     * Internal allowance lookup — no @PreAuthorize. Used by LeaveRequestController
+     * to check allowance sufficiency before submitting a leave request.
+     * Not exposed as an API endpoint.
+     */
+    public LeaveAllowanceDTO findMyAllowanceInternal(String staffMemberId) {
+        return leaveAllowanceQueryHandler.findAllowanceByStaffMemberId(staffMemberId);
+    }
+
+    /**
      * Retrieves a leave allowance by its unique allowance ID (not staffMemberId).
      * Used after amendEntitlement to return the updated allowance.
      */

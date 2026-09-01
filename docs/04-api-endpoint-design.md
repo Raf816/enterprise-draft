@@ -188,7 +188,7 @@ optional filters are combined. All filter fields are optional — omit a field o
 |---|--------|------|-------|------------|---------|-------------|
 | 4a | POST | `/leave-requests/my/search` | STAFF, MANAGER, ADMIN | `status` | 200 + `List<LeaveRequestDTO>` | Search own requests with filters |
 | 5a | POST | `/leave-requests/team/search` | MANAGER, ADMIN | `status`, `from`, `to` | 200 + `List<LeaveRequestDTO>` | Search team requests with filters (brief: "could be enhanced with start and end dates") |
-| 6a | POST | `/leave-requests/all/search` | ADMIN | `status`, `staffMemberId`, `managerId`, `from`, `to` | 200 + `List<LeaveRequestDTO>` | Search all requests with any combination of filters (brief: "filtered by staff member, manager's team or across the company") |
+| 6a | POST | `/leave-requests/all/search` | ADMIN | `status`, `staffMemberId`, `managerId`, `from`, `to` | 200 + `List<LeaveRequestDTO>` | Search all requests with optional filters. Filter priority: staffMemberId > managerId > company-wide (brief: "filtered by staff member, manager's team or across the company") |
 
 ### 4.3 Commands (Write Operations — CQRS Write Path)
 
@@ -196,7 +196,7 @@ These follow the Lecture 6 pattern: `Controller → Facade → ApplicationServic
 
 | # | Method | Path | Roles | Request Body | Success | Errors | Description |
 |---|--------|------|-------|-------------|---------|--------|-------------|
-| 8 | POST | `/leave-requests` | STAFF, MANAGER, ADMIN | `SubmitLeaveRequestBody` | 201 Created | 400 (validation), 409 (date overlap / insufficient balance) | Submit new leave request. managerId optional (auto-resolved from staff record). Date overlap detection prevents double-booking. |
+| 8 | POST | `/leave-requests` | STAFF, MANAGER, ADMIN | `SubmitLeaveRequestBody` | 201 Created | 400 (validation / no manager / insufficient balance), 409 (date overlap) | Submit new leave request. managerId always resolved from staff record's lineManagerId. Date overlap detection prevents double-booking. Synchronous allowance check prevents over-booking. |
 | 9 | PATCH | `/leave-requests/{id}/approve` | MANAGER (assigned), ADMIN | `{"reason?"}` optional | 200 + `LeaveRequestDTO` | 403 (not assigned manager), 404, 409 (not pending) | Approve a pending request. Only the assigned manager or admin. |
 | 10 | PATCH | `/leave-requests/{id}/reject` | MANAGER (assigned), ADMIN | `{"reason?"}` optional | 200 + `LeaveRequestDTO` | 403 (not assigned manager), 404, 409 (not pending) | Reject a pending request. Only the assigned manager or admin. |
 | 11 | PATCH | `/leave-requests/{id}/cancel` | STAFF (own), ADMIN | `{"reason?"}` optional | 200 + `LeaveRequestDTO` | 403 (not owner), 404, 409 (already terminal) | Cancel own request. Staff can only cancel their own. Admin can cancel any. |
@@ -206,7 +206,6 @@ These follow the Lecture 6 pattern: `Controller → Facade → ApplicationServic
 **SubmitLeaveRequestBody:**
 ```json
 {
-  "managerId": "optional — auto-resolved from staff record if not provided",
   "startDate": "2026-09-15",
   "endDate": "2026-09-19",
   "leaveType": "ANNUAL",
@@ -215,8 +214,9 @@ These follow the Lecture 6 pattern: `Controller → Facade → ApplicationServic
 ```
 > **Notes:**
 > - `staffMemberId` is derived from the authenticated user's JWT token — never passed in the body (prevents request forgery).
-> - `managerId` is optional. If omitted, auto-resolved from the staff member's assigned `lineManagerId`. If provided, validated to reference a real staff member.
+> - `managerId` is NOT in the body — always resolved from the staff member's assigned `lineManagerId`. If no line manager is assigned, returns 400.
 > - `startDate` and `endDate` must be today or in the future.
+> - Synchronous allowance sufficiency check: if the staff member doesn't have enough available days, returns 400 before the request is created.
 > - Date overlap detection: if the staff member already has a PENDING or APPROVED request covering the same dates, the submission is rejected with 409 Conflict.
 > - `reason` is optional (max 500 characters).
 
@@ -687,11 +687,11 @@ public class LeaveManagementFacade {
 | GET `/auth/users/{email}` | ✗ | ✗ | ✓ | Admin only |
 | PATCH `/auth/password` | ✓ | ✓ | ✓ | Any authenticated user (own password only) |
 | GET `/leave-requests/my` | ✓ (own) | ✓ (own) | ✓ (own) | Scoped by JWT staffMemberId |
-| POST `/leave-requests/my/search` | ✓ (own) | ✓ (own) | ✓ (own) | Filtered search of own requests |
+| POST `/leave-requests/my/search` | ✓ (own) | ✓ (own) | ✓ (own) | Status filter only. Rejects staffMemberId/managerId (scope from JWT) |
 | GET `/leave-requests/team` | ✗ | ✓ (own team) | ✓ (all) | Scoped by JWT managerId |
-| POST `/leave-requests/team/search` | ✗ | ✓ (own team) | ✓ (all) | Filtered search of team requests (status + date range) |
+| POST `/leave-requests/team/search` | ✗ | ✓ (own team) | ✓ (all) | Status + date range. Rejects staffMemberId/managerId (scope from JWT) |
 | GET `/leave-requests/all` | ✗ | ✗ | ✓ | Company-wide |
-| POST `/leave-requests/all/search` | ✗ | ✗ | ✓ | Filtered search (status, staffMemberId, managerId, date range) |
+| POST `/leave-requests/all/search` | ✗ | ✗ | ✓ | Status, staffMemberId OR managerId (mutually exclusive), date range |
 | GET `/leave-requests/{id}` | ✓ | ✓ | ✓ | Any authenticated user (write ops enforce ownership) |
 | POST `/leave-requests` | ✓ | ✓ | ✓ | staffMemberId from JWT |
 | PATCH `.../approve` | ✗ | ✓ (assigned) | ✓ | Only assigned manager or admin |
@@ -1112,7 +1112,7 @@ participant "LeaveRequestSubmittedListener\n(Event Consumer)" as Listener
 participant "LeaveAllowanceApplicationService" as LAAS
 participant "LeaveAllowance\n(Aggregate Root)" as LA
 
-Client -> Controller : POST /leave-requests\n{managerId, startDate, endDate,\nleaveType, reason}
+Client -> Controller : POST /leave-requests\n{startDate, endDate,\nleaveType, reason}
 note right of Controller : JWT validated by\nFirebaseTokenFilter\nstaffMemberId = auth.getName()
 Controller -> Facade : submitLeaveRequest(command)
 note right of Facade : @PreAuthorize("hasAnyRole\n('STAFF','MANAGER','ADMIN')")

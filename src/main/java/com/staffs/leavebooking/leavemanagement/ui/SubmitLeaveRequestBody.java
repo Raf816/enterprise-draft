@@ -12,20 +12,20 @@ import java.time.LocalDate;
  *
  * <p><strong>Fields:</strong>
  * <ul>
- *   <li>{@code managerId} — optional. If not provided, auto-resolved from the staff member's
- *       assigned lineManagerId in their staff record. If provided, validated to be a real staff member.</li>
  *   <li>{@code startDate} — required, must be today or future.</li>
  *   <li>{@code endDate} — required, must be today or future. Domain also validates endDate >= startDate.</li>
  *   <li>{@code leaveType} — required, validated against LeaveType enum in domain.</li>
  *   <li>{@code reason} — optional, max 500 characters.</li>
  * </ul>
  *
+ * <p><strong>Manager resolution:</strong> The managerId is NOT in this body — it is always
+ * resolved from the staff member's assigned lineManagerId in their staff record. This prevents
+ * staff from routing requests to arbitrary people who may not be their line manager or may
+ * not have the MANAGER role. If no lineManagerId is assigned, the submission returns 400.
+ *
  * <p><strong>Security:</strong> staffMemberId is NOT in this body — it comes from the JWT token.
  */
 public record SubmitLeaveRequestBody(
-
-        /** Manager UUID — optional. If null/blank, resolved from staff record's lineManagerId. */
-        String managerId,
 
         /** First day of leave — required, must be today or future. */
         @NotNull(message = "Start date is required")

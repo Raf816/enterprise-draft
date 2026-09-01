@@ -3,8 +3,10 @@ package com.staffs.leavebooking.leavemanagement.ui;
 import com.staffs.leavebooking.leavemanagement.LeaveManagementFacade;
 import com.staffs.leavebooking.leavemanagement.application.commands.CancelLeaveRequestCommand;
 import com.staffs.leavebooking.leavemanagement.application.commands.SubmitLeaveRequestCommand;
+import com.staffs.leavebooking.leavemanagement.application.dto.LeaveAllowanceDTO;
 import com.staffs.leavebooking.leavemanagement.application.dto.LeaveRequestDTO;
 import com.staffs.leavebooking.leavemanagement.application.dto.LeaveRequestSearchCriteria;
+import com.staffs.leavebooking.leavemanagement.domain.DateRange;
 import com.staffs.leavebooking.staffmanagement.StaffManagementFacade;
 import com.staffs.leavebooking.staffmanagement.application.dto.StaffMemberDTO;
 import jakarta.validation.Valid;
@@ -175,6 +177,8 @@ public class LeaveRequestController {
 
         // Validate that at least one search filter is present — directs user to GET endpoint otherwise
         validateSearchCriteria(criteria, "GET /leave-requests/my");
+        // Reject person-scope filters — /my/search derives the scope from the JWT
+        rejectPersonFilters(criteria, "/my/search");
         // Extract staffMemberId from JWT and delegate to facade with the validated criteria
         return facade.searchMyRequests(extractStaffMemberId(authentication), criteria);
     }
@@ -205,6 +209,8 @@ public class LeaveRequestController {
 
         // Validate that at least one search filter is present — directs user to GET endpoint otherwise
         validateSearchCriteria(criteria, "GET /leave-requests/team");
+        // Reject person-scope filters — /team/search derives the scope from the JWT
+        rejectPersonFilters(criteria, "/team/search");
         // Extract managerId from JWT and delegate to facade with the validated criteria
         return facade.searchTeamRequests(extractStaffMemberId(authentication), criteria);
     }
@@ -261,7 +267,7 @@ public class LeaveRequestController {
      * (fetched after creation so the client has the generated ID, status, and submittedOn date).
      *
      * @param authentication Spring Security authentication object containing the user's identity
-     * @param body           the validated request body containing managerId, dates, leaveType, and reason
+     * @param body           the validated request body containing dates, leaveType, and reason
      * @return the newly created leave request as a DTO
      * @throws ResponseStatusException 403 if the staff member is not active
      * @see SubmitLeaveRequestBody for the request body with Bean Validation annotations
@@ -279,19 +285,19 @@ public class LeaveRequestController {
         // Block PENDING_SETUP and TERMINATED staff from submitting leave requests
         verifyStaffIsActive(staffMemberId);
 
-        // Resolve managerId — if not provided, use the staff member's assigned lineManagerId
-        String managerId = resolveManagerId(staffMemberId, body.managerId());
-
-        // Validate that the managerId references a real staff member and is the assigned line manager
-        verifyManagerExists(managerId, staffMemberId);
+        // Resolve managerId from the staff member's assigned lineManagerId
+        String managerId = resolveLineManager(staffMemberId);
 
         // Check for date overlap with existing PENDING or APPROVED requests
         verifyNoDateOverlap(staffMemberId, body.startDate(), body.endDate());
 
+        // Check the staff member has enough available leave days for this request
+        verifyAllowanceSufficiency(staffMemberId, body.startDate(), body.endDate());
+
         // Build the CQRS command from the validated body and the JWT-derived staffMemberId
         SubmitLeaveRequestCommand command = new SubmitLeaveRequestCommand(
                 staffMemberId,          // From JWT — not from the request body (security)
-                managerId,              // Resolved: from body or auto-resolved from staff record
+                managerId,              // Resolved from staff record's lineManagerId
                 body.startDate(),       // First day of leave (validated: must be today or future)
                 body.endDate(),         // Last day of leave (validated: must be today or future)
                 body.leaveType(),       // Type of leave (e.g., "ANNUAL")
@@ -483,6 +489,32 @@ public class LeaveRequestController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "'from' date must be on or before 'to' date.");
         }
+        // Reject mutually exclusive filters: staffMemberId and managerId cannot be combined
+        boolean hasStaffFilter = criteria.staffMemberId() != null && !criteria.staffMemberId().isBlank();
+        boolean hasManagerFilter = criteria.managerId() != null && !criteria.managerId().isBlank();
+        if (hasStaffFilter && hasManagerFilter) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "staffMemberId and managerId cannot be supplied together. Search by one or the other.");
+        }
+    }
+
+    /**
+     * Rejects staffMemberId and managerId filters on role-scoped search endpoints.
+     * These endpoints derive their scope from the JWT — person filters are not applicable.
+     *
+     * @param criteria the search criteria to check
+     * @param endpoint the endpoint name for the error message
+     * @throws ResponseStatusException 400 if staffMemberId or managerId is provided
+     */
+    private void rejectPersonFilters(LeaveRequestSearchCriteria criteria, String endpoint) {
+        boolean hasStaffFilter = criteria.staffMemberId() != null && !criteria.staffMemberId().isBlank();
+        boolean hasManagerFilter = criteria.managerId() != null && !criteria.managerId().isBlank();
+        if (hasStaffFilter || hasManagerFilter) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "staffMemberId and managerId filters are not accepted on " + endpoint +
+                    ". The search scope is determined by your authentication token. " +
+                    "Use POST /leave-requests/all/search for person-filtered searches (admin only).");
+        }
     }
 
     /**
@@ -618,65 +650,29 @@ public class LeaveRequestController {
     }
 
     /**
-     * Resolves the managerId for a leave request.
-     * If the caller provided a managerId in the request body, uses that.
-     * If not (null or blank), looks up the staff member's assigned lineManagerId.
+     * Resolves the managerId from the staff member's assigned lineManagerId.
+     * Always resolves from the staff record — managerId is never accepted from the request body.
+     * This ensures leave requests can only be directed to the staff member's actual line manager.
      *
      * @param staffMemberId the staff member submitting the request
-     * @param providedManagerId the managerId from the request body (may be null/blank)
-     * @return the resolved managerId
-     * @throws ResponseStatusException 400 if no manager could be resolved
+     * @return the resolved managerId (the staff member's lineManagerId)
+     * @throws ResponseStatusException 400 if no line manager is assigned
      */
-    private String resolveManagerId(String staffMemberId, String providedManagerId) {
-        // If the caller provided a managerId, use it
-        if (providedManagerId != null && !providedManagerId.isBlank()) {
-            return providedManagerId;
-        }
-
-        // Auto-resolve from the staff member's assigned lineManagerId
+    private String resolveLineManager(String staffMemberId) {
         try {
             StaffMemberDTO staff = staffFacade.findStaffMemberByIdInternal(staffMemberId);
             if (staff.lineManagerId() != null && !staff.lineManagerId().isBlank()) {
                 return staff.lineManagerId();
             }
+        } catch (ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
             // Staff record lookup failed — fall through to error below
         }
 
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "Manager ID is required. Either provide a managerId in the request body " +
-                "or ensure your staff profile has an assigned line manager.");
-    }
-
-    /**
-     * Validates that the managerId references a real staff member in the system
-     * and is the staff member's assigned line manager.
-     *
-     * @param managerId the manager UUID to validate
-     * @param staffMemberId the staff member submitting the request
-     * @throws ResponseStatusException 400 if the manager doesn't exist or isn't the assigned line manager
-     */
-    private void verifyManagerExists(String managerId, String staffMemberId) {
-        try {
-            staffFacade.findStaffMemberByIdInternal(managerId);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Manager not found: " + managerId + ". Please provide a valid manager ID.");
-        }
-
-        // Verify the manager is the staff member's assigned line manager
-        try {
-            StaffMemberDTO staff = staffFacade.findStaffMemberByIdInternal(staffMemberId);
-            if (staff.lineManagerId() != null && !managerId.equals(staff.lineManagerId())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "The provided manager ID does not match your assigned line manager. " +
-                        "Leave requests must be directed to your assigned line manager.");
-            }
-        } catch (ResponseStatusException e) {
-            throw e;
-        } catch (Exception e) {
-            // Staff record lookup failed — already verified in verifyStaffIsActive, so shouldn't happen
-        }
+                "No line manager assigned to your profile. An administrator must assign " +
+                "a line manager before you can submit leave requests.");
     }
 
     /**
@@ -710,6 +706,40 @@ public class LeaveRequestController {
                         " request (" + existing.startDate() + " to " + existing.endDate() + ")." +
                         " Cancel the existing request first or choose different dates.");
             }
+        }
+    }
+
+    /**
+     * Verifies the staff member has enough available leave days for the requested period.
+     * Calculates working days from the date range and compares to the allowance's availableDays
+     * (totalEntitlement - daysUsed - daysPending).
+     *
+     * <p><strong>Why synchronous:</strong> The async event listener also enforces this invariant,
+     * but it runs after the transaction commits. This synchronous check catches insufficient
+     * balance BEFORE the leave request is persisted, preventing orphaned PENDING requests
+     * that could never have their allowance reserved.
+     *
+     * @param staffMemberId the staff member submitting the request
+     * @param startDate the requested start date
+     * @param endDate the requested end date
+     * @throws ResponseStatusException 400 if insufficient leave balance
+     */
+    private void verifyAllowanceSufficiency(String staffMemberId,
+                                             java.time.LocalDate startDate,
+                                             java.time.LocalDate endDate) {
+        try {
+            LeaveAllowanceDTO allowance = facade.findMyAllowanceInternal(staffMemberId);
+            int requestedDays = new DateRange(startDate, endDate).workingDays();
+
+            if (requestedDays > allowance.availableDays()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Insufficient leave balance. You have " + allowance.availableDays() +
+                        " days available but requested " + requestedDays + " days.");
+            }
+        } catch (ResponseStatusException e) {
+            throw e; // Re-throw our own validation error
+        } catch (Exception e) {
+            // Allowance not found — staff may not be activated yet. Let verifyStaffIsActive handle it.
         }
     }
 }

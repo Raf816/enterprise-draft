@@ -29,7 +29,7 @@ import java.util.List;
  * {@link ManagerNotificationPublisher}, but in the opposite direction — notifying
  * <em>staff</em> rather than <em>managers</em>. It listens for local domain events that
  * represent a decision on a leave request (approved, rejected, or cancelled), and raises
- * a remote {@link StaffNotificationEvent} via Spring's {@link ApplicationEventPublisher}.
+ * a remote {@link StaffNotificationEvent} via {@link com.staffs.leavebooking.common.events.DomainEventManager DomainEventManager}.
  * The {@link com.staffs.leavebooking.common.events.RemoteOutboxListener RemoteOutboxListener}
  * intercepts the remote event, persists it to the outbox, and the
  * {@link com.staffs.leavebooking.common.events.RabbitOutboxRouter RabbitOutboxRouter}
@@ -83,8 +83,8 @@ public class StaffNotificationPublisher {
      *   <li>Construct a {@link StaffNotificationEvent} with today's date, the staff member's ID,
      *       leave request ID, decision type {@code "APPROVED"}, the approving manager's ID,
      *       and the number of days.</li>
-     *   <li>Publish the remote event via {@link ApplicationEventPublisher} — this is
-     *       intercepted by
+     *   <li>Publish the remote event via {@link com.staffs.leavebooking.common.events.DomainEventManager DomainEventManager} — this
+     *       persists it to the event_store and publishes via Spring's event bus, where
      *       {@link com.staffs.leavebooking.common.events.RemoteOutboxListener RemoteOutboxListener}
      *       and routed to RabbitMQ.</li>
      * </ol>

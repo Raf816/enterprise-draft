@@ -174,6 +174,32 @@ class LeaveRequestControllerTest {
 
             verify(facade, never()).searchMyRequests(any(), any());
         }
+
+        @Test
+        @DisplayName("Should return 400 when staffMemberId filter is provided")
+        @WithMockUser(username = "staff-1")
+        void shouldRejectStaffMemberIdFilter() throws Exception {
+            var criteria = new LeaveRequestSearchCriteria("PENDING", "other-staff", null, null, null);
+
+            mockMvc.perform(post("/leave-requests/my/search")
+                            .with(csrf())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(criteria)))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @DisplayName("Should return 400 when managerId filter is provided")
+        @WithMockUser(username = "staff-1")
+        void shouldRejectManagerIdFilter() throws Exception {
+            var criteria = new LeaveRequestSearchCriteria("PENDING", null, "mgr-1", null, null);
+
+            mockMvc.perform(post("/leave-requests/my/search")
+                            .with(csrf())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(criteria)))
+                    .andExpect(status().isBadRequest());
+        }
     }
 
     @Nested
@@ -237,6 +263,19 @@ class LeaveRequestControllerTest {
                             .content(objectMapper.writeValueAsString(criteria)))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$[0].status").value("PENDING"));
+        }
+
+        @Test
+        @DisplayName("Should return 400 when staffMemberId filter is provided")
+        @WithMockUser(username = "mgr-1")
+        void shouldRejectStaffMemberIdFilter() throws Exception {
+            var criteria = new LeaveRequestSearchCriteria("PENDING", "staff-1", null, null, null);
+
+            mockMvc.perform(post("/leave-requests/team/search")
+                            .with(csrf())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(criteria)))
+                    .andExpect(status().isBadRequest());
         }
     }
 
@@ -341,6 +380,19 @@ class LeaveRequestControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$").isEmpty());
         }
+
+        @Test
+        @DisplayName("Should return 400 when both staffMemberId and managerId are provided")
+        @WithMockUser(username = "admin-1", roles = "ADMIN")
+        void shouldRejectCombinedStaffAndManagerFilters() throws Exception {
+            var criteria = new LeaveRequestSearchCriteria(null, "staff-1", "mgr-1", null, null);
+
+            mockMvc.perform(post("/leave-requests/all/search")
+                            .with(csrf())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(criteria)))
+                    .andExpect(status().isBadRequest());
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════════
@@ -358,14 +410,15 @@ class LeaveRequestControllerTest {
             // Arrange — staff is ACTIVE with lineManagerId "mgr-1"
             when(staffFacade.findStaffMemberByIdInternal("staff-1"))
                     .thenReturn(createTestStaffDTO("staff-1", "ACTIVE"));
-            // Manager exists check
-            when(staffFacade.findStaffMemberByIdInternal("mgr-1"))
-                    .thenReturn(createTestStaffDTO("mgr-1", "ACTIVE"));
             // No overlapping requests
             when(facade.findMyRequests("staff-1")).thenReturn(java.util.List.of());
+            // Sufficient allowance (25 available)
+            when(facade.findMyAllowanceInternal("staff-1")).thenReturn(
+                    new com.staffs.leavebooking.leavemanagement.application.dto.LeaveAllowanceDTO(
+                            "allow-1", "staff-1", "Test User", "mgr-1", "Engineering",
+                            "2026-2027", 25, 0, 0, 25, 25));
 
             var body = new SubmitLeaveRequestBody(
-                    "mgr-1",
                     LocalDate.now().plusDays(7),
                     LocalDate.now().plusDays(11),
                     "ANNUAL",
@@ -392,7 +445,6 @@ class LeaveRequestControllerTest {
             when(staffFacade.findStaffMemberByIdInternal("pending-user"))
                     .thenReturn(createTestStaffDTO("pending-user", "PENDING_SETUP"));
             var body = new SubmitLeaveRequestBody(
-                    "mgr-1",
                     LocalDate.now().plusDays(7),
                     LocalDate.now().plusDays(11),
                     "ANNUAL",
@@ -417,7 +469,6 @@ class LeaveRequestControllerTest {
             when(staffFacade.findStaffMemberByIdInternal("terminated-user"))
                     .thenReturn(createTestStaffDTO("terminated-user", "TERMINATED"));
             var body = new SubmitLeaveRequestBody(
-                    "mgr-1",
                     LocalDate.now().plusDays(7),
                     LocalDate.now().plusDays(11),
                     "ANNUAL",

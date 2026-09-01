@@ -236,7 +236,7 @@ pm.globals.set("jwt_admin_token", response.accessToken);
 | Leave Mgmt | Mappers (6 classes) | Unit tests | Plain JUnit |
 | Leave Mgmt | Query Handlers | Unit tests | Mockito |
 | Leave Mgmt | Application Services | Integration tests | @DataJpaTest |
-| Leave Mgmt | Event Listeners (4) | Unit tests | Mockito |
+| Leave Mgmt | Event Listeners (4) | Unit tests + Integration | Mockito (unit) + @DataJpaTest with real BEFORE_COMMIT listeners (integration) |
 | Leave Mgmt | Controllers | Unit tests (@WebMvcTest + MockMvc) | @WithMockUser, JSON assertions |
 | Staff Mgmt | Domain (aggregate) | Unit tests | Plain JUnit |
 | Staff Mgmt | Mappers (3 classes) | Unit tests | Plain JUnit |
@@ -352,7 +352,7 @@ The `identity.authService` package (33%) contains `FirebaseAuthService` which ma
 - Firebase Admin SDK (`FirebaseAuth.getInstance().createUser()`) for registration
 - Firebase Admin SDK for password changes and role updates
 
-These are external cloud API calls that cannot execute in a unit test environment. The service is mocked in `@WebMvcTest` controller tests, which verifies the controller → service delegation but not the service's internal Firebase logic. This is standard practice — external service integrations are tested via Postman against the live running application, not in unit tests.
+These are external cloud API calls that are not executed in the unit test environment — the service is mocked via `@MockBean` in `@WebMvcTest` controller tests. Mocking the Firebase SDK directly is possible (and `FirebaseAuthServiceTest` does mock `FirebaseAuth`), but the real HTTP calls to the Identity Toolkit REST API are tested via Postman against the live running application.
 
 ### Why Facade Packages Show 0%
 

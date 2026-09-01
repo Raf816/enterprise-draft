@@ -164,7 +164,7 @@ docker rm -f leave-rabbitmq
 
 ### Unit Tests (Task 12 â€” COMPLETE)
 
-- **450 tests, 0 failures, 1 skipped** (the skipped test is the Spring Boot context loader which needs Firebase)
+- **451+ tests, 0 failures, 1 skipped** (the skipped test is the Spring Boot context loader which needs Firebase)
 - Run: `mvn test`
 - Runtime: ~2-3 seconds
 - No external dependencies needed (pure Java domain tests + mapper tests)
@@ -190,7 +190,7 @@ docker rm -f leave-rabbitmq
 |------|-----------|
 | 2026-08-21 | Lecture material loaded (Lectures 1-9) |
 | 2026-08-24 | Tasks 1-11 completed (full implementation) |
-| 2026-08-24 | Task 12: Unit tests created (450 tests, all passing) |
+| 2026-08-24 | Task 12: Unit tests created (451+ tests, all passing) |
 | 2026-08-25 | Design docs (01-05) enhanced to first-class standard |
 | 2026-08-25 | Environment setup: Firebase, RabbitMQ (Docker), compilation fixes |
 | 2026-08-25 | Identified corporate network limitation (Zscaler blocks Google OAuth2) |
@@ -272,7 +272,7 @@ These items were identified during an exhaustive line-by-line audit of both the 
 | **Resolution** | Comprehensive Postman collections created: automated at `postman/Leave-Booking-System.postman_collection.json`, manual at `postman/Leave-Booking-System-MANUAL.postman_collection.json`, with environment file `Leave-Booking-System.postman_environment.json`. |
 | **Coverage** | 8 domain-based folders with Edge Cases subfolders, 137 requests total covering all 26 endpoints: (1) Auth: Registration & Login — register 5 users + login all + edge cases (blank/invalid/duplicate/empty); (2) Auth: Role Check, Find User & Password — role-check, find-by-email, change password + edge cases (401/403/404); (3) Staff Management: Setup & Queries — PATCH 5 skeletons, GET all/by-id, POST search + edge cases (RBAC 403, 404 not-found, invalid status BANANA→400, no filters→400, POST /staff validation: missing fields, future hireDate, digits in name domain VO, >50 chars, empty body); (4) Staff Management: Updates & Transitions — terminate + edge cases (reactivate terminated→409, terminated submits leave→403); (5) Leave Requests: Submit — auto-resolve manager, explicit managerId, Staff2 submit + edge cases (missing fields, past dates, end<start, reason >500, non-existent manager, date overlap→409, no token, empty body); (6) Leave Requests: Approve, Reject & Cancel — approve/reject/cancel happy paths, admin override + edge cases (already-approved→409, already-rejected→409, already-cancelled→409, cancel-rejected→409, wrong manager→403, staff role→403, not-owner→403, reason >500, 404 not-found, no-token 401); (7) Leave Requests: Queries & Search — GET my/team/all/{id}, POST search by status/date-range/staffMemberId/managerId/combined + edge cases (RBAC 403, 404, no filters→400, invalid status→400, single date→400, from>to→400); (8) Leave Allowances — GET my/staff/team/all/dept-filter, PATCH amend/revert + edge cases (401, 403 staff/manager, 404, @Min 0→400, negative→400). |
 | **Test scripts** | Every request in the automated collection has `pm.test()` assertions verifying status codes, response structure, and business rules. Login scripts auto-save JWT tokens via `pm.environment.set()` for use in subsequent requests. Manual collection uses PASTE_*_TOKEN placeholders with no scripts. |
-| **Status** | ✅ IMPLEMENTED AND RESTRUCTURED (2026-08-31) — 137 requests, domain-based folders matching bounded contexts |
+| **Status** | ✅ IMPLEMENTED AND RESTRUCTURED (2026-08-31) — domain-based folders matching bounded contexts |
 
 ---
 
@@ -331,16 +331,16 @@ These items were identified during an exhaustive line-by-line audit of both the 
 
 | Priority | Gap | Effort | Impact |
 |----------|-----|--------|--------|
-| 1 (RESOLVED) | ~~Postman collection~~ | ~~2-3 hours~~ | ✅ Implemented — 8 folders, 137 requests, all 26 endpoints covered with edge cases |
+| 1 (RESOLVED) | ~~Postman collection~~ | ~~2-3 hours~~ | ✅ Implemented — 8 folders, all 26 endpoints covered with edge cases |
 | 2 (MEDIUM) | **Prior learning reflection** | 1 hour writing | +3-5 marks across all sections |
 | 3 (RESOLVED) | ~~Admin filtering params~~ | ~~10 minutes code~~ | ✅ Implemented — POST `/all/search` with staffMemberId/managerId filters |
 | 4 (RESOLVED) | ~~PUT/DELETE justification in report~~ | ~~Already documented~~ | ✅ Fully justified in docs/04 section 13 |
 | 5 (RESOLVED) | ~~Date range filter on /team~~ | ~~20 minutes code~~ | ✅ Implemented — POST `/team/search` with from/to date range |
 | 6 (RESOLVED) | ~~Rate limit 429 Postman test~~ | ~~30 min~~ | ✅ Increased to 20/min, 429 test added to both collections, unit tests updated |
-| 7 (BY DESIGN) | Allowance eventual consistency | — | ⚠️ Follows Lecture 7 Simpler Subscriber pattern. Documented trade-off |
+| 7 (RESOLVED) | ~~Allowance eventual consistency~~ | — | ✅ Changed to synchronous BEFORE_COMMIT. Atomic with leave request. Integration test proves rollback |
 | 8 (JUSTIFIED) | No HR role / two-stage approval | — | ⚠️ Admin acts as HR. Brief scopes for single developer. Documented |
 | 9 (NOTED) | No pagination on list endpoints | — | ⚠️ Acceptable for prototype. Would need Spring Data Pageable for production |
-| 10 (KNOWN) | Combined staff+manager filters | — | ⚠️ staffMemberId takes precedence. Deterministic, documented in code |
+| 10 (RESOLVED) | ~~Combined staff+manager filters~~ | — | ✅ Rejects with 400. Person filters rejected on /my/ and /team/ search |
 
 ---
 
@@ -355,16 +355,16 @@ These items were identified during an exhaustive line-by-line audit of both the 
 
 ---
 
-### GAP 7: Allowance Updates Use Eventual Consistency (Async AFTER_COMMIT) — BY DESIGN
+### GAP 7: Allowance Updates Are Now Atomic via BEFORE_COMMIT Listeners — RESOLVED
 
 | Item | Detail |
 |------|--------|
-| **Observation** | All four leave allowance listeners (`LeaveRequestSubmittedListener`, `LeaveRequestApprovedListener`, `LeaveRequestRejectedListener`, `LeaveRequestCancelledListener`) use `@Async` + `@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)`. This means the leave request commits first, then the allowance update runs asynchronously in a separate transaction. If the allowance update fails (e.g., insufficient balance on `reserveDays`), the request is already persisted as PENDING but the reservation never happened. |
-| **Why this is by design** | This follows Phil James's **Simpler Subscriber** pattern from Lecture 7. The case study code uses the same `@Async` + `AFTER_COMMIT` pattern for the `DeliveryAddressAddedEvent` listener. Two aggregates within the same bounded context communicate through local domain events rather than direct method calls, keeping each aggregate focused on its own invariants. |
-| **Alternative** | Making the allowance update synchronous (`BEFORE_COMMIT` or direct method call within the same `@Transactional` service method) would guarantee atomicity — the request and allowance update succeed or fail together. However, this would (a) contradict the lecture's event-driven architecture, (b) couple the two aggregates, and (c) violate the DDD principle that one transaction should only modify one aggregate. |
-| **Risk** | In practice, the over-booking invariant check on `reserveDays()` would only fail if the staff member submits requests faster than the async listener can process them (a race condition requiring sub-second concurrent submissions). For a university prototype this is acceptable. |
-| **Mitigation** | The controller's `verifyNoDateOverlap()` check catches the most common double-booking scenario synchronously (before the command is dispatched). The async listener is a secondary safety net. |
-| **Status** | ⚠️ KNOWN TRADE-OFF — deliberate architectural decision following lecture pattern |
+| **Original issue** | All four leave allowance listeners used `@Async` + `@TransactionalEventListener(AFTER_COMMIT)`. The leave request committed first, then the allowance update ran asynchronously in a separate transaction. If the allowance update failed (e.g., insufficient balance), the request was already persisted as PENDING but the reservation never happened — the system was inconsistent. |
+| **Fix applied** | Changed all four listeners (`LeaveRequestSubmittedListener`, `LeaveRequestApprovedListener`, `LeaveRequestRejectedListener`, `LeaveRequestCancelledListener`) from `@Async` + `AFTER_COMMIT` to synchronous `@TransactionalEventListener(BEFORE_COMMIT)`. Removed `@Async`. The allowance update now fires within the same transaction as the leave request save. If the allowance check fails, the entire transaction rolls back — no orphaned PENDING request. |
+| **Architecture** | The design now follows a clean separation: internal business invariants (allowance consistency) are atomic via `BEFORE_COMMIT`, while external notifications (manager/staff alerts via RabbitMQ) remain asynchronous via `@Async` + `AFTER_COMMIT` + `@Transactional`. This ensures no notification is sent for a failed operation. |
+| **Supplementary check** | The controller's `verifyAllowanceSufficiency()` remains as a supplementary early validation that provides a cleaner 400 error message. The `BEFORE_COMMIT` listener is the real consistency guarantee. |
+| **Integration test** | New `AtomicAllowanceConsistency` nested class in `LeaveRequestIntegrationTest` with `TransactionTemplate`: (1) successful submit commits request + reserves daysPending atomically; (2) insufficient allowance rolls back — no request persisted, allowance unchanged. |
+| **Status** | ✅ RESOLVED (2026-08-31) |
 
 ---
 
@@ -374,7 +374,7 @@ These items were identified during an exhaustive line-by-line audit of both the 
 |------|--------|
 | **Brief says** | "Your employer has stated that at this stage several things are required to be included — HR approval of specific staff requests, manager alerts re pending requests or staff alerts for approved/cancelled requests." |
 | **What we have** | Three roles: STAFF, MANAGER, ADMIN. Single-stage approval: PENDING → APPROVED/REJECTED by the assigned manager or admin. Manager alerts via `ManagerNotificationEvent` → RabbitMQ. Staff alerts via `StaffNotificationEvent` → RabbitMQ. No separate HR role or `PENDING_MANAGER → PENDING_HR → APPROVED` workflow. |
-| **Justification** | (1) The brief says "at this stage" and scopes requirements deliberately: "The following scenario limits the scope to certain core state requirements in order for it to be achievable by a single developer in this time window." (2) The ADMIN role in our system functions as HR — admins can approve/reject any request (bypassing the assigned manager check), amend entitlements, view all requests company-wide, and manage staff records. (3) Adding a fourth role and two-stage state machine would add significant complexity (extra database columns, additional state transitions, new RBAC rules, extra Postman tests) with minimal benefit for a prototype that already demonstrates the core patterns. (4) The brief explicitly asks for manager alerts and staff alerts (both implemented via RabbitMQ), with HR approval listed alongside them — suggesting it's one of several requirements, not the primary focus. |
+| **Justification** | (1) The brief says "at this stage" and scopes requirements deliberately: "The following scenario limits the scope to certain core state requirements in order for it to be achievable by a single developer in this time window." (2) The ADMIN role in our system functions as the HR authority — admins can approve/reject any request (bypassing the assigned manager check), amend entitlements, view all requests company-wide, and manage staff records. This is an acknowledged simplification, not an equivalent implementation. A dedicated HR role with a two-stage approval workflow was not implemented. (3) Adding a fourth role and two-stage state machine would add significant complexity (extra database columns, additional state transitions, new RBAC rules, extra Postman tests) with minimal benefit for a prototype that already demonstrates the core patterns. (4) The brief lists HR approval alongside manager alerts and staff alerts — both of which ARE implemented via RabbitMQ notifications. |
 | **If time permitted** | Add an `HR` role, a `PENDING_HR` state between `PENDING` and `APPROVED`, and a configurable rule (e.g., requests > 5 days require HR approval). The state machine infrastructure already supports additional states. |
 | **Status** | ⚠️ JUSTIFIED SIMPLIFICATION — admin acts as HR, documented for report |
 
@@ -391,10 +391,10 @@ These items were identified during an exhaustive line-by-line audit of both the 
 
 ---
 
-### GAP 10: Combined Staff + Manager Search Filters Not Genuinely Combined — KNOWN LIMITATION
+### GAP 10: Combined Staff + Manager Search Filters — RESOLVED
 
 | Item | Detail |
 |------|--------|
-| **Observation** | In `POST /leave-requests/all/search`, if an admin provides both `staffMemberId` and `managerId`, the query handler uses a three-tier if/else: staffMemberId takes precedence and managerId is silently ignored. They do not combine to mean "show requests where this staff member's requests are managed by this manager." |
-| **Why this is acceptable** | (1) This is an unlikely use case — an admin searching by staff member already sees the manager in each result. (2) The code is deterministic and the behaviour is documented in comments. (3) Genuinely combining them would require 4-8 additional repository methods for a scenario that barely occurs. (4) The controller's `validateSearchCriteria()` already validates that at least one filter is provided. |
-| **Status** | ⚠️ KNOWN LIMITATION — documented, deterministic behaviour |
+| **Original issue** | If an admin provided both `staffMemberId` and `managerId` in `POST /leave-requests/all/search`, the query handler silently ignored `managerId` (staffMemberId took precedence). |
+| **Fix applied** | The controller's `validateSearchCriteria()` now rejects the combination with 400: "staffMemberId and managerId cannot be supplied together." Additionally, `/my/search` and `/team/search` now reject `staffMemberId` and `managerId` filters entirely — these endpoints derive their scope from the JWT. Person-filtered searches are only available on `/all/search` (admin only). |
+| **Status** | ✅ RESOLVED (2026-08-31) |

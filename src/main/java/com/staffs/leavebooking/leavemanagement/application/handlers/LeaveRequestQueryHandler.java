@@ -235,12 +235,11 @@ public class LeaveRequestQueryHandler {
      * <p>Used by POST /leave-requests/all/search. Supports filtering by staffMemberId,
      * managerId, status, and date range in any combination.
      *
-     * <p><strong>Filter priority:</strong> staffMemberId takes precedence over managerId
-     * if both are provided (an unlikely scenario, but handled deterministically). This
-     * avoids ambiguity — the admin is either searching a specific person's requests or
-     * a manager's team, not both simultaneously.
+     * <p><strong>Filter routing:</strong> staffMemberId and managerId are mutually exclusive
+     * (the controller rejects requests with both). The handler routes to the appropriate
+     * query tier based on which filter is present:
      *
-     * <p><strong>Three-tier routing:</strong>
+     * <p><strong>Two-tier routing:</strong>
      * <ol>
      *   <li>If staffMemberId is set → routes to staff-member-scoped queries</li>
      *   <li>Else if managerId is set → routes to manager-scoped queries</li>
@@ -266,7 +265,7 @@ public class LeaveRequestQueryHandler {
 
         List<LeaveRequestJpa> results;
 
-        // TIER 1: Staff member filter takes precedence (search a specific person's requests)
+        // Staff member filter (search a specific person's requests)
         if (staffId != null) {
             if (status != null && hasDateRange) {
                 // Staff + status + date range — most specific staff-scoped query

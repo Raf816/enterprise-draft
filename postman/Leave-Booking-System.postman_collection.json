@@ -379,9 +379,9 @@
           "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],"body":{"mode":"raw","raw":"{\"startDate\":\"2026-10-01\",\"endDate\":\"2026-10-05\",\"leaveType\":\"ANNUAL\",\"reason\":\"Holiday\"}"},"url":{"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}}
         },
         {
-          "name": "Staff1 submits leave (explicit managerId): 201",
+          "name": "Staff1 submits second leave: 201",
           "event": [{"listen":"test","script":{"exec":["pm.test('201 Created', function(){ pm.response.to.have.status(201); });","pm.environment.set('leave_request_id_2', pm.response.json().id);"]}}],
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],"body":{"mode":"raw","raw":"{\"managerId\":\"{{manager1_uid}}\",\"startDate\":\"2026-11-01\",\"endDate\":\"2026-11-03\",\"leaveType\":\"ANNUAL\",\"reason\":\"Family event\"}"},"url":{"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}}
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],"body":{"mode":"raw","raw":"{\"startDate\":\"2026-11-01\",\"endDate\":\"2026-11-03\",\"leaveType\":\"ANNUAL\",\"reason\":\"Family event\"}"},"url":{"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}}
         },
         {
           "name": "Staff2 submits leave: 201",
@@ -425,16 +425,6 @@
               "name": "Submit: reason >500 chars (400)",
               "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });"]}}],
               "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],"body":{"mode":"raw","raw":"{\"startDate\":\"2027-03-01\",\"endDate\":\"2027-03-05\",\"leaveType\":\"ANNUAL\",\"reason\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"}"},"url":{"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}}
-            },
-            {
-              "name": "Submit: non-existent managerId (400)",
-              "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","pm.test('manager not found', function(){ pm.expect(pm.response.json().message).to.include('Manager not found'); });"]}}],
-              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],"body":{"mode":"raw","raw":"{\"managerId\":\"non-existent-manager-id\",\"startDate\":\"2027-01-10\",\"endDate\":\"2027-01-12\",\"leaveType\":\"ANNUAL\"}"},"url":{"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}}
-            },
-            {
-              "name": "Submit: wrong lineManager (400)",
-              "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","pm.test('not assigned line manager', function(){ pm.expect(pm.response.json().message).to.include('assigned line manager'); });"]}}],
-              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],"body":{"mode":"raw","raw":"{\"managerId\":\"{{manager2_uid}}\",\"startDate\":\"2027-04-01\",\"endDate\":\"2027-04-03\",\"leaveType\":\"ANNUAL\"}"},"url":{"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}}
             },
             {
               "name": "Submit: date overlap with existing PENDING (409)",
@@ -642,6 +632,11 @@
               "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],"body":{"mode":"raw","raw":"{\"status\":\"BANANA\"}"},"url":{"raw":"{{base_url}}/leave-requests/my/search","host":["{{base_url}}"],"path":["leave-requests","my","search"]}}
             },
             {
+              "name": "POST /my/search: staffMemberId filter rejected (400)",
+              "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","pm.test('not accepted msg', function(){ pm.expect(pm.response.json().message).to.include('not accepted'); });"]}}],
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],"body":{"mode":"raw","raw":"{\"status\":\"PENDING\",\"staffMemberId\":\"{{staff1_uid}}\"}"},"url":{"raw":"{{base_url}}/leave-requests/my/search","host":["{{base_url}}"],"path":["leave-requests","my","search"]}}
+            },
+            {
               "name": "POST /team/search: Staff role (403)",
               "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });"]}}],
               "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],"body":{"mode":"raw","raw":"{\"status\":\"PENDING\"}"},"url":{"raw":"{{base_url}}/leave-requests/team/search","host":["{{base_url}}"],"path":["leave-requests","team","search"]}}
@@ -665,6 +660,11 @@
               "name": "POST /all/search: no filters (400)",
               "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });"]}}],
               "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"{{base_url}}/leave-requests/all/search","host":["{{base_url}}"],"path":["leave-requests","all","search"]}}
+            },
+            {
+              "name": "POST /all/search: both staffMemberId + managerId (400)",
+              "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","pm.test('mutually exclusive msg', function(){ pm.expect(pm.response.json().message).to.include('cannot be supplied together'); });"]}}],
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],"body":{"mode":"raw","raw":"{\"staffMemberId\":\"{{staff1_uid}}\",\"managerId\":\"{{manager1_uid}}\"}"},"url":{"raw":"{{base_url}}/leave-requests/all/search","host":["{{base_url}}"],"path":["leave-requests","all","search"]}}
             }
           ]
         }

@@ -313,8 +313,8 @@
           "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"startDate\":\"2026-10-01\",\"endDate\":\"2026-10-05\",\"leaveType\":\"ANNUAL\",\"reason\":\"Holiday\"}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
         },
         {
-          "name": "Staff1 submits leave (explicit managerId): 201",
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"managerId\":\"PASTE_MANAGER1_UID\",\"startDate\":\"2026-11-01\",\"endDate\":\"2026-11-03\",\"leaveType\":\"ANNUAL\",\"reason\":\"Family event\"}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
+          "name": "Staff1 submits second leave: 201",
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"startDate\": \"2026-11-01\",\n  \"endDate\": \"2026-11-03\",\n  \"leaveType\": \"ANNUAL\",\n  \"reason\": \"Family event\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
         },
         {
           "name": "Staff2 submits leave: 201",
@@ -350,14 +350,6 @@
             {
               "name": "Submit: reason >500 chars (400)",
               "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"startDate\":\"2027-03-01\",\"endDate\":\"2027-03-05\",\"leaveType\":\"ANNUAL\",\"reason\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
-            },
-            {
-              "name": "Submit: non-existent managerId (400)",
-              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"managerId\":\"non-existent-manager-id\",\"startDate\":\"2027-01-10\",\"endDate\":\"2027-01-12\",\"leaveType\":\"ANNUAL\"}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
-            },
-            {
-              "name": "Submit: wrong lineManager (400) — use a valid UID who isn't your manager",
-              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"managerId\": \"PASTE_MANAGER2_UID\",\n  \"startDate\": \"2027-04-01\",\n  \"endDate\": \"2027-04-03\",\n  \"leaveType\": \"ANNUAL\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests","host":["http://localhost:8900"],"path":["leave-requests"]}}
             },
             {
               "name": "Submit: date overlap with existing PENDING (409)",
@@ -528,6 +520,10 @@
               "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"status\":\"BANANA\"}"},"url":{"raw":"http://localhost:8900/leave-requests/my/search","host":["http://localhost:8900"],"path":["leave-requests","my","search"]}}
             },
             {
+              "name": "POST /my/search: staffMemberId filter rejected (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"status\": \"PENDING\",\n  \"staffMemberId\": \"PASTE_STAFF1_UID\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests/my/search","host":["http://localhost:8900"],"path":["leave-requests","my","search"]}}
+            },
+            {
               "name": "POST /team/search: Staff role (403)",
               "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"status\":\"PENDING\"}"},"url":{"raw":"http://localhost:8900/leave-requests/team/search","host":["http://localhost:8900"],"path":["leave-requests","team","search"]}}
             },
@@ -546,6 +542,10 @@
             {
               "name": "POST /all/search: no filters (400)",
               "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{}"},"url":{"raw":"http://localhost:8900/leave-requests/all/search","host":["http://localhost:8900"],"path":["leave-requests","all","search"]}}
+            },
+            {
+              "name": "POST /all/search: both staffMemberId + managerId (400)",
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_ADMIN_TOKEN"}],"body":{"mode":"raw","raw":"{\n  \"staffMemberId\": \"PASTE_STAFF1_UID\",\n  \"managerId\": \"PASTE_MANAGER1_UID\"\n}"},"url":{"raw":"http://localhost:8900/leave-requests/all/search","host":["http://localhost:8900"],"path":["leave-requests","all","search"]}}
             }
           ]
         }

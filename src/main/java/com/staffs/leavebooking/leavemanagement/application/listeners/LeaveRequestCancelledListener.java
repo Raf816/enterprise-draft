@@ -4,7 +4,6 @@ import com.staffs.leavebooking.leavemanagement.application.handlers.LeaveAllowan
 import com.staffs.leavebooking.leavemanagement.domain.events.LeaveRequestCancelledEvent;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -46,10 +45,9 @@ import org.springframework.transaction.event.TransactionalEventListener;
  * </ul>
  *
  * <h3>Transaction Safety</h3>
- * <p>{@code @TransactionalEventListener(AFTER_COMMIT)} guarantees this listener only fires
- * after the leave-request cancellation transaction has committed successfully. If the
- * cancellation rolls back, this method is never invoked. {@code @Async} runs the handler on
- * a separate thread so the HTTP response is returned without waiting for the allowance update.</p>
+ * <p>{@code @TransactionalEventListener(BEFORE_COMMIT)} ensures this listener fires
+ * within the same transaction as the leave request cancellation. The day release/credit
+ * is atomic with the status change to CANCELLED.</p>
  *
  * @see LeaveRequestCancelledEvent
  * @see LeaveAllowanceApplicationService#creditBackDays(String, int)
@@ -92,8 +90,7 @@ public class LeaveRequestCancelledListener {
      *              days to return, who initiated the cancellation, and whether the request
      *              had been approved before cancellation
      */
-    @Async  // Executes on a separate thread pool so the HTTP response is not blocked
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT) // Only fires after the source transaction commits successfully
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT) // Fires WITHIN the source transaction — atomic with cancellation
     public void handle(LeaveRequestCancelledEvent event) {
         // Log the incoming event — includes the branch path for debugging
         log.info("LeaveRequestCancelledEvent received — {} {} days for staff {}, cancelled by {}",

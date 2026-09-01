@@ -7,6 +7,10 @@ import com.staffs.leavebooking.leavemanagement.application.commands.CancelLeaveR
 import com.staffs.leavebooking.leavemanagement.application.commands.SubmitLeaveRequestCommand;
 import com.staffs.leavebooking.leavemanagement.application.handlers.LeaveAllowanceApplicationService;
 import com.staffs.leavebooking.leavemanagement.application.handlers.LeaveRequestApplicationService;
+import com.staffs.leavebooking.leavemanagement.application.listeners.LeaveRequestSubmittedListener;
+import com.staffs.leavebooking.leavemanagement.application.listeners.LeaveRequestApprovedListener;
+import com.staffs.leavebooking.leavemanagement.application.listeners.LeaveRequestRejectedListener;
+import com.staffs.leavebooking.leavemanagement.application.listeners.LeaveRequestCancelledListener;
 import com.staffs.leavebooking.leavemanagement.infrastructure.entities.LeaveAllowanceJpa;
 import com.staffs.leavebooking.leavemanagement.infrastructure.entities.LeaveRequestJpa;
 import com.staffs.leavebooking.leavemanagement.infrastructure.repositories.LeaveAllowanceRepository;
@@ -18,6 +22,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,8 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Integration tests for the Leave Request and Leave Allowance command flows.
  * Uses {@code @DataJpaTest} to load only the JPA slice (repositories, entities, H2).
- * Application services are imported explicitly via {@code @Import} — no Firebase,
- * RabbitMQ, Security, or web layer is loaded.
+ * Application services and event listeners are imported explicitly via {@code @Import}.
  *
  * <p><strong>What these tests prove:</strong>
  * <ul>
@@ -39,15 +43,15 @@ import static org.junit.jupiter.api.Assertions.*;
  *   <li>LeaveAllowance operations (reserve/confirm/release/credit) work correctly</li>
  *   <li>Idempotency guards work (duplicate allowance prevention)</li>
  *   <li>Event store captures domain events during command execution</li>
+ *   <li><strong>BEFORE_COMMIT listeners</strong> atomically update allowances within the
+ *       same transaction as the leave request — insufficient balance rolls back both</li>
  * </ul>
  *
- * <p><strong>Design decision:</strong> Local event listeners use
- * {@code @TransactionalEventListener(AFTER_COMMIT)} + {@code @Async}, which means they
- * only fire after the outermost transaction commits. Since {@code @DataJpaTest} wraps
- * each test in a transaction that rolls back, the listeners never fire. Instead, we test
- * the allowance update logic by calling {@link LeaveAllowanceApplicationService} directly,
- * which is exactly what the listeners do. This proves the service logic is correct
- * without needing a full Spring Boot context.
+ * <p><strong>Transaction design:</strong> The four allowance listeners use
+ * {@code @TransactionalEventListener(BEFORE_COMMIT)}, so they fire synchronously within
+ * the producing transaction. This means the allowance update is atomic with the leave
+ * request save. Tests that need to verify committed state use {@link TransactionTemplate}
+ * to control transaction boundaries explicitly.
  */
 @DataJpaTest
 @Import({
@@ -55,7 +59,12 @@ import static org.junit.jupiter.api.Assertions.*;
         LeaveAllowanceApplicationService.class,
         DomainEventManager.class,
         EventStoreService.class,
-        JacksonAutoConfiguration.class
+        JacksonAutoConfiguration.class,
+        // Real BEFORE_COMMIT listeners — fire synchronously within the transaction
+        LeaveRequestSubmittedListener.class,
+        LeaveRequestApprovedListener.class,
+        LeaveRequestRejectedListener.class,
+        LeaveRequestCancelledListener.class
 })
 @ActiveProfiles("test")
 @DisplayName("Leave Request Integration Tests (@DataJpaTest)")
@@ -73,6 +82,9 @@ class LeaveRequestIntegrationTest {
 
     @Autowired
     private LeaveAllowanceRepository leaveAllowanceRepository;
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
 
     private static final String STAFF_MEMBER_ID = "int-test-staff-001";
     private static final String MANAGER_ID = "int-test-mgr-001";
@@ -429,5 +441,81 @@ class LeaveRequestIntegrationTest {
             date = date.plusDays(1);
         }
         return date;
+    }
+
+    // ---------------------------------------------------------------
+    // BEFORE_COMMIT LISTENER INTEGRATION TESTS
+    // ---------------------------------------------------------------
+
+    @Nested
+    @DisplayName("Atomic Allowance Consistency (BEFORE_COMMIT listeners)")
+    class AtomicAllowanceConsistency {
+
+        @Test
+        @Order(20)
+        @DisplayName("Submit with sufficient balance — request committed + daysPending incremented atomically")
+        void shouldCommitRequestAndReserveDaysAtomically() {
+            // Act — submit in an explicit transaction so BEFORE_COMMIT listener fires
+            transactionTemplate.executeWithoutResult(status -> {
+                LocalDate start = findNextMonday().plusWeeks(20);
+                LocalDate end = start.plusDays(4); // 5 working days (Mon-Fri)
+                SubmitLeaveRequestCommand command = new SubmitLeaveRequestCommand(
+                        STAFF_MEMBER_ID, MANAGER_ID, start, end, "ANNUAL", "atomic-test-success"
+                );
+                leaveRequestService.submitNewRequest(command);
+            });
+
+            // Assert — in a new read context, verify both committed
+            LeaveAllowanceJpa allowance = leaveAllowanceRepository
+                    .findFirstByStaffMemberIdOrderByBusinessYearStartDesc(STAFF_MEMBER_ID)
+                    .orElseThrow();
+            assertEquals(5, allowance.getDaysPending(),
+                    "BEFORE_COMMIT listener should have reserved 5 pending days");
+
+            List<LeaveRequestJpa> requests = leaveRequestRepository.findByStaffMemberId(STAFF_MEMBER_ID);
+            assertTrue(requests.stream().anyMatch(r -> "atomic-test-success".equals(r.getReason())),
+                    "Leave request should be persisted");
+        }
+
+        @Test
+        @Order(21)
+        @DisplayName("Submit with insufficient balance — transaction rolls back, no request persisted, allowance unchanged")
+        void shouldRollBackWhenInsufficientAllowance() {
+            // Arrange — set allowance to only 2 days available
+            transactionTemplate.executeWithoutResult(status -> {
+                LeaveAllowanceJpa allowance = leaveAllowanceRepository
+                        .findFirstByStaffMemberIdOrderByBusinessYearStartDesc(STAFF_MEMBER_ID)
+                        .orElseThrow();
+                allowance.setTotalEntitlement(2);
+                allowance.setDaysUsed(0);
+                allowance.setDaysPending(0);
+                leaveAllowanceRepository.save(allowance);
+            });
+
+            // Act — try to submit a 5-day request (only 2 available) — should fail
+            assertThrows(Exception.class, () ->
+                transactionTemplate.executeWithoutResult(status -> {
+                    LocalDate start = findNextMonday().plusWeeks(25);
+                    LocalDate end = start.plusDays(4); // 5 working days
+                    SubmitLeaveRequestCommand command = new SubmitLeaveRequestCommand(
+                            STAFF_MEMBER_ID, MANAGER_ID, start, end, "ANNUAL", "atomic-test-fail"
+                    );
+                    leaveRequestService.submitNewRequest(command);
+                })
+            );
+
+            // Assert — no request persisted, allowance unchanged
+            List<LeaveRequestJpa> requests = leaveRequestRepository.findByStaffMemberId(STAFF_MEMBER_ID);
+            assertTrue(requests.stream().noneMatch(r -> "atomic-test-fail".equals(r.getReason())),
+                    "No leave request should be persisted when allowance is insufficient");
+
+            LeaveAllowanceJpa allowance = leaveAllowanceRepository
+                    .findFirstByStaffMemberIdOrderByBusinessYearStartDesc(STAFF_MEMBER_ID)
+                    .orElseThrow();
+            assertEquals(0, allowance.getDaysPending(),
+                    "Allowance daysPending should remain 0 after rollback");
+            assertEquals(2, allowance.getTotalEntitlement(),
+                    "Allowance totalEntitlement should remain unchanged");
+        }
     }
 }

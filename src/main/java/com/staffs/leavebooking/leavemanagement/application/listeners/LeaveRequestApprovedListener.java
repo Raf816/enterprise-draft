@@ -4,7 +4,6 @@ import com.staffs.leavebooking.leavemanagement.application.handlers.LeaveAllowan
 import com.staffs.leavebooking.leavemanagement.domain.events.LeaveRequestApprovedEvent;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -36,10 +35,9 @@ import org.springframework.transaction.event.TransactionalEventListener;
  * </ul>
  *
  * <h3>Transaction Safety</h3>
- * <p>{@code @TransactionalEventListener(AFTER_COMMIT)} guarantees this listener only fires
- * after the leave-request approval transaction has committed successfully. If the approval
- * rolls back, this method is never invoked. {@code @Async} runs the handler on a separate
- * thread so the manager's HTTP response is returned without waiting for the allowance update.</p>
+ * <p>{@code @TransactionalEventListener(BEFORE_COMMIT)} ensures this listener fires
+ * within the same transaction as the leave request approval. The day confirmation
+ * (daysPending → daysUsed) is atomic with the status change to APPROVED.</p>
  *
  * @see LeaveRequestApprovedEvent
  * @see LeaveAllowanceApplicationService#confirmDays(String, int)
@@ -73,8 +71,7 @@ public class LeaveRequestApprovedListener {
      *              manager's ID, and the number of days to confirm; published after the
      *              leave request approval is committed
      */
-    @Async  // Executes on a separate thread pool so the HTTP response is not blocked
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT) // Only fires after the source transaction commits successfully
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT) // Fires WITHIN the source transaction — atomic with approval
     public void handle(LeaveRequestApprovedEvent event) {
         // Log the incoming event for operational traceability and debugging
         log.info("LeaveRequestApprovedEvent received — confirming {} days for staff {}, approved by {}",

@@ -23,7 +23,9 @@ import java.time.LocalDate;
  * </ul>
  *
  * <p><strong>Date range semantics:</strong> When both {@code from} and {@code to} are provided,
- * the query filters by leave requests whose start date falls within the range [from, to] inclusive.
+ * the query filters by leave requests that overlap with the range — any request where
+ * {@code startDate <= to AND endDate >= from}. This catches requests that start before the
+ * range but end within it, or span the entire range.
  * Both dates must be provided for the range to take effect — a single date is ignored.
  *
  * <p><strong>Immutability:</strong> As a Java record, this is immutable after construction.
