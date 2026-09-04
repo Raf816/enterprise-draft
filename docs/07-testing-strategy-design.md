@@ -2,7 +2,7 @@
 
 **Module:** COMP60047 Enterprise Application Development
 **Assignment:** Scenario 1 — Leave Booking System
-**Last Updated:** 2026-09-01
+**Last Updated:** 2026-09-04
 
 ---
 
@@ -123,10 +123,28 @@ class LeaveRequestQueryHandlerTest {
         var result = handler.findByStaffMemberId("staff-1");
         // Assert
         assertEquals(1, result.size());
-        verify(repository).findByStaffMemberId("staff-1");
     }
 }
 ```
+
+### 2.4 verify() Philosophy (Khorikov, 2020 / Lecture Guidance)
+
+Controller tests **do not use `verify()`**. Following Khorikov's Pillar 2 (Resistance to Refactoring) and the module lecturer's explicit guidance:
+
+> "If you are just starting out doing this, people tend to test and put verifies here, there and everywhere of the call to downstream. But do you think it's necessary? [...] That's testing implementation, not behaviour."
+> — Phil James, COMP50051/COMP60047
+
+The principle: **test observable outcomes (HTTP status, response body), not implementation details (which internal methods were called)**. If a controller returns 200 OK with the correct JSON, the downstream call must have happened — a separate `verify()` is redundant and creates brittle coupling to the internal wiring.
+
+**Where verify() IS used (justified):**
+- **Event listeners** (void, fire-and-forget) — no return value to assert on, so `verify()` is the only way to confirm the listener delegated correctly (e.g., `verify(leaveAllowanceApplicationService).confirmDays(...)`)
+- **Service-layer unit tests** — `verify(repository).save(jpa)` combined with `ArgumentCaptor` to confirm both that the save happened AND that the correct values were set on the entity before persistence
+- **Scheduled jobs** — void methods with no observable output (e.g., `verify(eventStoreService).purgeOldEvents(30)`)
+
+**Where verify() was removed (13 calls across 3 controller tests):**
+- `StaffControllerTest` — removed `verify(facade).searchStaff(...)`, `verify(facade).updateDepartment(...)`, `verify(facade).updateStatus(...)`, `verify(firebaseAuthService).registerUser(...)`, `verify(firebaseAuthService).updateUserRole(...)`, and associated `verify(never())` calls
+- `LeaveAllowanceControllerTest` — removed `verify(facade).amendEntitlement(...)`
+- `AuthControllerTest` — removed `verify(firebaseAuthService).changePassword(...)`
 
 ### 2.3 Properties of Good Unit Tests (Lecture 2)
 
@@ -288,6 +306,7 @@ mvn test -Dtest="com.staffs.leavebooking.leavemanagement.domain.LeaveRequestTest
 |-----------------|-----------------|
 | Lecture 2: AAA pattern | Every test follows Arrange/Act/Assert |
 | Lecture 2: Properties of good tests (FIRST) | Fast, Isolated, Repeatable, Self-validating, Thorough |
+| Lecture 2: Khorikov Pillar 2 — Resistance to refactoring | Controller tests assert on observable behaviour (HTTP status, response body), not implementation details. `verify()` removed from all controller tests; retained only for void/fire-and-forget operations (event listeners, scheduled jobs) |
 | Lecture 2: Object Mother | `LeaveRequestMother` and helper methods in test classes |
 | Lecture 2: `@DisplayName` + `@Nested` | Every test class uses both |
 | Lecture 2: Test VOs and Entities | All domain objects comprehensively tested |

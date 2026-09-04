@@ -10,52 +10,52 @@
       "item": [
         {
           "name": "Register Admin",
-          "event": [{"listen":"test","script":{"exec":["pm.test('201 Created', function(){ pm.response.to.have.status(201); });","var json = pm.response.json();","pm.test('has uid', function(){ pm.expect(json.uid).to.be.a('string'); });","pm.environment.set('admin_uid', json.uid);","pm.test('has message', function(){ pm.expect(json.message).to.include('successfully'); });"]}}],
+          "event": [{"listen":"test","script":{"exec":["var code = pm.response.code;","pm.test('201 Created or 400 already exists', function(){ pm.expect(code).to.be.oneOf([201, 400]); });","if (code === 201) {","  var json = pm.response.json();","  pm.test('has uid', function(){ pm.expect(json.uid).to.be.a('string'); });","  pm.environment.set('admin_uid', json.uid);","  pm.test('has message', function(){ pm.expect(json.message).to.include('successfully'); });","}"]}}],
           "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"username\":\"Admin User\",\"email\":\"admin@leavebooking.test\",\"password\":\"Admin123!\",\"role\":\"ADMIN\"}"},"url":{"raw":"{{base_url}}/auth/register","host":["{{base_url}}"],"path":["auth","register"]}}
         },
         {
           "name": "Register Manager1",
-          "event": [{"listen":"test","script":{"exec":["pm.test('201 Created', function(){ pm.response.to.have.status(201); });","var json = pm.response.json();","pm.environment.set('manager1_uid', json.uid);"]}}],
+          "event": [{"listen":"test","script":{"exec":["var code = pm.response.code;","pm.test('201 Created or 400 already exists', function(){ pm.expect(code).to.be.oneOf([201, 400]); });","if (code === 201) {","  var json = pm.response.json();","  pm.environment.set('manager1_uid', json.uid);","}"]}}],
           "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"username\":\"Manager One\",\"email\":\"manager1@leavebooking.test\",\"password\":\"Manager123!\",\"role\":\"MANAGER\"}"},"url":{"raw":"{{base_url}}/auth/register","host":["{{base_url}}"],"path":["auth","register"]}}
         },
         {
           "name": "Register Manager2",
-          "event": [{"listen":"test","script":{"exec":["pm.test('201 Created', function(){ pm.response.to.have.status(201); });","var json = pm.response.json();","pm.environment.set('manager2_uid', json.uid);"]}}],
+          "event": [{"listen":"test","script":{"exec":["var code = pm.response.code;","pm.test('201 Created or 400 already exists', function(){ pm.expect(code).to.be.oneOf([201, 400]); });","if (code === 201) {","  var json = pm.response.json();","  pm.environment.set('manager2_uid', json.uid);","}"]}}],
           "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"username\":\"Manager Two\",\"email\":\"manager2@leavebooking.test\",\"password\":\"Manager123!\",\"role\":\"MANAGER\"}"},"url":{"raw":"{{base_url}}/auth/register","host":["{{base_url}}"],"path":["auth","register"]}}
         },
         {
           "name": "Register Staff1",
-          "event": [{"listen":"test","script":{"exec":["pm.test('201 Created', function(){ pm.response.to.have.status(201); });","var json = pm.response.json();","pm.environment.set('staff1_uid', json.uid);"]}}],
+          "event": [{"listen":"test","script":{"exec":["var code = pm.response.code;","pm.test('201 Created or 400 already exists', function(){ pm.expect(code).to.be.oneOf([201, 400]); });","if (code === 201) {","  var json = pm.response.json();","  pm.environment.set('staff1_uid', json.uid);","}"]}}],
           "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"username\":\"Staff One\",\"email\":\"staff1@leavebooking.test\",\"password\":\"Staff123!\",\"role\":\"STAFF\"}"},"url":{"raw":"{{base_url}}/auth/register","host":["{{base_url}}"],"path":["auth","register"]}}
         },
         {
           "name": "Register Staff2",
-          "event": [{"listen":"test","script":{"exec":["pm.test('201 Created', function(){ pm.response.to.have.status(201); });","var json = pm.response.json();","pm.environment.set('staff2_uid', json.uid);"]}}],
+          "event": [{"listen":"test","script":{"exec":["var code = pm.response.code;","pm.test('201 Created or 400 already exists', function(){ pm.expect(code).to.be.oneOf([201, 400]); });","if (code === 201) {","  var json = pm.response.json();","  pm.environment.set('staff2_uid', json.uid);","}"]}}],
           "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"username\":\"Staff Two\",\"email\":\"staff2@leavebooking.test\",\"password\":\"Staff123!\",\"role\":\"STAFF\"}"},"url":{"raw":"{{base_url}}/auth/register","host":["{{base_url}}"],"path":["auth","register"]}}
         },
         {
           "name": "Login Admin",
-          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('has idToken', function(){ pm.expect(json.idToken).to.be.a('string'); });","pm.environment.set('jwt_admin_token', json.idToken);"]}}],
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('has idToken', function(){ pm.expect(json.idToken).to.be.a('string'); });","pm.environment.set('jwt_admin_token', json.idToken);","pm.environment.set('admin_uid', json.localId);"]}}],
           "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"emailOrUsername\":\"admin@leavebooking.test\",\"password\":\"Admin123!\"}"},"url":{"raw":"{{base_url}}/auth/login","host":["{{base_url}}"],"path":["auth","login"]}}
         },
         {
           "name": "Login Manager1",
-          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","pm.environment.set('jwt_manager1_token', pm.response.json().idToken);"]}}],
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.environment.set('jwt_manager1_token', json.idToken);","pm.environment.set('manager1_uid', json.localId);"]}}],
           "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"emailOrUsername\":\"manager1@leavebooking.test\",\"password\":\"Manager123!\"}"},"url":{"raw":"{{base_url}}/auth/login","host":["{{base_url}}"],"path":["auth","login"]}}
         },
         {
           "name": "Login Manager2",
-          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","pm.environment.set('jwt_manager2_token', pm.response.json().idToken);"]}}],
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.environment.set('jwt_manager2_token', json.idToken);","pm.environment.set('manager2_uid', json.localId);"]}}],
           "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"emailOrUsername\":\"manager2@leavebooking.test\",\"password\":\"Manager123!\"}"},"url":{"raw":"{{base_url}}/auth/login","host":["{{base_url}}"],"path":["auth","login"]}}
         },
         {
           "name": "Login Staff1",
-          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","pm.environment.set('jwt_staff1_token', pm.response.json().idToken);"]}}],
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.environment.set('jwt_staff1_token', json.idToken);","pm.environment.set('staff1_uid', json.localId);"]}}],
           "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"emailOrUsername\":\"staff1@leavebooking.test\",\"password\":\"Staff123!\"}"},"url":{"raw":"{{base_url}}/auth/login","host":["{{base_url}}"],"path":["auth","login"]}}
         },
         {
           "name": "Login Staff2",
-          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","pm.environment.set('jwt_staff2_token', pm.response.json().idToken);"]}}],
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.environment.set('jwt_staff2_token', json.idToken);","pm.environment.set('staff2_uid', json.localId);"]}}],
           "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"emailOrUsername\":\"staff2@leavebooking.test\",\"password\":\"Staff123!\"}"},"url":{"raw":"{{base_url}}/auth/login","host":["{{base_url}}"],"path":["auth","login"]}}
         },
         {
@@ -79,7 +79,7 @@
             {
               "name": "Register: duplicate email (400)",
               "event": [{"listen":"test","script":{"exec":["pm.test('400 Bad Request', function(){ pm.response.to.have.status(400); });","pm.test('duplicate msg', function(){ pm.expect(pm.response.json().message).to.include('already exists'); });"]}}],
-              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"username\":\"Dup User\",\"email\":\"admin@leavebooking.test\",\"password\":\"Pass123!\"}"},"url":{"raw":"{{base_url}}/auth/register","host":["{{base_url}}"],"path":["auth","register"]}}
+              "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"username\":\"Dup User\",\"email\":\"staff1@leavebooking.test\",\"password\":\"Pass123!\"}"},"url":{"raw":"{{base_url}}/auth/register","host":["{{base_url}}"],"path":["auth","register"]}}
             },
             {
               "name": "Register: empty body (400)",

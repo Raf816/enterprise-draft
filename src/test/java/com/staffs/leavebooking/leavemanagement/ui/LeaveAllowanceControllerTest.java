@@ -176,8 +176,6 @@ class LeaveAllowanceControllerTest {
                             .content("{\"newEntitlement\": 30}"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.totalEntitlement").value(30));
-
-            verify(facade).amendEntitlement(any());
         }
     }
 

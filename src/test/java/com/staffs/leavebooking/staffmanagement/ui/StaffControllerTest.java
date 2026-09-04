@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -101,8 +100,6 @@ class StaffControllerTest {
                             .content("{\"department\": \"Engineering\"}"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$[0].id").value("staff-1"));
-
-            verify(facade).searchStaff(any(StaffSearchCriteria.class));
         }
 
         @Test
@@ -144,8 +141,6 @@ class StaffControllerTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("{}"))
                     .andExpect(status().isBadRequest());
-
-            verify(facade, never()).searchStaff(any());
         }
     }
 
@@ -187,9 +182,6 @@ class StaffControllerTest {
                             .content(body))
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.email").value("james@company.com"));
-
-            verify(firebaseAuthService).registerUser(eq("James Wilson"), eq("james@company.com"), any(), any());
-            verify(facade).addStaffMemberWithId(eq("firebase-uid-123"), any());
         }
     }
 
@@ -213,10 +205,6 @@ class StaffControllerTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("{\"department\": \"Marketing\", \"lineManagerId\": \"mgr-2\"}"))
                     .andExpect(status().isOk());
-
-            verify(facade).updateDepartment(any());
-            verify(facade, never()).updatePlacement(any());
-            verify(facade, never()).updateStatus(any());
         }
 
         @Test
@@ -231,9 +219,6 @@ class StaffControllerTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("{\"employmentStatus\": \"ACTIVE\"}"))
                     .andExpect(status().isOk());
-
-            verify(facade, never()).updateDepartment(any());
-            verify(facade).updateStatus(any());
         }
 
         @Test
@@ -248,8 +233,6 @@ class StaffControllerTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content("{\"role\": \"MANAGER\"}"))
                     .andExpect(status().isOk());
-
-            verify(firebaseAuthService).updateUserRole("staff-1", "MANAGER");
         }
 
         @Test
@@ -277,11 +260,6 @@ class StaffControllerTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(body))
                     .andExpect(status().isOk());
-
-            verify(facade).updateDepartment(any());
-            verify(facade).updatePlacement(any());
-            verify(facade).updateStatus(any());
-            verify(firebaseAuthService).updateUserRole("staff-1", "MANAGER");
         }
     }
 

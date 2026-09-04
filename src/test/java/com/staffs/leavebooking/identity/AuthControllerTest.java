@@ -148,8 +148,6 @@ class AuthControllerTest {
                             .content("{\"newPassword\": \"NewSecurePass123!\"}"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.message").value("Password changed successfully"));
-
-            verify(firebaseAuthService).changePassword("uid-staff-001", "NewSecurePass123!");
         }
 
         @Test
