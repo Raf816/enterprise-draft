@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -102,7 +103,7 @@ public class ManagerNotificationPublisher {
      */
     @Async  // Executes on a separate thread pool so the HTTP response is not blocked
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT) // Only fires after the source transaction commits successfully
-    @Transactional // Opens a new transaction so RemoteOutboxListener's @TransactionalEventListener can bind to it
+    @Transactional(propagation = Propagation.REQUIRES_NEW) // Own transaction so DomainEventManager can persist + RemoteOutboxListener can bind
     public void onLeaveRequestSubmitted(LeaveRequestSubmittedEvent event) {
         log.info("Publishing manager notification for leave request {} by staff {}",
                 event.leaveRequestId(), event.staffMemberId());
