@@ -354,6 +354,8 @@ These events cross the bounded context boundary via RabbitMQ. The Staff Manageme
  * 2. After commit: RemoteOutboxListener publishes to RabbitMQ
  * 3. On success: status → PUBLISHED
  * 4. On failure: @Retryable retries, then @Recover marks FAILED
+ * 5. Recovery: OutboxRecoveryJob polls every 5 minutes for stranded PENDING/FAILED events,
+ *    deserialises from event_body, and re-publishes to RabbitMQ (max 10 recovery retries)
  */
 public record StaffMemberAddedEvent(
         Long id,

@@ -44,4 +44,17 @@ public interface EventStoreRepository extends CrudRepository<EventStoreJpa, Long
      * @return list of matching events (empty if none found)
      */
     List<EventStoreJpa> findByStatusAndOccurredOnBefore(String status, LocalDate cutoffDate);
+
+    /**
+     * Finds all events with a given status, regardless of date.
+     * Spring Data generates: {@code WHERE status = :status}
+     *
+     * <p><strong>Used by:</strong> {@link EventStoreService#findStrandedEvents()} for the
+     * outbox recovery poller — finds PENDING events that were never published due to
+     * process failure or broker unavailability.
+     *
+     * @param status the event delivery status to filter by (e.g., "PENDING", "FAILED")
+     * @return list of matching events (empty if none found)
+     */
+    List<EventStoreJpa> findByStatus(String status);
 }

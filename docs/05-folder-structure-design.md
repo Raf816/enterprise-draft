@@ -134,6 +134,7 @@ com.staffs.leavebooking/
 │       ├── EventStoreJpa.java            @Entity for event_store table
 │       ├── EventStoreRepository.java     CrudRepository<EventStoreJpa, Long>
 │       ├── EventStoreCleanupJob.java     @Scheduled — purges old PUBLISHED/LOCAL events (30-day retention)
+│       ├── OutboxRecoveryJob.java        @Scheduled — re-publishes stranded PENDING/FAILED events (every 5 min)
 │       ├── RabbitInfrastructureConfig.java @Configuration — declares exchanges, queues, bindings as Spring beans
 │       ├── RabbitOutboxRouter.java        @ConfigurationProperties — resolves exchange+routingKey
 │       ├── RemoteOutboxListener.java     @Async, @TransactionalEventListener, @Retryable
@@ -862,7 +863,8 @@ src/test/java/com/staffs/leavebooking/
 │   │   └── DomainAssertionsTest.java         23 tests — all 7 guard methods
 │   └── events/
 │       ├── EventStoreServiceTest.java        6 tests — append, updateStatus, purge
-│       └── EventStoreCleanupJobTest.java     2 tests — scheduled purge delegation
+│       ├── EventStoreCleanupJobTest.java     2 tests — scheduled purge delegation
+│       └── OutboxRecoveryJobTest.java        5 tests — recovery poller (success, broker failure, max retries, unknown type)
 ├── leavemanagement/
 │   ├── domain/
 │   │   ├── DateRangeTest.java                12 tests — null, end<start, workingDays, futureStart

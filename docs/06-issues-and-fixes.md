@@ -198,6 +198,8 @@ docker rm -f leave-rabbitmq
 | 2026-08-26 | Task 13: Integration tests (23 tests, @DataJpaTest) |
 | 2026-08-31 | Task 14: Postman collections (139 requests per collection, all 26 endpoints) |
 | 2026-09-04 | Removed 13 redundant `verify()` calls from controller tests (StaffControllerTest, LeaveAllowanceControllerTest, AuthControllerTest). Per Khorikov's Pillar 2 and Phil James' explicit lecture guidance: controller tests should assert on observable behaviour (HTTP status, response body), not implementation details (which internal methods were called). `verify()` retained in event listener tests and service-layer tests where void operations have no observable return value. Documented in docs/07 section 2.4. |
+| 2026-09-05 | Implemented `OutboxRecoveryJob` — scheduled poller (every 5 minutes) that re-publishes stranded PENDING and FAILED events to RabbitMQ. Closes the resilience gap where process failure between transaction commit and RabbitMQ publish left events permanently undelivered. Added `findByStatus()` to `EventStoreRepository`, `findStrandedEvents()` to `EventStoreService`, and 5 unit tests in `OutboxRecoveryJobTest`. Max 10 recovery retries before skipping (prevents infinite loops). |
+| 2026-09-05 | Documentation audit: fixed 20+ stale references across docs 03-08 (test counts, endpoint paths, missing files in folder tree, PENDING_SETUP state, decisionReason field, rate limit code snippet, Postman request counts). |
 | 2026-09-21 | **Submission deadline** |
 
 ---

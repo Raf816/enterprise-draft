@@ -195,4 +195,27 @@ public class EventStoreService {
 
         return purgedCount;
     }
+
+    /**
+     * Finds all events stranded in PENDING or FAILED status.
+     * Called by {@link OutboxRecoveryJob} on a scheduled interval to re-attempt
+     * publishing events that were never delivered due to process failure, broker
+     * unavailability, or exhausted retries.
+     *
+     * <p><strong>Why this is needed:</strong> The {@link RemoteOutboxListener} publishes
+     * events asynchronously after commit. If the application process dies between the
+     * commit and the RabbitMQ publish (or if all 3 retry attempts fail), the event
+     * remains PENDING or FAILED in the event store with no automatic recovery.
+     * This method provides the query for the recovery poller to find those events.
+     *
+     * @return list of events in PENDING or FAILED status (empty if none stranded)
+     */
+    public java.util.List<EventStoreJpa> findStrandedEvents() {
+        var pending = eventsStore.findByStatus(StatusOfMessageDelivery.PENDING.name());
+        var failed = eventsStore.findByStatus(StatusOfMessageDelivery.FAILED.name());
+
+        var stranded = new java.util.ArrayList<>(pending);
+        stranded.addAll(failed);
+        return stranded;
+    }
 }
