@@ -48,7 +48,7 @@ class OutboxRecoveryJobTest {
         event.setEventBody("{\"id\":1,\"occurredOn\":\"2026-09-01\",\"staffMemberId\":\"staff-1\"}");
         event.setStatus(status);
         event.setRetryCount(retryCount);
-        event.setOccurredOn(LocalDate.now().minusMinutes(10));
+        event.setOccurredOn(LocalDate.now().minusDays(1));
         event.setSourceContext("TestContext");
         return event;
     }
