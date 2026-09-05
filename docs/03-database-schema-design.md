@@ -3,6 +3,7 @@
 **Module:** COMP60047 Enterprise Application Development
 **Lecturer:** Phil James — Staffordshire University
 **Lecture Alignment:** Lecture 5 (CQRS Queries — schema.sql, data.sql, H2, ERD), Lecture 6 (CQRS Commands — extended schema, VARCHAR(36) PKs), Lecture 7 (event_store + event_publication tables), Lecture 8 (extended event_store with status + retry)
+**Last Updated:** 2026-09-05
 
 ---
 
@@ -242,7 +243,7 @@ erDiagram
 | `start_date_current_role` | DATE | — | — | NOT NULL | When they started this role. |
 | `job_level` | VARCHAR(20) | — | — | — | Grade/band (e.g. "L4", "Senior"). Optional. |
 | `employment_type` | VARCHAR(20) | — | — | NOT NULL, CHECK IN ('FULL_TIME','PART_TIME','CONTRACT') | Maps to `EmploymentType` enum. |
-| `employment_status` | VARCHAR(20) | — | — | NOT NULL, CHECK IN ('ACTIVE','ON_LEAVE','TERMINATED') | Maps to `EmploymentStatus` enum. TERMINATED is terminal. |
+| `employment_status` | VARCHAR(20) | — | — | NOT NULL, CHECK IN ('PENDING_SETUP','ACTIVE','ON_LEAVE','TERMINATED') | Maps to `EmploymentStatus` enum. PENDING_SETUP is the initial state (set at creation before onboarding completes). TERMINATED is terminal. |
 
 ---
 
@@ -398,6 +399,7 @@ public class LeaveRequestDomainToJpaMapper {
         jpa.setSubmittedOn(domain.submittedOn());
         jpa.setDecidedOn(domain.decidedOn());
         jpa.setDecidedBy(domain.decidedBy());
+        jpa.setDecisionReason(domain.decisionReason());
         jpa.setCancellationReason(domain.cancellationReason());
         return jpa;
     }
@@ -428,6 +430,7 @@ public class LeaveRequestJpaToDomainMapper {
                 jpa.getSubmittedOn(),
                 jpa.getDecidedOn(),
                 jpa.getDecidedBy(),
+                jpa.getDecisionReason(),
                 jpa.getCancellationReason()
         );
     }
@@ -445,7 +448,7 @@ This file is loaded by Spring Boot on startup (`spring.sql.init.mode: always` in
 -- LEAVE MANAGEMENT CONTEXT (CORE)
 -- ============================================================
 
-CREATE TABLE leave_allowance (
+CREATE TABLE IF NOT EXISTS leave_allowance (
     id                   VARCHAR(36)  PRIMARY KEY,
     staff_member_id      VARCHAR(36)  NOT NULL,
     manager_id           VARCHAR(36)  NOT NULL,
@@ -460,20 +463,19 @@ CREATE TABLE leave_allowance (
     CONSTRAINT uq_allowance_staff_year UNIQUE (staff_member_id, business_year_start)
 );
 
-CREATE INDEX idx_leave_allowance_staff ON leave_allowance(staff_member_id);
-CREATE INDEX idx_leave_allowance_manager ON leave_allowance(manager_id);
+CREATE INDEX IF NOT EXISTS idx_leave_allowance_staff ON leave_allowance(staff_member_id);
+CREATE INDEX IF NOT EXISTS idx_leave_allowance_manager ON leave_allowance(manager_id);
 
-CREATE TABLE leave_request (
+CREATE TABLE IF NOT EXISTS leave_request (
     id                   VARCHAR(36)  PRIMARY KEY,
     staff_member_id      VARCHAR(36)  NOT NULL,
     manager_id           VARCHAR(36)  NOT NULL,
-    leave_type           VARCHAR(20)  NOT NULL CHECK (leave_type IN ('ANNUAL')),
+    leave_type           VARCHAR(20)  NOT NULL,
     start_date           DATE         NOT NULL,
     end_date             DATE         NOT NULL,
     number_of_days       INT          NOT NULL CHECK (number_of_days > 0),
     reason               VARCHAR(500),
-    status               VARCHAR(20)  NOT NULL 
-        CHECK (status IN ('PENDING','APPROVED','REJECTED','CANCELLED')),
+    status               VARCHAR(20)  NOT NULL,
     submitted_on         DATE         NOT NULL,
     decided_on           DATE,
     decided_by           VARCHAR(36),
@@ -481,38 +483,36 @@ CREATE TABLE leave_request (
     cancellation_reason  VARCHAR(500)
 );
 
-CREATE INDEX idx_leave_request_staff ON leave_request(staff_member_id);
-CREATE INDEX idx_leave_request_manager ON leave_request(manager_id);
-CREATE INDEX idx_leave_request_status ON leave_request(status);
+CREATE INDEX IF NOT EXISTS idx_leave_request_staff ON leave_request(staff_member_id);
+CREATE INDEX IF NOT EXISTS idx_leave_request_manager ON leave_request(manager_id);
+CREATE INDEX IF NOT EXISTS idx_leave_request_status ON leave_request(status);
 
 -- ============================================================
 -- STAFF MANAGEMENT CONTEXT (SUPPORTING)
 -- ============================================================
 
-CREATE TABLE staff_member (
-    id                      VARCHAR(36)  PRIMARY KEY,
-    first_name              VARCHAR(50)  NOT NULL,
-    surname                 VARCHAR(50)  NOT NULL,
-    email                   VARCHAR(150) NOT NULL UNIQUE,
-    department              VARCHAR(100) NOT NULL,
-    line_manager_id         VARCHAR(36),
-    hire_date               DATE         NOT NULL,
-    current_role            VARCHAR(100) NOT NULL,
-    start_date_current_role DATE         NOT NULL,
-    job_level               VARCHAR(20),
-    employment_type         VARCHAR(20)  NOT NULL 
-        CHECK (employment_type IN ('FULL_TIME','PART_TIME','CONTRACT')),
-    employment_status       VARCHAR(20)  NOT NULL 
-        CHECK (employment_status IN ('ACTIVE','ON_LEAVE','TERMINATED'))
+CREATE TABLE IF NOT EXISTS staff_member (
+    id                        VARCHAR(36)  PRIMARY KEY,
+    first_name                VARCHAR(50)  NOT NULL,
+    surname                   VARCHAR(50)  NOT NULL,
+    email                     VARCHAR(150) NOT NULL UNIQUE,
+    department                VARCHAR(100) NOT NULL,
+    line_manager_id           VARCHAR(36),
+    hire_date                 DATE         NOT NULL,
+    "current_role"            VARCHAR(100) NOT NULL,
+    start_date_current_role   DATE         NOT NULL,
+    job_level                 VARCHAR(20),
+    employment_type           VARCHAR(20)  NOT NULL,
+    employment_status         VARCHAR(20)  NOT NULL
 );
 
-CREATE INDEX idx_staff_member_manager ON staff_member(line_manager_id);
+CREATE INDEX IF NOT EXISTS idx_staff_member_manager ON staff_member(line_manager_id);
 
 -- ============================================================
 -- COMMON (EVENT INFRASTRUCTURE)
 -- ============================================================
 
-CREATE TABLE event_store (
+CREATE TABLE IF NOT EXISTS event_store (
     id              INT AUTO_INCREMENT PRIMARY KEY,
     occurred_on     DATE          NOT NULL,
     event_body      VARCHAR(65000) NOT NULL,
@@ -522,12 +522,10 @@ CREATE TABLE event_store (
     source_context  VARCHAR(100)
 );
 
-CREATE INDEX idx_event_store_type ON event_store(event_type);
-CREATE INDEX idx_event_store_status ON event_store(status);
+CREATE INDEX IF NOT EXISTS idx_event_store_type ON event_store(event_type);
+CREATE INDEX IF NOT EXISTS idx_event_store_status ON event_store(status);
 
--- Spring Modulith event publication registry
--- Required for @TransactionalEventListener to track publication lifecycle
--- (Lecture 7: Phil explicitly creates this table manually in schema.sql)
+-- Spring Modulith event publication registry (required for @TransactionalEventListener)
 CREATE TABLE IF NOT EXISTS event_publication (
     id                      UUID         NOT NULL PRIMARY KEY,
     listener_id             VARCHAR(512) NOT NULL,
@@ -543,77 +541,21 @@ CREATE TABLE IF NOT EXISTS event_publication (
 
 ---
 
-## 5. data.sql (Seed Data for Development/Testing)
+## 5. data.sql (No Seed Data — API-Driven Test Data)
 
-Seed data populates the H2 database on startup for manual testing and Postman verification:
+Seed data was removed because all test data is now created via the Postman collection through the API. This ensures that Firebase UIDs match staff record IDs and leave allowance `staffMemberId` values — a constraint that cannot be guaranteed with hardcoded INSERT statements.
 
 ```sql
--- ============================================================
--- STAFF MANAGEMENT CONTEXT — Seed Staff
--- ============================================================
--- These represent staff members already in the system.
--- In production, they would be created via POST /staff (triggering events).
-
-INSERT INTO staff_member (id, first_name, surname, email, department, 
-    line_manager_id, hire_date, current_role, start_date_current_role, 
-    job_level, employment_type, employment_status)
-VALUES
-    ('mgr-001', 'Sarah', 'Thompson', 'sarah.thompson@company.com', 
-     'Engineering', NULL, '2020-03-15', 'Engineering Manager', 
-     '2022-01-01', 'L6', 'FULL_TIME', 'ACTIVE'),
-    ('staff-001', 'James', 'Wilson', 'james.wilson@company.com', 
-     'Engineering', 'mgr-001', '2022-06-01', 'Software Engineer', 
-     '2022-06-01', 'L4', 'FULL_TIME', 'ACTIVE'),
-    ('staff-002', 'Emily', 'Chen', 'emily.chen@company.com', 
-     'Engineering', 'mgr-001', '2023-01-10', 'Software Engineer', 
-     '2023-01-10', 'L4', 'FULL_TIME', 'ACTIVE'),
-    ('staff-003', 'David', 'Patel', 'david.patel@company.com', 
-     'Engineering', 'mgr-001', '2021-09-01', 'Senior Engineer', 
-     '2024-04-01', 'L5', 'FULL_TIME', 'ACTIVE'),
-    ('admin-001', 'Rachel', 'Morgan', 'rachel.morgan@company.com', 
-     'HR', NULL, '2019-01-05', 'HR Administrator', 
-     '2019-01-05', 'L5', 'FULL_TIME', 'ACTIVE');
-
--- ============================================================
--- LEAVE MANAGEMENT CONTEXT — Seed Allowances (2026-2027)
--- ============================================================
--- In production, these are auto-created by StaffMemberAddedEvent.
-
-INSERT INTO leave_allowance (id, staff_member_id, manager_id, first_name, 
-    surname, department, business_year_start, business_year_end, 
-    total_entitlement, days_used, days_pending)
-VALUES
-    ('allow-001', 'staff-001', 'mgr-001', 'James', 'Wilson', 
-     'Engineering', 2026, 2027, 25, 5, 3),
-    ('allow-002', 'staff-002', 'mgr-001', 'Emily', 'Chen', 
-     'Engineering', 2026, 2027, 25, 2, 0),
-    ('allow-003', 'staff-003', 'mgr-001', 'David', 'Patel', 
-     'Engineering', 2026, 2027, 28, 10, 5),
-    ('allow-004', 'mgr-001', NULL, 'Sarah', 'Thompson', 
-     'Engineering', 2026, 2027, 30, 8, 0);
-
--- ============================================================
--- LEAVE MANAGEMENT CONTEXT — Seed Leave Requests
--- ============================================================
-
-INSERT INTO leave_request (id, staff_member_id, manager_id, leave_type, 
-    start_date, end_date, number_of_days, reason, status, 
-    submitted_on, decided_on, decided_by, cancellation_reason)
-VALUES
-    ('req-001', 'staff-001', 'mgr-001', 'ANNUAL', '2026-07-14', '2026-07-18', 
-     5, 'Summer holiday', 'APPROVED', '2026-06-01', '2026-06-03', 'mgr-001', NULL),
-    ('req-002', 'staff-001', 'mgr-001', 'ANNUAL', '2026-09-01', '2026-09-03', 
-     3, 'Long weekend', 'PENDING', '2026-08-15', NULL, NULL, NULL),
-    ('req-003', 'staff-002', 'mgr-001', 'ANNUAL', '2026-08-05', '2026-08-06', 
-     2, 'Personal appointment', 'APPROVED', '2026-07-20', '2026-07-21', 'mgr-001', NULL),
-    ('req-004', 'staff-003', 'mgr-001', 'ANNUAL', '2026-12-23', '2026-12-31', 
-     5, 'Christmas break', 'PENDING', '2026-08-20', NULL, NULL, NULL),
-    ('req-005', 'staff-003', 'mgr-001', 'ANNUAL', '2026-10-14', '2026-10-25', 
-     10, 'Annual trip', 'APPROVED', '2026-08-01', '2026-08-02', 'mgr-001', NULL),
-    ('req-006', 'staff-001', 'mgr-001', 'ANNUAL', '2026-04-07', '2026-04-11', 
-     5, 'Easter break', 'CANCELLED', '2026-03-01', '2026-03-02', 'mgr-001', 
-     'Plans changed');
+-- No seed data — the Postman collection creates all test data via the API.
+-- This ensures Firebase UID = staff record ID = leave allowance staffMemberId.
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE 1=0;
 ```
+
+**Why no seed data?**
+- The Postman collection exercises the full write path (POST endpoints → domain validation → event publication → projections)
+- Firebase authentication requires the staff record ID to match the authenticated user's Firebase UID
+- Hardcoded INSERTs bypass domain logic and event publishing, leading to inconsistent state
+- API-driven test data ensures all cross-context event listeners fire correctly (e.g. `StaffMemberAddedEvent` → `LeaveAllowance` creation)
 
 ---
 

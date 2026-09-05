@@ -3,6 +3,7 @@
 **Module:** COMP60047 Enterprise Application Development
 **Project:** Leave Booking System (Scenario 1)
 **Date Started:** 2026-08-24
+**Last Updated:** 2026-09-05
 
 ---
 
@@ -95,7 +96,7 @@
 | **RabbitMQ** | Docker local: `localhost:5672`, user: `guest`/`guest` | âœ… Works on any network |
 | **RabbitMQ Management UI** | `http://localhost:15672` | âœ… Works on any network |
 | **Firebase Auth** | `serviceAccountKey.json` + web API key | âš ï¸ Requires unrestricted internet |
-| **Unit Tests (423)** | `mvn test` | âœ… Works on any network (no external deps) |
+| **Unit Tests (467)** | `mvn test` | ✅ Works on any network (no external deps) |
 | **Application Startup** | `mvn spring-boot:run` or IntelliJ Run | âœ… Starts on any network (RabbitMQ/Firebase errors are non-fatal) |
 
 ---
@@ -300,7 +301,7 @@ These items were identified during an exhaustive line-by-line audit of both the 
 | **First fix (2026-08-29)** | Added sub-path endpoints: `GET /all/staff/{id}` and `GET /all/manager/{id}` with optional `?status=` query param. |
 | **Rework (2026-08-29)** | Migrated ALL filtering from GET query params to POST search endpoints. Removed the sub-paths and `?status=` params. GET endpoints are now simple unfiltered reads. Three POST search endpoints handle all filtering with a structured JSON body: `POST /my/search` (status), `POST /team/search` (status + date range), `POST /all/search` (status + staffMemberId + managerId + date range). |
 | **Implementation** | `LeaveRequestSearchCriteria` record (5 optional fields: status, staffMemberId, managerId, from, to). `LeaveRequestQueryHandler` has 3 search methods with dynamic filter combination logic. `LeaveManagementFacade` has 3 search methods with `@PreAuthorize`. 8 new Spring Data JPA repository query methods for date range combinations. |
-| **Tests** | Controller: 18 tests (4 GET + 10 POST search + 4 commands). Query handler: 17 tests (5 basic + 12 search). Total: 423 tests, all passing. |
+| **Tests** | Controller: 18 tests (4 GET + 10 POST search + 4 commands). Query handler: 17 tests (5 basic + 12 search). Total: 467 tests, all passing. |
 | **Design justification** | Documented in docs/04 section 13: "Why POST search endpoints instead of GET with query parameters?" — covers clean URL separation, structured filter body, extensibility, and enterprise convention (Elasticsearch, Stripe). |
 | **Status** | ✅ IMPLEMENTED (2026-08-29) — both gap 3 (admin filtering) and gap 5 (date range) resolved in one rework |
 
@@ -351,7 +352,7 @@ These items were identified during an exhaustive line-by-line audit of both the 
 |------|--------|
 | **What we had** | `RateLimitFilter` used Bucket4j token-bucket algorithm with 5 POST requests per IP per minute on `/auth/login`. Code worked, unit tests passed, but the Postman collection did not include a test triggering the 429 response. The limit of 5 also conflicted with the Postman collection flow — the 5 happy-path logins exhausted the bucket, causing edge case login tests to get 429 instead of expected 400/401. |
 | **Fix applied** | (1) Increased `MAX_REQUESTS` from 5 to 20 per minute — a realistic production value (most APIs use 10-30 for login endpoints). Gives headroom for the collection runner (5 happy logins + edge case logins = ~11 total, well within 20). (2) Added a rate limit test to both Postman collections in folder 1 Edge Cases. The automated version uses a pre-request script (`pm.sendRequest` fires 10 dummy login requests to reach 20 total consumed, then the actual request is the 21st → 429). Asserts status 429, `"Rate limit exceeded"` message, and `"Too Many Requests"` error. (3) Updated `RateLimitFilterTest` — all 4 tests updated from 5→20 (shouldAllowFirst20Requests, shouldReturn429On21stRequest, shouldRateLimitPerIp, shouldUseXForwardedForHeader). |
-| **Files changed** | `RateLimitFilter.java` (MAX_REQUESTS 5→20 + all Javadoc), `RateLimitFilterTest.java` (all loops and assertions 5→20), both Postman collections (+1 request each, now 138 total). |
+| **Files changed** | `RateLimitFilter.java` (MAX_REQUESTS 5→20 + all Javadoc), `RateLimitFilterTest.java` (all loops and assertions 5→20), both Postman collections (+1 request each, now 139 total). |
 | **Status** | ✅ RESOLVED (2026-08-31) |
 
 ---

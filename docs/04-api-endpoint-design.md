@@ -4,6 +4,7 @@
 **Lecturer:** Phil James — Staffordshire University
 **Lecture Alignment:** Lecture 5 (CQRS Queries — GET endpoints, Postman), Lecture 6 (CQRS Commands — POST endpoints, command records), Lecture 9 (Identity — JWT auth, @PreAuthorize, role-check)
 **Base URL:** `http://localhost:8900`
+**Last Updated:** 2026-09-05
 
 ---
 
@@ -701,7 +702,7 @@ public class LeaveManagementFacade {
 | GET `/leave-allowances/staff/{id}` | ✗ | ✓ (team) | ✓ | Team member check |
 | GET `/leave-allowances/team` | ✗ | ✓ | ✓ | Team-scoped |
 | GET `/leave-allowances/all` | ✗ | ✗ | ✓ | Admin only |
-| PATCH `.../entitlement` | ✗ | ✗ | ✓ | Admin only |
+| PATCH `/leave-allowances/{id}` | ✗ | ✗ | ✓ | Admin only |
 | POST `/staff` | ✗ | ✗ | ✓ | Admin only |
 | POST `/staff/search` | ✗ | ✗ | ✓ | Admin only |
 | GET `/staff` | ✗ | ✗ | ✓ | Admin only |
@@ -799,7 +800,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     private Bucket createBucket(String key) {
         return Bucket.builder()
-                .addLimit(Bandwidth.classic(5, Refill.intervally(5, Duration.ofMinutes(1))))
+                .addLimit(Bandwidth.classic(20, Refill.greedy(20, Duration.ofMinutes(1))))
                 .build();
     }
 }

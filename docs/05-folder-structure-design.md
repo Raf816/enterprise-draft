@@ -3,6 +3,7 @@
 **Module:** COMP60047 Enterprise Application Development
 **Lecturer:** Phil James — Staffordshire University
 **Lecture Alignment:** Lecture 2 (Layered Architecture), Lecture 4 (Modulith, Facade, Open Host Service, Shared Kernel), Lecture 5 (CQRS Queries — folder layout), Lecture 6 (CQRS Commands — application service), Lecture 8 (common module reorganisation, @ApplicationModule(type=OPEN))
+**Last Updated:** 2026-09-05
 
 ---
 
@@ -147,6 +148,7 @@ com.staffs.leavebooking/
 │   ├── ui/                               HIDDEN — controllers only
 │   │   ├── LeaveRequestController.java   @RestController /leave-requests (11 endpoints: 4 GET + 3 POST search + 1 POST create + 3 PATCH)
 │   │   ├── LeaveAllowanceController.java @RestController /leave-allowances (5 endpoints)
+│   │   ├── SubmitLeaveRequestBody.java   record — request body for POST /leave-requests
 │   │   └── exceptions/
 │   │       ├── LeaveRequestNotFoundException.java
 │   │       └── LeaveAllowanceNotFoundException.java
@@ -157,7 +159,8 @@ com.staffs.leavebooking/
 │   │   │   └── AmendEntitlementCommand.java        record
 │   │   ├── dto/
 │   │   │   ├── LeaveRequestDTO.java                record — JSON response
-│   │   │   └── LeaveAllowanceDTO.java              record — JSON response
+│   │   │   ├── LeaveAllowanceDTO.java              record — JSON response
+│   │   │   └── LeaveRequestSearchCriteria.java     record — search filter fields
 │   │   ├── handlers/
 │   │   │   ├── LeaveRequestQueryHandler.java       @Service — CQRS read path
 │   │   │   ├── LeaveRequestApplicationService.java @Service — CQRS write path
@@ -205,7 +208,8 @@ com.staffs.leavebooking/
 ├── staffmanagement/                      ═══ SUPPORTING CONTEXT (Staff Management) ═══
 │   ├── StaffManagementFacade.java        PUBLIC — Open Host Service, @PreAuthorize
 │   ├── ui/
-│   │   ├── StaffController.java          @RestController /staff (4 endpoints: 2 GET + 1 POST + 1 PATCH)
+│   │   ├── StaffController.java          @RestController /staff (5 endpoints: 2 GET + 2 POST + 1 PATCH)
+│   │   ├── StaffMemberCreatedResponse.java  record — response for POST /staff
 │   │   └── exceptions/
 │   │       └── StaffMemberNotFoundException.java
 │   ├── application/
@@ -216,6 +220,7 @@ com.staffs.leavebooking/
 │   │   │   └── UpdateStatusCommand.java
 │   │   ├── dto/
 │   │   │   └── StaffMemberDTO.java       record
+│   │   │   └── StaffSearchCriteria.java      record — search filter fields
 │   │   ├── handlers/
 │   │   │   ├── StaffQueryHandler.java    @Service — read operations
 │   │   │   └── StaffApplicationService.java @Service — write operations + remote events
@@ -245,6 +250,7 @@ com.staffs.leavebooking/
 │   │   ├── LoginRequest.java             record
 │   │   ├── LoginResponse.java            record
 │   │   └── ErrorResponse.java            record
+│   │   └── ChangePasswordRequest.java   record — request body for PATCH /auth/password
 │   └── security/
 │       ├── SecurityConfig.java           @EnableWebSecurity, @EnableMethodSecurity
 │       ├── FirebaseJwtAuthenticationConverter.java  JWT claims → GrantedAuthority
@@ -848,32 +854,75 @@ src/test/java/com/staffs/leavebooking/
 │   ├── LeaveAllowanceMother.java         Pre-configured LeaveAllowance aggregates
 │   ├── StaffMemberMother.java            Pre-configured StaffMember aggregates
 │   └── JpaEntityMother.java              Pre-configured JPA entities for mapper tests
-├── common/domain/
-│   ├── IdentityTest.java                 11 tests — null, blank, UUID format, factories
-│   ├── FullNameTest.java                 15 tests — null, blank, length, trimming, equality
-│   ├── EmailTest.java                    19 tests — null, blank, regex, valid formats
-│   └── DomainAssertionsTest.java         23 tests — all 7 guard methods
+├── common/
+│   ├── domain/
+│   │   ├── IdentityTest.java                 11 tests — null, blank, UUID format, factories
+│   │   ├── FullNameTest.java                 15 tests — null, blank, length, trimming, equality
+│   │   ├── EmailTest.java                    19 tests — null, blank, regex, valid formats
+│   │   └── DomainAssertionsTest.java         23 tests — all 7 guard methods
+│   └── events/
+│       ├── EventStoreServiceTest.java        6 tests — append, updateStatus, purge
+│       └── EventStoreCleanupJobTest.java     2 tests — scheduled purge delegation
 ├── leavemanagement/
 │   ├── domain/
-│   │   ├── DateRangeTest.java            12 tests — null, end<start, workingDays, futureStart
-│   │   ├── BusinessYearTest.java         8 tests — invalid years, current(), toString
-│   │   ├── LeaveReasonTest.java          8 tests — null, blank, max length, trimming
-│   │   ├── LeaveRequestTest.java         37 tests — submitNew, reconstitute, approve, reject, cancel
-│   │   └── LeaveAllowanceTest.java       24 tests — reserve, confirm, release, credit, amend
-│   └── application/mappers/
-│       ├── LeaveRequestDomainToJpaMapperTest.java
-│       ├── LeaveRequestJpaToDomainMapperTest.java
-│       ├── LeaveRequestJpaToDTOMapperTest.java
-│       ├── LeaveAllowanceDomainToJpaMapperTest.java
-│       ├── LeaveAllowanceJpaToDomainMapperTest.java
-│       └── LeaveAllowanceJpaToDTOMapperTest.java
-└── staffmanagement/
-    ├── domain/
-    │   └── StaffMemberTest.java          27 tests — createNew, reconstitute, update*, terminal state
-    └── application/mappers/
-        ├── StaffMemberDomainToJpaMapperTest.java
-        ├── StaffMemberJpaToDomainMapperTest.java
-        └── StaffMemberJpaToDTOMapperTest.java
+│   │   ├── DateRangeTest.java                12 tests — null, end<start, workingDays, futureStart
+│   │   ├── BusinessYearTest.java             8 tests — invalid years, current(), toString
+│   │   ├── LeaveReasonTest.java              8 tests — null, blank, max length, trimming
+│   │   ├── LeaveRequestTest.java             37 tests — submitNew, reconstitute, approve, reject, cancel
+│   │   └── LeaveAllowanceTest.java           24 tests — reserve, confirm, release, credit, amend
+│   ├── application/
+│   │   ├── mappers/
+│   │   │   ├── LeaveRequestDomainToJpaMapperTest.java
+│   │   │   ├── LeaveRequestJpaToDomainMapperTest.java
+│   │   │   ├── LeaveRequestJpaToDTOMapperTest.java
+│   │   │   ├── LeaveAllowanceDomainToJpaMapperTest.java
+│   │   │   ├── LeaveAllowanceJpaToDomainMapperTest.java
+│   │   │   └── LeaveAllowanceJpaToDTOMapperTest.java
+│   │   ├── handlers/
+│   │   │   ├── LeaveRequestApplicationServiceTest.java   service-layer unit tests (Mockito)
+│   │   │   ├── LeaveRequestQueryHandlerTest.java         query handler unit tests
+│   │   │   ├── LeaveAllowanceApplicationServiceTest.java allowance service tests (verify + ArgumentCaptor)
+│   │   │   └── LeaveAllowanceQueryHandlerTest.java       allowance query tests
+│   │   └── listeners/
+│   │       ├── LeaveRequestSubmittedListenerTest.java    verify reserveDays called
+│   │       ├── LeaveRequestApprovedListenerTest.java     verify confirmDays called
+│   │       ├── LeaveRequestRejectedListenerTest.java     verify releasePendingDays called
+│   │       ├── LeaveRequestCancelledListenerTest.java    verify creditBack/release called
+│   │       ├── StaffMemberAddedListenerTest.java         verify createAllowance called
+│   │       ├── StaffMemberUpdatedListenerTest.java       verify updateStaffDetails called
+│   │       ├── ManagerNotificationPublisherTest.java     notification routing
+│   │       ├── ManagerNotificationConsumerTest.java      consumer logging
+│   │       ├── StaffNotificationPublisherTest.java       notification routing
+│   │       └── StaffNotificationConsumerTest.java        consumer logging
+│   └── ui/
+│       ├── LeaveRequestControllerTest.java   @WebMvcTest — HTTP mapping, status codes, JSON
+│       └── LeaveAllowanceControllerTest.java @WebMvcTest — HTTP mapping, status codes, JSON
+├── staffmanagement/
+│   ├── domain/
+│   │   └── StaffMemberTest.java              27 tests — createNew, createSkeleton, update*, terminal state
+│   ├── application/
+│   │   ├── mappers/
+│   │   │   ├── StaffMemberDomainToJpaMapperTest.java
+│   │   │   ├── StaffMemberJpaToDomainMapperTest.java
+│   │   │   └── StaffMemberJpaToDTOMapperTest.java
+│   │   └── handlers/
+│   │       ├── StaffApplicationServiceTest.java  service-layer unit tests (Mockito)
+│   │       └── StaffQueryHandlerTest.java        query handler unit tests
+│   └── ui/
+│       └── StaffControllerTest.java          @WebMvcTest — HTTP mapping, status codes, JSON
+├── identity/
+│   ├── AuthControllerTest.java               @WebMvcTest — register, login, password, role-check
+│   ├── authService/
+│   │   └── FirebaseAuthServiceTest.java      Mockito — registerUser, loginUser, changePassword
+│   └── security/
+│       ├── RateLimitFilterTest.java          4 tests — 20 req/min limit, per-IP, X-Forwarded-For
+│       ├── SecurityHeadersFilterTest.java    header stripping and addition
+│       └── UnauthorisedAccessLoggerTest.java 401/403 response formatting
+├── integration/
+│   ├── LeaveRequestIntegrationTest.java          @DataJpaTest — submit, approve, reject, cancel, allowance ops
+│   ├── DateOverlapQueryIntegrationTest.java      @DataJpaTest — date overlap @Query validation
+│   └── AtomicAllowanceConsistencyIntegrationTest.java  NOT_SUPPORTED propagation — real commit/rollback
+└── ModularityTest.java                       Spring Modulith — ApplicationModules.of() detects all modules
 ```
 
 **Total: 467 tests | 0 failures | BUILD SUCCESS**

@@ -2,7 +2,7 @@
 
 **Module:** COMP60047 Enterprise Application Development
 **Scenario:** Scenario 1 — Leave Booking System
-**Last Updated:** 2026-08-26
+**Last Updated:** 2026-09-05
 
 This document maps every requirement from the assignment brief to its implementation and test coverage.
 
@@ -37,7 +37,7 @@ This document maps every requirement from the assignment brief to its implementa
 | A1 | Add a new member of staff | `StaffMember.createNew()` creates with PENDING_SETUP status. Admin activates via `PATCH /staff/{id}` with `{"employmentStatus":"ACTIVE"}` which triggers `StaffMemberAddedEvent` → RabbitMQ → creates `LeaveAllowance`. Self-registration also creates skeleton staff record. | `POST /staff` (admin), `POST /auth/register` (self-registration creates skeleton) | Unit: `StaffMemberTest$CreateNew` (11 tests), `$CreateSkeleton` (4 tests), `StaffApplicationServiceTest$AddNewStaffMember` (3 tests), `$CreateSkeleton` (2 tests). Controller: `StaffControllerTest$AddStaffMember` (1 test). |
 | A2 | Amend role or department of staff | `StaffMember.updateDepartment()`, `StaffMember.updatePlacement()`, `StaffMember.updateStatus()` via unified `PATCH /staff/{id}` | `PATCH /staff/{id}` with any combination of: `department`, `lineManagerId`, `currentRole`, `startDateOfCurrentRole`, `jobLevel`, `employmentType`, `employmentStatus` | Unit: `StaffMemberTest$UpdateDepartment` (3 tests), `$UpdatePlacement` (4 tests), `$UpdateStatus` (9 tests), `StaffApplicationServiceTest$UpdateDepartment` (3 tests), `$UpdatePlacement` (3 tests), `$UpdateStatus` (3 tests). Controller: `StaffControllerTest$UpdateStaff` (5 tests). |
 | A3 | View all outstanding leave requests (filtered by staff/manager/company) | `LeaveRequestQueryHandler.searchAll()` with `LeaveRequestSearchCriteria` supporting staffMemberId, managerId, status, and date range filters | `GET /leave-requests/all` (unfiltered), `POST /leave-requests/all/search` (filtered — status, staffMemberId OR managerId (mutually exclusive), from, to) | Unit: `LeaveRequestQueryHandlerTest$SearchAll` (6 tests). Controller: `LeaveRequestControllerTest$SearchAllRequests` (6 tests), `$GetAllRequests` (1 test). |
-| A4 | Amend annual leave entitlement | `LeaveAllowance.amendEntitlement()` → `LeaveAllowanceApplicationService.amendEntitlement()` | `PATCH /leave-allowances/{id}/entitlement` | Unit: `LeaveAllowanceTest$AmendEntitlement` (5 tests). Integration: `shouldAmendEntitlement` (1 test). Controller: `LeaveAllowanceControllerTest$AmendEntitlement` (1 test). |
+| A4 | Amend annual leave entitlement | `LeaveAllowance.amendEntitlement()` → `LeaveAllowanceApplicationService.amendEntitlement()` | `PATCH /leave-allowances/{id}` | Unit: `LeaveAllowanceTest$AmendEntitlement` (5 tests). Integration: `shouldAmendEntitlement` (1 test). Controller: `LeaveAllowanceControllerTest$AmendEntitlement` (1 test). |
 | A5 | Approve on behalf of managers | Same `approveRequest()` endpoint — ADMIN role has access via `@PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")` | `PATCH /leave-requests/{id}/approve` | Covered by M2 tests above. RBAC enforced at facade. |
 
 ---
@@ -101,6 +101,6 @@ This document maps every requirement from the assignment brief to its implementa
 | Design documents | 8 |
 | Bounded contexts | 3 (Leave Management, Staff Management, Identity) |
 | Domain events (local) | 4 |
-| Domain events (remote) | 2 |
-| API endpoints | ~20 |
+| Domain events (remote) | 4 |
+| API endpoints | 26 |
 | Remaining work | Report writing |

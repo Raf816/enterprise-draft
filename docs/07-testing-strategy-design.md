@@ -2,7 +2,7 @@
 
 **Module:** COMP60047 Enterprise Application Development
 **Assignment:** Scenario 1 — Leave Booking System
-**Last Updated:** 2026-09-04
+**Last Updated:** 2026-09-05
 
 ---
 
@@ -127,6 +127,16 @@ class LeaveRequestQueryHandlerTest {
 }
 ```
 
+### 2.3 Properties of Good Unit Tests (Lecture 2)
+
+| Property | How We Achieve It |
+|----------|-------------------|
+| **Fast** | No Spring context, no database, no network — pure Java + Mockito |
+| **Isolated** | Each test creates its own objects, @BeforeEach resets state |
+| **Repeatable** | No randomness, deterministic date calculations, no shared mutable state |
+| **Self-validating** | JUnit assertions — pass/fail is automatic |
+| **Thorough** | Test happy paths AND guard conditions (nulls, invalid ranges, wrong states) |
+
 ### 2.4 verify() Philosophy (Khorikov, 2020 / Lecture Guidance)
 
 Controller tests **do not use `verify()`**. Following Khorikov's Pillar 2 (Resistance to Refactoring) and the module lecturer's explicit guidance:
@@ -145,16 +155,6 @@ The principle: **test observable outcomes (HTTP status, response body), not impl
 - `StaffControllerTest` — removed `verify(facade).searchStaff(...)`, `verify(facade).updateDepartment(...)`, `verify(facade).updateStatus(...)`, `verify(firebaseAuthService).registerUser(...)`, `verify(firebaseAuthService).updateUserRole(...)`, and associated `verify(never())` calls
 - `LeaveAllowanceControllerTest` — removed `verify(facade).amendEntitlement(...)`
 - `AuthControllerTest` — removed `verify(firebaseAuthService).changePassword(...)`
-
-### 2.3 Properties of Good Unit Tests (Lecture 2)
-
-| Property | How We Achieve It |
-|----------|-------------------|
-| **Fast** | No Spring context, no database, no network — pure Java + Mockito |
-| **Isolated** | Each test creates its own objects, @BeforeEach resets state |
-| **Repeatable** | No randomness, deterministic date calculations, no shared mutable state |
-| **Self-validating** | JUnit assertions — pass/fail is automatic |
-| **Thorough** | Test happy paths AND guard conditions (nulls, invalid ranges, wrong states) |
 
 ---
 
