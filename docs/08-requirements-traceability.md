@@ -55,7 +55,7 @@ This document maps every requirement from the assignment brief to its implementa
 | AR7 | RBAC (Staff/Manager/Admin roles) | `Role` enum, `@PreAuthorize` on all facade methods, Firebase custom claims | `SecurityConfig.java`, `LeaveManagementFacade.java`, `StaffManagementFacade.java`. Unit: `AuthControllerTest$RoleCheck`. |
 | AR8 | DDD patterns (entities, VOs, aggregates, repositories) | `LeaveRequest` (aggregate root), `LeaveAllowance` (aggregate root), `StaffMember` (aggregate root), `DateRange`/`BusinessYear`/`LeaveReason` (value objects), `Identity`/`Email`/`FullName` (common VOs) | `docs/01-domain-model-design.md`. Unit: all domain tests (~184 tests). |
 | AR9 | CQRS (separate read/write paths) | Query handlers (read) vs Application services (write). Separate mappers for each direction. | `LeaveRequestQueryHandler`, `LeaveRequestApplicationService`. Unit: query handler tests + integration tests. |
-| AR10 | Facade / Open Host Service | `LeaveManagementFacade`, `StaffManagementFacade` — single public entry points per bounded context | Controllers only talk to facades. |
+| AR10 | Facade / Open Host Service | `LeaveManagementFacade`, `StaffManagementFacade` — single public entry points per bounded context | Controllers primarily delegate to facades. Controlled exceptions: `StaffController` also calls `FirebaseAuthService` directly for Firebase account creation on `POST /staff`; `LeaveRequestController` calls `StaffManagementFacade` for staff-status and line-manager resolution. |
 
 ---
 
@@ -66,7 +66,7 @@ This document maps every requirement from the assignment brief to its implementa
 | Comprehensive automated unit testing | ✅ 444 unit tests | All domain objects, mappers, query handlers, app services, listeners, EventStoreService, controllers, identity |
 | Follows best practice | ✅ | AAA pattern, @DisplayName, @Nested, Object Mother, FIRST properties — documented in `docs/07-testing-strategy-design.md` |
 | Automated integration testing | ✅ ~23 integration tests | `@DataJpaTest` + `@Import` — service→domain→repository→H2. Includes `AtomicAllowanceConsistencyIntegrationTest` (real commit/rollback) and `DateOverlapQueryIntegrationTest` (JPQL overlap proof). |
-| API testing (Postman) | ✅ Implemented | 139 requests per collection (automated + manual) covering all 26 endpoints with valid/invalid data per role |
+| API testing (Postman) | ✅ Implemented | 141 requests per collection (automated + manual) covering all 26 endpoints with valid/invalid data per role |
 | Coverage of all endpoints | ✅ | Controller tests verify HTTP mapping. Postman collections provide full end-to-end coverage with real JWT tokens. |
 
 ---
@@ -94,10 +94,10 @@ This document maps every requirement from the assignment brief to its implementa
 | Manager requirements implemented | 4/4 (100%) |
 | Admin requirements implemented | 5/5 (100%) |
 | Architectural requirements | 10/10 (100%) |
-| Total unit tests | 444 |
+| Total unit tests | 449 |
 | Total integration tests | 23 |
-| Total tests | 467 (0 failures, 0 skipped) |
-| Test classes | 50 |
+| Total tests | 476 (0 failures, 0 skipped) |
+| Test classes | 51 |
 | Design documents | 8 |
 | Bounded contexts | 3 (Leave Management, Staff Management, Identity) |
 | Domain events (local) | 4 |

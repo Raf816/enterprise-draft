@@ -96,7 +96,7 @@
 | **RabbitMQ** | Docker local: `localhost:5672`, user: `guest`/`guest` | âœ… Works on any network |
 | **RabbitMQ Management UI** | `http://localhost:15672` | âœ… Works on any network |
 | **Firebase Auth** | `serviceAccountKey.json` + web API key | âš ï¸ Requires unrestricted internet |
-| **Unit Tests (467)** | `mvn test` | ✅ Works on any network (no external deps) |
+| **Unit Tests (476)** | `mvn test` | ✅ Works on any network (no external deps) |
 | **Application Startup** | `mvn spring-boot:run` or IntelliJ Run | âœ… Starts on any network (RabbitMQ/Firebase errors are non-fatal) |
 
 ---
@@ -165,7 +165,7 @@ docker rm -f leave-rabbitmq
 
 ### Unit Tests (Task 12 â€” COMPLETE)
 
-- **467 tests, 0 failures, 0 skipped**
+- **476 tests, 0 failures, 0 skipped**
 - Run: `mvn test`
 - Runtime: ~2-3 seconds
 - No external dependencies needed (pure Java domain tests + mapper tests)
@@ -191,7 +191,7 @@ docker rm -f leave-rabbitmq
 |------|-----------|
 | 2026-08-21 | Lecture material loaded (Lectures 1-9) |
 | 2026-08-24 | Tasks 1-11 completed (full implementation) |
-| 2026-08-24 | Task 12: Unit tests created (444 unit tests + 23 integration tests = 467 total) |
+| 2026-08-24 | Task 12: Unit tests created (449 unit tests + 23 integration tests = 476 total, including later additions) |
 | 2026-08-25 | Design docs (01-05) enhanced to first-class standard |
 | 2026-08-25 | Environment setup: Firebase, RabbitMQ (Docker), compilation fixes |
 | 2026-08-25 | Identified corporate network limitation (Zscaler blocks Google OAuth2) |
@@ -304,7 +304,7 @@ These items were identified during an exhaustive line-by-line audit of both the 
 | **First fix (2026-08-29)** | Added sub-path endpoints: `GET /all/staff/{id}` and `GET /all/manager/{id}` with optional `?status=` query param. |
 | **Rework (2026-08-29)** | Migrated ALL filtering from GET query params to POST search endpoints. Removed the sub-paths and `?status=` params. GET endpoints are now simple unfiltered reads. Three POST search endpoints handle all filtering with a structured JSON body: `POST /my/search` (status), `POST /team/search` (status + date range), `POST /all/search` (status + staffMemberId + managerId + date range). |
 | **Implementation** | `LeaveRequestSearchCriteria` record (5 optional fields: status, staffMemberId, managerId, from, to). `LeaveRequestQueryHandler` has 3 search methods with dynamic filter combination logic. `LeaveManagementFacade` has 3 search methods with `@PreAuthorize`. 8 new Spring Data JPA repository query methods for date range combinations. |
-| **Tests** | Controller: 18 tests (4 GET + 10 POST search + 4 commands). Query handler: 17 tests (5 basic + 12 search). Total: 467 tests, all passing. |
+| **Tests** | Controller: 18 tests (4 GET + 10 POST search + 4 commands). Query handler: 17 tests (5 basic + 12 search). Total: 476 tests, all passing. |
 | **Design justification** | Documented in docs/04 section 13: "Why POST search endpoints instead of GET with query parameters?" — covers clean URL separation, structured filter body, extensibility, and enterprise convention (Elasticsearch, Stripe). |
 | **Status** | ✅ IMPLEMENTED (2026-08-29) — both gap 3 (admin filtering) and gap 5 (date range) resolved in one rework |
 

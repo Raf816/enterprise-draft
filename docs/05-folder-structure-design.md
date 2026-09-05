@@ -364,7 +364,7 @@ Because the domain layer has **zero framework dependencies**, domain classes can
 - No mocking of framework components
 - Millisecond execution time
 
-This is demonstrated in our test suite (467 tests, 0 failures):
+This is demonstrated in our test suite (476 tests, 0 failures):
 
 ```java
 // Domain test — pure Java, no Spring, no mocks
@@ -497,11 +497,11 @@ For `leavemanagement`:
 
 ### 5.2 Visibility Matrix (by convention)
 
-| Source Module | Can See | Cannot See | Notes |
+| Source Module | Can See | Controlled Dependencies | Notes |
 |---|---|---|---|
-| `leavemanagement` | `common/*` (OPEN), own packages | `staffmanagement/*`, `identity/*` | Clean — no cross-context imports |
-| `staffmanagement` | `common/*` (OPEN), own packages | `leavemanagement/*`, `identity/*` | Clean — no cross-context imports |
-| `identity` | `common/*` (OPEN), `staffmanagement` facade | `leavemanagement/*` | Controlled dependency: AuthController calls StaffManagementFacade for skeleton staff record creation on registration |
+| `leavemanagement` | `common/*` (OPEN), own packages | `staffmanagement` facade | LeaveRequestController imports StaffManagementFacade for staff-status checking and line-manager resolution |
+| `staffmanagement` | `common/*` (OPEN), own packages | `identity` authService | StaffController imports FirebaseAuthService to coordinate Firebase account creation with staff record on POST /staff |
+| `identity` | `common/*` (OPEN), own packages | `staffmanagement` facade | AuthController imports StaffManagementFacade for skeleton staff record creation on registration |
 
 ### 5.3 Inter-Module Communication Paths
 
@@ -836,7 +836,7 @@ The Identity module deliberately does **not** follow the DDD layered structure:
 Unit tests do **not** require Firebase or RabbitMQ — they test domain logic in pure Java:
 
 ```bash
-# Run all tests (467 tests, 0 failures)
+# Run all tests (476 tests, 0 failures)
 mvn test
 
 # Run only domain tests
@@ -929,7 +929,7 @@ src/test/java/com/staffs/leavebooking/
 └── ModularityTest.java                       Spring Modulith — ApplicationModules.of() detects all modules
 ```
 
-**Total: 467 tests | 0 failures | BUILD SUCCESS**
+**Total: 476 tests | 0 failures | BUILD SUCCESS**
 
 ---
 

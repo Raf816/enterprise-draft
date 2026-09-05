@@ -18,7 +18,7 @@
               │ Tests (23)     │     Service → Domain → H2
               └──────┬─────────┘
          ┌───────────┴──────────────┐
-         │    Unit Tests (444)      │  ← Plain JUnit 5 + Mockito
+         │    Unit Tests (453)      │  ← Plain JUnit 5 + Mockito
          │  Domain, Mappers,        │     No Spring context, fast
          │  Handlers, Listeners,    │
          │  Services                │
@@ -312,7 +312,7 @@ mvn test -Dtest="com.staffs.leavebooking.leavemanagement.domain.LeaveRequestTest
 | Lecture 2: Test VOs and Entities | All domain objects comprehensively tested |
 | Lecture 7: Event flows | Integration tests prove service flows; unit tests prove listener delegation |
 | Lecture 9: Postman testing | Comprehensive collection with JWT management (`pm.globals.set`) — `postman/` folder |
-| K22: Unit testing as a development technique | 467 tests, 0 failures — across all architectural layers |
+| K22: Unit testing as a development technique | 476 tests, 0 failures — across all architectural layers |
 
 ---
 
@@ -330,12 +330,13 @@ mvn test -Dtest="com.staffs.leavebooking.leavemanagement.domain.LeaveRequestTest
 | EventStoreService unit tests | ~6 |
 | Security filter unit tests (RateLimitFilter, SecurityHeaders, UnauthorisedAccessLogger, FirebaseTokenFilter) | ~28 |
 | Identity (AuthController + FirebaseAuthService) unit tests | ~48 |
-| Event store cleanup job unit tests | ~6 |
+| Event store cleanup job unit tests | ~2 |
+| Outbox recovery job unit tests | ~5 |
 | Integration tests (@DataJpaTest) | 23 |
-| **Confirmed total (mvn clean verify)** | **467 run, 0 failures, 0 errors, 0 skipped** |
-| Postman API tests | 139 requests across 8 folders |
+| **Confirmed total (mvn clean verify)** | **476 run, 0 failures, 0 errors, 0 skipped** |
+| Postman API tests | 141 requests across 8 folders |
 
-*(Confirmed: 467 run, 0 failures, 0 errors, 0 skipped — BUILD SUCCESS)*
+*(Confirmed: 476 run, 0 failures, 0 errors, 0 skipped — BUILD SUCCESS)*
 
 ---
 
