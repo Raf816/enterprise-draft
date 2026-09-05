@@ -1,0 +1,22 @@
+{
+    "id": "leave-booking-env",
+    "name": "Leave Booking System env",
+    "values": [
+        { "key": "base_url", "value": "http://localhost:8900", "type": "default", "enabled": true },
+        { "key": "jwt_admin_token", "value": "", "type": "default", "enabled": true },
+        { "key": "jwt_manager1_token", "value": "", "type": "default", "enabled": true },
+        { "key": "jwt_manager2_token", "value": "", "type": "default", "enabled": true },
+        { "key": "jwt_staff1_token", "value": "", "type": "default", "enabled": true },
+        { "key": "jwt_staff2_token", "value": "", "type": "default", "enabled": true },
+        { "key": "admin_uid", "value": "", "type": "default", "enabled": true },
+        { "key": "manager1_uid", "value": "", "type": "default", "enabled": true },
+        { "key": "manager2_uid", "value": "", "type": "default", "enabled": true },
+        { "key": "staff1_uid", "value": "", "type": "default", "enabled": true },
+        { "key": "staff2_uid", "value": "", "type": "default", "enabled": true },
+        { "key": "leave_request_id", "value": "", "type": "default", "enabled": true },
+        { "key": "leave_request_id_2", "value": "", "type": "default", "enabled": true },
+        { "key": "leave_request_id_3", "value": "", "type": "default", "enabled": true },
+        { "key": "leave_allowance_id", "value": "", "type": "default", "enabled": true }
+    ],
+    "_postman_variable_scope": "environment"
+}

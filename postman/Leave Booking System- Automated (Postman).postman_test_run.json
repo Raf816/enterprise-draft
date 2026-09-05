@@ -1,0 +1,4733 @@
+{
+	"id": "46ab6936-82fc-4fc9-902e-34d0a52da8a6",
+	"name": "Leave Booking System: Automated (Postman)",
+	"timestamp": "2026-09-05T11:19:08.657Z",
+	"collection_id": "50511645-36ab05ca-a259-443a-afc8-4e340528b936",
+	"folder_id": 0,
+	"environment_id": "50511645-b645d2a4-5677-4bad-a626-138d7a5b9bc5",
+	"totalPass": 206,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2026-09-05T11:18:41.717Z",
+	"totalFail": 0,
+	"results": [
+		{
+			"id": "f0632489-3d89-47f7-b8ad-bbcd52b71414",
+			"name": "Register Admin",
+			"url": "http://localhost:8900/auth/register",
+			"time": 2448,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"201 Created or 400 already exists": true,
+				"has uid": true,
+				"has message": true
+			},
+			"testPassFailCounts": {
+				"201 Created or 400 already exists": {
+					"pass": 1,
+					"fail": 0
+				},
+				"has uid": {
+					"pass": 1,
+					"fail": 0
+				},
+				"has message": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				2448
+			],
+			"allTests": [
+				{
+					"201 Created or 400 already exists": true,
+					"has uid": true,
+					"has message": true
+				}
+			]
+		},
+		{
+			"id": "48839667-d6c2-412d-beb5-1831198b856f",
+			"name": "Register Manager1",
+			"url": "http://localhost:8900/auth/register",
+			"time": 1050,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"201 Created or 400 already exists": true
+			},
+			"testPassFailCounts": {
+				"201 Created or 400 already exists": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				1050
+			],
+			"allTests": [
+				{
+					"201 Created or 400 already exists": true
+				}
+			]
+		},
+		{
+			"id": "fdd5e12a-7e1a-4bbd-b417-aa8b9d7dd3f8",
+			"name": "Register Manager2",
+			"url": "http://localhost:8900/auth/register",
+			"time": 997,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"201 Created or 400 already exists": true
+			},
+			"testPassFailCounts": {
+				"201 Created or 400 already exists": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				997
+			],
+			"allTests": [
+				{
+					"201 Created or 400 already exists": true
+				}
+			]
+		},
+		{
+			"id": "fb3684f6-1b9c-4080-9e69-01ceade4ccac",
+			"name": "Register Staff1",
+			"url": "http://localhost:8900/auth/register",
+			"time": 1041,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"201 Created or 400 already exists": true
+			},
+			"testPassFailCounts": {
+				"201 Created or 400 already exists": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				1041
+			],
+			"allTests": [
+				{
+					"201 Created or 400 already exists": true
+				}
+			]
+		},
+		{
+			"id": "36e13016-a256-4d22-972e-6751ce3d48ae",
+			"name": "Register Staff2",
+			"url": "http://localhost:8900/auth/register",
+			"time": 1026,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"201 Created or 400 already exists": true
+			},
+			"testPassFailCounts": {
+				"201 Created or 400 already exists": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				1026
+			],
+			"allTests": [
+				{
+					"201 Created or 400 already exists": true
+				}
+			]
+		},
+		{
+			"id": "1d867061-b0cb-47f7-a2de-af1a7672db2a",
+			"name": "Login Admin",
+			"url": "http://localhost:8900/auth/login",
+			"time": 536,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"has idToken": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"has idToken": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				536
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"has idToken": true
+				}
+			]
+		},
+		{
+			"id": "d74fbd95-dbe6-4514-a92a-db6c25be4e46",
+			"name": "Login Manager1",
+			"url": "http://localhost:8900/auth/login",
+			"time": 229,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				229
+			],
+			"allTests": [
+				{
+					"200 OK": true
+				}
+			]
+		},
+		{
+			"id": "5fba8b42-3c45-4519-8364-822039d23229",
+			"name": "Login Manager2",
+			"url": "http://localhost:8900/auth/login",
+			"time": 225,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				225
+			],
+			"allTests": [
+				{
+					"200 OK": true
+				}
+			]
+		},
+		{
+			"id": "e2f94c3e-41dc-48bd-8e3d-a1a681611201",
+			"name": "Login Staff1",
+			"url": "http://localhost:8900/auth/login",
+			"time": 240,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				240
+			],
+			"allTests": [
+				{
+					"200 OK": true
+				}
+			]
+		},
+		{
+			"id": "2cf3d56a-5cfe-4942-b41c-9cad6081d098",
+			"name": "Login Staff2",
+			"url": "http://localhost:8900/auth/login",
+			"time": 224,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				224
+			],
+			"allTests": [
+				{
+					"200 OK": true
+				}
+			]
+		},
+		{
+			"id": "734541d3-6ac4-47c7-88a9-f833462d01c3",
+			"name": "Register: blank username (400)",
+			"url": "http://localhost:8900/auth/register",
+			"time": 29,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true,
+				"username error": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				},
+				"username error": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				29
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true,
+					"username error": true
+				}
+			]
+		},
+		{
+			"id": "3254499b-72b8-48a9-85f4-239ad4dc344d",
+			"name": "Register: invalid email (400)",
+			"url": "http://localhost:8900/auth/register",
+			"time": 16,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true,
+				"email error": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				},
+				"email error": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				16
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true,
+					"email error": true
+				}
+			]
+		},
+		{
+			"id": "2b2d9880-574f-45ea-b45a-e5c44d05136f",
+			"name": "Register: short password (400)",
+			"url": "http://localhost:8900/auth/register",
+			"time": 18,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true,
+				"password error": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				},
+				"password error": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				18
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true,
+					"password error": true
+				}
+			]
+		},
+		{
+			"id": "1c6a5d59-1fdf-4b8c-b73c-ffebd67970fc",
+			"name": "Register: duplicate email (400)",
+			"url": "http://localhost:8900/auth/register",
+			"time": 337,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true,
+				"duplicate msg": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				},
+				"duplicate msg": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				337
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true,
+					"duplicate msg": true
+				}
+			]
+		},
+		{
+			"id": "35b50ca2-bd3b-4ccb-96d5-93e82441361e",
+			"name": "Register: empty body (400)",
+			"url": "http://localhost:8900/auth/register",
+			"time": 9,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true,
+				"has errors": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				},
+				"has errors": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				9
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true,
+					"has errors": true
+				}
+			]
+		},
+		{
+			"id": "005b52ef-10fd-4e94-98c7-3f18042bee92",
+			"name": "Login: blank email (400)",
+			"url": "http://localhost:8900/auth/login",
+			"time": 11,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				11
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true
+				}
+			]
+		},
+		{
+			"id": "68b9fb32-f8dc-4e03-a68d-baa34c3d5724",
+			"name": "Login: blank password (400)",
+			"url": "http://localhost:8900/auth/login",
+			"time": 9,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				9
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true
+				}
+			]
+		},
+		{
+			"id": "8096eebd-2d7a-47bd-aa74-9e5d93d2a2af",
+			"name": "Login: wrong password",
+			"url": "http://localhost:8900/auth/login",
+			"time": 239,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"non-200 response": true
+			},
+			"testPassFailCounts": {
+				"non-200 response": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				239
+			],
+			"allTests": [
+				{
+					"non-200 response": true
+				}
+			]
+		},
+		{
+			"id": "8ff3cfba-6bb9-49a0-be5d-d904d0bb3cfc",
+			"name": "Login: non-existent user",
+			"url": "http://localhost:8900/auth/login",
+			"time": 208,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"non-200 response": true
+			},
+			"testPassFailCounts": {
+				"non-200 response": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				208
+			],
+			"allTests": [
+				{
+					"non-200 response": true
+				}
+			]
+		},
+		{
+			"id": "ef75ff9f-5d77-42e4-88a1-b7f5f573c8a1",
+			"name": "Login: empty body (400)",
+			"url": "http://localhost:8900/auth/login",
+			"time": 7,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				7
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true
+				}
+			]
+		},
+		{
+			"id": "6c1042ef-cf43-41fa-b4f1-ccc6aae15a5b",
+			"name": "Role Check: Admin",
+			"url": "http://localhost:8900/auth/role-check",
+			"time": 797,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"has ROLE_ADMIN": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"has ROLE_ADMIN": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				797
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"has ROLE_ADMIN": true
+				}
+			]
+		},
+		{
+			"id": "d6e0b6ba-85de-4933-b4a9-765b3189bf0f",
+			"name": "Role Check: Staff1",
+			"url": "http://localhost:8900/auth/role-check",
+			"time": 9,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"has ROLE_STAFF": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"has ROLE_STAFF": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				9
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"has ROLE_STAFF": true
+				}
+			]
+		},
+		{
+			"id": "305ae51f-45d1-48e4-869e-9a58c70c8ff0",
+			"name": "Find User by Email: Admin (200)",
+			"url": "http://localhost:8900/auth/users/staff1@leavebooking.test",
+			"time": 292,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"has uid": true,
+				"has email": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"has uid": {
+					"pass": 1,
+					"fail": 0
+				},
+				"has email": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				292
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"has uid": true,
+					"has email": true
+				}
+			]
+		},
+		{
+			"id": "df259e68-5e98-4743-a4cc-d74b21fa3b3d",
+			"name": "Change Password: Staff1 (200)",
+			"url": "http://localhost:8900/auth/password",
+			"time": 600,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"success msg": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"success msg": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				600
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"success msg": true
+				}
+			]
+		},
+		{
+			"id": "5957f1f4-e482-4111-b031-0ad6920df617",
+			"name": "Change Password: revert Staff1",
+			"url": "http://localhost:8900/auth/password",
+			"time": 595,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				595
+			],
+			"allTests": [
+				{
+					"200 OK": true
+				}
+			]
+		},
+		{
+			"id": "cf85715d-db78-4e50-9701-14296901109d",
+			"name": "Role Check: no token (401)",
+			"url": "http://localhost:8900/auth/role-check",
+			"time": 7,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"403 Forbidden": true
+			},
+			"testPassFailCounts": {
+				"403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				7
+			],
+			"allTests": [
+				{
+					"403 Forbidden": true
+				}
+			]
+		},
+		{
+			"id": "f273417d-b896-480d-9930-ed37781cc869",
+			"name": "Role Check: invalid token (401)",
+			"url": "http://localhost:8900/auth/role-check",
+			"time": 5,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"401 Unauthorized": true
+			},
+			"testPassFailCounts": {
+				"401 Unauthorized": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				5
+			],
+			"allTests": [
+				{
+					"401 Unauthorized": true
+				}
+			]
+		},
+		{
+			"id": "ca0416b9-c8fe-4079-8316-e73e1c9f865f",
+			"name": "Find User: non-existent email (404)",
+			"url": "http://localhost:8900/auth/users/nobody@test.com",
+			"time": 297,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found"
+			},
+			"tests": {
+				"404 Not Found": true,
+				"has message": true
+			},
+			"testPassFailCounts": {
+				"404 Not Found": {
+					"pass": 1,
+					"fail": 0
+				},
+				"has message": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				297
+			],
+			"allTests": [
+				{
+					"404 Not Found": true,
+					"has message": true
+				}
+			]
+		},
+		{
+			"id": "c70310df-580c-4744-be66-ca6f08b8f201",
+			"name": "Find User: Staff role (403)",
+			"url": "http://localhost:8900/auth/users/admin@leavebooking.test",
+			"time": 13,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"403 Forbidden": true
+			},
+			"testPassFailCounts": {
+				"403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				13
+			],
+			"allTests": [
+				{
+					"403 Forbidden": true
+				}
+			]
+		},
+		{
+			"id": "86f8f907-8888-4f72-b18f-1239ba436bbd",
+			"name": "Find User: no token (401)",
+			"url": "http://localhost:8900/auth/users/admin@leavebooking.test",
+			"time": 8,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"403 Forbidden": true
+			},
+			"testPassFailCounts": {
+				"403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				8
+			],
+			"allTests": [
+				{
+					"403 Forbidden": true
+				}
+			]
+		},
+		{
+			"id": "21e97109-9577-4e17-88ee-2a5538862088",
+			"name": "Change Password: blank (400)",
+			"url": "http://localhost:8900/auth/password",
+			"time": 16,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				16
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true
+				}
+			]
+		},
+		{
+			"id": "21383fab-1f4c-4de9-8e8d-9e3d56326174",
+			"name": "Change Password: too short (400)",
+			"url": "http://localhost:8900/auth/password",
+			"time": 18,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				18
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true
+				}
+			]
+		},
+		{
+			"id": "1fe257ae-12a5-4b96-a4b3-1828dc968236",
+			"name": "Change Password: no token (401)",
+			"url": "http://localhost:8900/auth/password",
+			"time": 8,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"403 Forbidden": true
+			},
+			"testPassFailCounts": {
+				"403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				8
+			],
+			"allTests": [
+				{
+					"403 Forbidden": true
+				}
+			]
+		},
+		{
+			"id": "f81a48e5-cc0d-430a-bf93-b8d8eda99cc5",
+			"name": "PATCH Admin skeleton: activate",
+			"url": "http://localhost:8900/staff/XzOU5RnJ8PThDDerxdxbhFAGt0x2",
+			"time": 151,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"ACTIVE": true,
+				"department set": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"ACTIVE": {
+					"pass": 1,
+					"fail": 0
+				},
+				"department set": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				151
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"ACTIVE": true,
+					"department set": true
+				}
+			]
+		},
+		{
+			"id": "a73abdbd-092d-4123-9e1c-84b3892f2325",
+			"name": "PATCH Manager1 skeleton: activate",
+			"url": "http://localhost:8900/staff/K5tlyNJYpxZF1qkxmApqwBJDigj1",
+			"time": 37,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"ACTIVE": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"ACTIVE": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				37
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"ACTIVE": true
+				}
+			]
+		},
+		{
+			"id": "42e6153b-60b5-4879-938c-95a6e48e450b",
+			"name": "PATCH Manager2 skeleton: activate",
+			"url": "http://localhost:8900/staff/UmA5fooisbQyoI4hykj56nSdWiv2",
+			"time": 32,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				32
+			],
+			"allTests": [
+				{
+					"200 OK": true
+				}
+			]
+		},
+		{
+			"id": "58a15d27-94cc-4f6b-b81b-41e821b8f98d",
+			"name": "PATCH Staff1 skeleton: under Manager1",
+			"url": "http://localhost:8900/staff/3BQM8GemjlQNCi9k1R6zD9da0DV2",
+			"time": 42,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"lineManagerId set": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"lineManagerId set": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				42
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"lineManagerId set": true
+				}
+			]
+		},
+		{
+			"id": "d54444f1-ac72-4915-8d65-c516e8c4aca3",
+			"name": "PATCH Staff2 skeleton: under Manager2",
+			"url": "http://localhost:8900/staff/9P1v3XvilGUtl5CkbtQcl9Rq7wj1",
+			"time": 32,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				32
+			],
+			"allTests": [
+				{
+					"200 OK": true
+				}
+			]
+		},
+		{
+			"id": "c7d31755-9eff-486a-a26a-c6eed2bedd10",
+			"name": "GET /staff: Admin list all (200)",
+			"url": "http://localhost:8900/staff",
+			"time": 478,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"is array": true,
+				"has staff": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"is array": {
+					"pass": 1,
+					"fail": 0
+				},
+				"has staff": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				478
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"is array": true,
+					"has staff": true
+				}
+			]
+		},
+		{
+			"id": "08bfbc6e-3872-4cb6-bfcc-10e57f8a4838",
+			"name": "GET /staff/{id}: Admin (200)",
+			"url": "http://localhost:8900/staff/3BQM8GemjlQNCi9k1R6zD9da0DV2",
+			"time": 12,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"has email": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"has email": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				12
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"has email": true
+				}
+			]
+		},
+		{
+			"id": "10548d2c-2467-451e-9819-5c982c696721",
+			"name": "GET /staff/{id}: Manager (200)",
+			"url": "http://localhost:8900/staff/3BQM8GemjlQNCi9k1R6zD9da0DV2",
+			"time": 12,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				12
+			],
+			"allTests": [
+				{
+					"200 OK": true
+				}
+			]
+		},
+		{
+			"id": "70930d9f-38b6-495b-807d-e3526dbe25b9",
+			"name": "POST /staff/search: by department (200)",
+			"url": "http://localhost:8900/staff/search",
+			"time": 15,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"all Networks": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"all Networks": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				15
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"all Networks": true
+				}
+			]
+		},
+		{
+			"id": "af7c6e68-e76e-4a9c-a54d-7b168a7b2a69",
+			"name": "POST /staff/search: by status ACTIVE (200)",
+			"url": "http://localhost:8900/staff/search",
+			"time": 19,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"all ACTIVE": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"all ACTIVE": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				19
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"all ACTIVE": true
+				}
+			]
+		},
+		{
+			"id": "7a4736b8-65a8-43d4-aff3-5546e96bb229",
+			"name": "POST /staff/search: combined dept+status (200)",
+			"url": "http://localhost:8900/staff/search",
+			"time": 18,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				18
+			],
+			"allTests": [
+				{
+					"200 OK": true
+				}
+			]
+		},
+		{
+			"id": "22a6a691-aafa-46f4-9507-3746f4856074",
+			"name": "GET /staff: Staff role (403)",
+			"url": "http://localhost:8900/staff",
+			"time": 9,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"403 Forbidden": true
+			},
+			"testPassFailCounts": {
+				"403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				9
+			],
+			"allTests": [
+				{
+					"403 Forbidden": true
+				}
+			]
+		},
+		{
+			"id": "0a84e7f4-6db4-4956-bf77-2f8ec1da6480",
+			"name": "GET /staff: no token (401)",
+			"url": "http://localhost:8900/staff",
+			"time": 8,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"401 Unauthorized": true
+			},
+			"testPassFailCounts": {
+				"401 Unauthorized": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				8
+			],
+			"allTests": [
+				{
+					"401 Unauthorized": true
+				}
+			]
+		},
+		{
+			"id": "9469e77c-8869-499a-babd-3b2f9e73b9f6",
+			"name": "GET /staff/{id}: Staff role (403)",
+			"url": "http://localhost:8900/staff/9P1v3XvilGUtl5CkbtQcl9Rq7wj1",
+			"time": 10,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"403 Forbidden": true
+			},
+			"testPassFailCounts": {
+				"403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				10
+			],
+			"allTests": [
+				{
+					"403 Forbidden": true
+				}
+			]
+		},
+		{
+			"id": "e69c80cf-a717-4b30-bed2-aa75e3a8b81d",
+			"name": "GET /staff/{id}: not found (404)",
+			"url": "http://localhost:8900/staff/non-existent-id-12345",
+			"time": 14,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found"
+			},
+			"tests": {
+				"404 Not Found": true
+			},
+			"testPassFailCounts": {
+				"404 Not Found": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				14
+			],
+			"allTests": [
+				{
+					"404 Not Found": true
+				}
+			]
+		},
+		{
+			"id": "460fa5c1-b26c-42fc-880e-3bb25e7a49aa",
+			"name": "POST /staff/search: invalid status BANANA (400)",
+			"url": "http://localhost:8900/staff/search",
+			"time": 13,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true,
+				"invalid status msg": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				},
+				"invalid status msg": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				13
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true,
+					"invalid status msg": true
+				}
+			]
+		},
+		{
+			"id": "dfab945d-eacb-4ca9-b33f-f5b2c8f7eab3",
+			"name": "POST /staff/search: no filters (400)",
+			"url": "http://localhost:8900/staff/search",
+			"time": 18,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true,
+				"filter required msg": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				},
+				"filter required msg": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				18
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true,
+					"filter required msg": true
+				}
+			]
+		},
+		{
+			"id": "a5f21d50-b919-4a91-90c1-2daeb8089164",
+			"name": "POST /staff/search: Staff role (403)",
+			"url": "http://localhost:8900/staff/search",
+			"time": 12,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"403 Forbidden": true
+			},
+			"testPassFailCounts": {
+				"403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				12
+			],
+			"allTests": [
+				{
+					"403 Forbidden": true
+				}
+			]
+		},
+		{
+			"id": "f260564a-bc7f-4e79-9ce4-fb2c4e2f6867",
+			"name": "POST /staff: missing firstName (400)",
+			"url": "http://localhost:8900/staff",
+			"time": 30,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				30
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true
+				}
+			]
+		},
+		{
+			"id": "754c1ba2-4b02-4be2-b6e3-fd12ae5198ed",
+			"name": "POST /staff: missing email (400)",
+			"url": "http://localhost:8900/staff",
+			"time": 16,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				16
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true
+				}
+			]
+		},
+		{
+			"id": "4f9f71c8-f342-4660-907d-5aaad1af8367",
+			"name": "POST /staff: future hireDate (400)",
+			"url": "http://localhost:8900/staff",
+			"time": 15,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				15
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true
+				}
+			]
+		},
+		{
+			"id": "687005a6-e878-4476-86de-8c81d5f762da",
+			"name": "POST /staff: digits in name (400 domain VO)",
+			"url": "http://localhost:8900/staff",
+			"time": 38,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true,
+				"has message": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				},
+				"has message": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				38
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true,
+					"has message": true
+				}
+			]
+		},
+		{
+			"id": "a7dbdbbc-b06c-4f7d-9e17-702c5bfd7dfa",
+			"name": "POST /staff: firstName >50 chars (400)",
+			"url": "http://localhost:8900/staff",
+			"time": 15,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				15
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true
+				}
+			]
+		},
+		{
+			"id": "a60fa4a5-e375-4272-ac78-9f89ee2adf8a",
+			"name": "POST /staff: empty body (400)",
+			"url": "http://localhost:8900/staff",
+			"time": 14,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				14
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true
+				}
+			]
+		},
+		{
+			"id": "3b03c094-a81c-4190-a38a-555d2d731bd6",
+			"name": "POST /staff: Staff role (403)",
+			"url": "http://localhost:8900/staff",
+			"time": 1443,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"403 Forbidden": true
+			},
+			"testPassFailCounts": {
+				"403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				1443
+			],
+			"allTests": [
+				{
+					"403 Forbidden": true
+				}
+			]
+		},
+		{
+			"id": "981caf08-180c-4d71-a767-9b6ff319deb6",
+			"name": "POST /staff: no token (401)",
+			"url": "http://localhost:8900/staff",
+			"time": 19,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"401 Unauthorized": true
+			},
+			"testPassFailCounts": {
+				"401 Unauthorized": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				19
+			],
+			"allTests": [
+				{
+					"401 Unauthorized": true
+				}
+			]
+		},
+		{
+			"id": "2e7c2653-6b37-4201-84e2-4d62e5b825e3",
+			"name": "PATCH /staff/{id}: not found (404)",
+			"url": "http://localhost:8900/staff/non-existent-id",
+			"time": 22,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found"
+			},
+			"tests": {
+				"404 Not Found": true
+			},
+			"testPassFailCounts": {
+				"404 Not Found": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				22
+			],
+			"allTests": [
+				{
+					"404 Not Found": true
+				}
+			]
+		},
+		{
+			"id": "cef07bba-3018-4d7b-9bde-28b8318bf1ad",
+			"name": "PATCH /staff/{id}: Staff role (403)",
+			"url": "http://localhost:8900/staff/3BQM8GemjlQNCi9k1R6zD9da0DV2",
+			"time": 17,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"403 Forbidden": true
+			},
+			"testPassFailCounts": {
+				"403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				17
+			],
+			"allTests": [
+				{
+					"403 Forbidden": true
+				}
+			]
+		},
+		{
+			"id": "8b27ccad-e951-4ecb-b063-77cd4028d709",
+			"name": "PATCH /staff/{id}: no token (401)",
+			"url": "http://localhost:8900/staff/3BQM8GemjlQNCi9k1R6zD9da0DV2",
+			"time": 4,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"401 Unauthorized": true
+			},
+			"testPassFailCounts": {
+				"401 Unauthorized": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				4
+			],
+			"allTests": [
+				{
+					"401 Unauthorized": true
+				}
+			]
+		},
+		{
+			"id": "3d7c68fd-d712-4b1b-bd67-9c9f85a2dd53",
+			"name": "Staff2 submits leave (before termination): 201",
+			"url": "http://localhost:8900/leave-requests",
+			"time": 69,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"201 Created": true
+			},
+			"testPassFailCounts": {
+				"201 Created": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				69
+			],
+			"allTests": [
+				{
+					"201 Created": true
+				}
+			]
+		},
+		{
+			"id": "b632be8b-d9d6-4d03-b90c-64c5bfce2f8e",
+			"name": "Terminate Staff2 (200)",
+			"url": "http://localhost:8900/staff/9P1v3XvilGUtl5CkbtQcl9Rq7wj1",
+			"time": 15,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"TERMINATED": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"TERMINATED": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				15
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"TERMINATED": true
+				}
+			]
+		},
+		{
+			"id": "1e9ef75f-09e0-485b-a650-7591ae616381",
+			"name": "Reactivate terminated staff (409 invariant)",
+			"url": "http://localhost:8900/staff/9P1v3XvilGUtl5CkbtQcl9Rq7wj1",
+			"time": 11,
+			"responseCode": {
+				"code": 409,
+				"name": "Conflict"
+			},
+			"tests": {
+				"409 Conflict": true
+			},
+			"testPassFailCounts": {
+				"409 Conflict": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				11
+			],
+			"allTests": [
+				{
+					"409 Conflict": true
+				}
+			]
+		},
+		{
+			"id": "8ac10f8d-89fe-4c15-8f51-16cf849aae82",
+			"name": "Terminated staff submits leave (403)",
+			"url": "http://localhost:8900/leave-requests",
+			"time": 11,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"403 Forbidden": true,
+				"terminated msg": true
+			},
+			"testPassFailCounts": {
+				"403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				},
+				"terminated msg": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				11
+			],
+			"allTests": [
+				{
+					"403 Forbidden": true,
+					"terminated msg": true
+				}
+			]
+		},
+		{
+			"id": "c3a84db2-191c-457d-a9f2-913c18be45f1",
+			"name": "Staff1 submits leave (auto-resolve manager): 201",
+			"url": "http://localhost:8900/leave-requests",
+			"time": 32,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"201 Created": true,
+				"PENDING": true,
+				"managerId is manager1": true
+			},
+			"testPassFailCounts": {
+				"201 Created": {
+					"pass": 1,
+					"fail": 0
+				},
+				"PENDING": {
+					"pass": 1,
+					"fail": 0
+				},
+				"managerId is manager1": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				32
+			],
+			"allTests": [
+				{
+					"201 Created": true,
+					"PENDING": true,
+					"managerId is manager1": true
+				}
+			]
+		},
+		{
+			"id": "6b5e642c-7461-42a7-b502-d0bf595e9c5b",
+			"name": "Staff1 submits second leave: 201",
+			"url": "http://localhost:8900/leave-requests",
+			"time": 30,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"201 Created": true
+			},
+			"testPassFailCounts": {
+				"201 Created": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				30
+			],
+			"allTests": [
+				{
+					"201 Created": true
+				}
+			]
+		},
+		{
+			"id": "424f2ee1-aeb9-4260-beea-fb47694aa057",
+			"name": "Submit: missing startDate (400)",
+			"url": "http://localhost:8900/leave-requests",
+			"time": 12,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true,
+				"startDate error": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				},
+				"startDate error": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				12
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true,
+					"startDate error": true
+				}
+			]
+		},
+		{
+			"id": "67b2dc86-609a-4e15-a49d-3648de6293fa",
+			"name": "Submit: missing endDate (400)",
+			"url": "http://localhost:8900/leave-requests",
+			"time": 13,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true,
+				"endDate error": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				},
+				"endDate error": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				13
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true,
+					"endDate error": true
+				}
+			]
+		},
+		{
+			"id": "3416890b-becd-4820-b97c-c33a772378aa",
+			"name": "Submit: missing leaveType (400)",
+			"url": "http://localhost:8900/leave-requests",
+			"time": 12,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				12
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true
+				}
+			]
+		},
+		{
+			"id": "3f04b3b4-31d5-4b26-8e6e-c7829351a1ec",
+			"name": "Submit: startDate in the past (400)",
+			"url": "http://localhost:8900/leave-requests",
+			"time": 11,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				11
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true
+				}
+			]
+		},
+		{
+			"id": "d62e16dc-1696-4b8d-ab1e-f6035496ebeb",
+			"name": "Submit: endDate in the past (400)",
+			"url": "http://localhost:8900/leave-requests",
+			"time": 17,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				17
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true
+				}
+			]
+		},
+		{
+			"id": "87e2b964-491c-4273-a842-36897423a73e",
+			"name": "Submit: endDate before startDate (400 domain)",
+			"url": "http://localhost:8900/leave-requests",
+			"time": 23,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true,
+				"date range msg": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				},
+				"date range msg": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				23
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true,
+					"date range msg": true
+				}
+			]
+		},
+		{
+			"id": "9b171ff0-94de-4819-9571-b982365f6d77",
+			"name": "Submit: reason >500 chars (400)",
+			"url": "http://localhost:8900/leave-requests",
+			"time": 14,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				14
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true
+				}
+			]
+		},
+		{
+			"id": "fc8094f5-fbe6-44fb-b633-5f18d5200167",
+			"name": "Submit: date overlap with existing PENDING (409)",
+			"url": "http://localhost:8900/leave-requests",
+			"time": 20,
+			"responseCode": {
+				"code": 409,
+				"name": "Conflict"
+			},
+			"tests": {
+				"409 Conflict": true,
+				"overlap msg": true
+			},
+			"testPassFailCounts": {
+				"409 Conflict": {
+					"pass": 1,
+					"fail": 0
+				},
+				"overlap msg": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				20
+			],
+			"allTests": [
+				{
+					"409 Conflict": true,
+					"overlap msg": true
+				}
+			]
+		},
+		{
+			"id": "0b1ccbc8-0c99-4ac1-b785-a5942117afaf",
+			"name": "Submit: no token (401)",
+			"url": "http://localhost:8900/leave-requests",
+			"time": 4,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"401 Unauthorized": true
+			},
+			"testPassFailCounts": {
+				"401 Unauthorized": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				4
+			],
+			"allTests": [
+				{
+					"401 Unauthorized": true
+				}
+			]
+		},
+		{
+			"id": "35a9c9a8-509f-47ac-8754-87f04023d446",
+			"name": "Submit: empty body (400)",
+			"url": "http://localhost:8900/leave-requests",
+			"time": 13,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				13
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true
+				}
+			]
+		},
+		{
+			"id": "2b2d7a8f-3f52-4f2f-9335-5c4b38553b0b",
+			"name": "Approve: Manager1 approves Staff1 request (200)",
+			"url": "http://localhost:8900/leave-requests/e9e97a3c-1d72-4ab3-9cf1-c7e0c602f553/approve",
+			"time": 37,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"APPROVED": true,
+				"decidedBy": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"APPROVED": {
+					"pass": 1,
+					"fail": 0
+				},
+				"decidedBy": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				37
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"APPROVED": true,
+					"decidedBy": true
+				}
+			]
+		},
+		{
+			"id": "eaf60f02-e8c0-4005-9f73-9ed7c16c21c7",
+			"name": "Reject: Manager1 rejects Staff1 request #2 (200)",
+			"url": "http://localhost:8900/leave-requests/7eab5777-f04a-4d7f-98fc-6d70756fc14d/reject",
+			"time": 34,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"REJECTED": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"REJECTED": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				34
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"REJECTED": true
+				}
+			]
+		},
+		{
+			"id": "0cd0591f-4489-4e7b-a925-5c5c0dd5a3ef",
+			"name": "Cancel: Staff1 cancels approved request (200)",
+			"url": "http://localhost:8900/leave-requests/e9e97a3c-1d72-4ab3-9cf1-c7e0c602f553/cancel",
+			"time": 35,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"CANCELLED": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"CANCELLED": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				35
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"CANCELLED": true
+				}
+			]
+		},
+		{
+			"id": "462af612-587d-435e-8855-fcf5ef2dc965",
+			"name": "Approve: Admin overrides (approves Staff2 req) (200)",
+			"url": "http://localhost:8900/leave-requests/4d6e547f-52af-4d9e-82d4-2348d13776ec/approve",
+			"time": 19,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"APPROVED": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"APPROVED": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				19
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"APPROVED": true
+				}
+			]
+		},
+		{
+			"id": "3a3918ce-d1a7-4598-985b-446d6a97c738",
+			"name": "Cancel: Admin cancels anyone (200)",
+			"url": "http://localhost:8900/leave-requests/4d6e547f-52af-4d9e-82d4-2348d13776ec/cancel",
+			"time": 25,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"CANCELLED": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"CANCELLED": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				25
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"CANCELLED": true
+				}
+			]
+		},
+		{
+			"id": "7d5f823e-89d5-4899-b780-bb5c08851718",
+			"name": "Approve: already approved (409)",
+			"url": "http://localhost:8900/leave-requests/e9e97a3c-1d72-4ab3-9cf1-c7e0c602f553/approve",
+			"time": 16,
+			"responseCode": {
+				"code": 409,
+				"name": "Conflict"
+			},
+			"tests": {
+				"409 Conflict": true
+			},
+			"testPassFailCounts": {
+				"409 Conflict": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				16
+			],
+			"allTests": [
+				{
+					"409 Conflict": true
+				}
+			]
+		},
+		{
+			"id": "ae2daf1c-3b94-420e-b890-17ca8f4418cc",
+			"name": "Reject: already rejected (409)",
+			"url": "http://localhost:8900/leave-requests/7eab5777-f04a-4d7f-98fc-6d70756fc14d/reject",
+			"time": 15,
+			"responseCode": {
+				"code": 409,
+				"name": "Conflict"
+			},
+			"tests": {
+				"409 Conflict": true
+			},
+			"testPassFailCounts": {
+				"409 Conflict": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				15
+			],
+			"allTests": [
+				{
+					"409 Conflict": true
+				}
+			]
+		},
+		{
+			"id": "347f1f3d-3eb4-4b38-b886-133508a58eba",
+			"name": "Cancel: already cancelled (409)",
+			"url": "http://localhost:8900/leave-requests/e9e97a3c-1d72-4ab3-9cf1-c7e0c602f553/cancel",
+			"time": 16,
+			"responseCode": {
+				"code": 409,
+				"name": "Conflict"
+			},
+			"tests": {
+				"409 Conflict": true
+			},
+			"testPassFailCounts": {
+				"409 Conflict": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				16
+			],
+			"allTests": [
+				{
+					"409 Conflict": true
+				}
+			]
+		},
+		{
+			"id": "c2865393-da13-452e-8fc5-976be255c980",
+			"name": "Cancel: rejected request (409)",
+			"url": "http://localhost:8900/leave-requests/7eab5777-f04a-4d7f-98fc-6d70756fc14d/cancel",
+			"time": 17,
+			"responseCode": {
+				"code": 409,
+				"name": "Conflict"
+			},
+			"tests": {
+				"409 Conflict": true
+			},
+			"testPassFailCounts": {
+				"409 Conflict": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				17
+			],
+			"allTests": [
+				{
+					"409 Conflict": true
+				}
+			]
+		},
+		{
+			"id": "330e3988-9d68-41c5-aef6-a7520c14b43d",
+			"name": "Approve: wrong manager (403)",
+			"url": "http://localhost:8900/leave-requests/4d6e547f-52af-4d9e-82d4-2348d13776ec/approve",
+			"time": 17,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"403 Forbidden": true,
+				"assigned manager msg": true
+			},
+			"testPassFailCounts": {
+				"403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				},
+				"assigned manager msg": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				17
+			],
+			"allTests": [
+				{
+					"403 Forbidden": true,
+					"assigned manager msg": true
+				}
+			]
+		},
+		{
+			"id": "379e982f-1b3d-4493-86bc-84bfa093e7d9",
+			"name": "Approve: Staff role (403)",
+			"url": "http://localhost:8900/leave-requests/4d6e547f-52af-4d9e-82d4-2348d13776ec/approve",
+			"time": 16,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"403 Forbidden": true
+			},
+			"testPassFailCounts": {
+				"403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				16
+			],
+			"allTests": [
+				{
+					"403 Forbidden": true
+				}
+			]
+		},
+		{
+			"id": "73119030-fd5d-413f-81ee-f4e372d5d525",
+			"name": "Approve: no token (401)",
+			"url": "http://localhost:8900/leave-requests/4d6e547f-52af-4d9e-82d4-2348d13776ec/approve",
+			"time": 4,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"401 Unauthorized": true
+			},
+			"testPassFailCounts": {
+				"401 Unauthorized": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				4
+			],
+			"allTests": [
+				{
+					"401 Unauthorized": true
+				}
+			]
+		},
+		{
+			"id": "47d6bd04-4b70-4772-9d98-e40fc514f3bd",
+			"name": "Approve: not found (404)",
+			"url": "http://localhost:8900/leave-requests/00000000-0000-0000-0000-000000000000/approve",
+			"time": 17,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found"
+			},
+			"tests": {
+				"404 Not Found": true
+			},
+			"testPassFailCounts": {
+				"404 Not Found": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				17
+			],
+			"allTests": [
+				{
+					"404 Not Found": true
+				}
+			]
+		},
+		{
+			"id": "8e1c2dc5-283c-4194-b404-6514ea2db141",
+			"name": "Approve: reason >500 chars (400)",
+			"url": "http://localhost:8900/leave-requests/4d6e547f-52af-4d9e-82d4-2348d13776ec/approve",
+			"time": 20,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true,
+				"reason length": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				},
+				"reason length": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				20
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true,
+					"reason length": true
+				}
+			]
+		},
+		{
+			"id": "613f6de1-c783-4d9e-baba-c669b77c8231",
+			"name": "Cancel: not owner not admin (403)",
+			"url": "http://localhost:8900/leave-requests/4d6e547f-52af-4d9e-82d4-2348d13776ec/cancel",
+			"time": 19,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"403 Forbidden": true,
+				"own requests msg": true
+			},
+			"testPassFailCounts": {
+				"403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				},
+				"own requests msg": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				19
+			],
+			"allTests": [
+				{
+					"403 Forbidden": true,
+					"own requests msg": true
+				}
+			]
+		},
+		{
+			"id": "fe1318d0-d583-4f5a-9895-d896a0767846",
+			"name": "Reject: no token (401)",
+			"url": "http://localhost:8900/leave-requests/4d6e547f-52af-4d9e-82d4-2348d13776ec/reject",
+			"time": 5,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"401 Unauthorized": true
+			},
+			"testPassFailCounts": {
+				"401 Unauthorized": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				5
+			],
+			"allTests": [
+				{
+					"401 Unauthorized": true
+				}
+			]
+		},
+		{
+			"id": "e66dc5bd-cab7-4f2b-b24d-ded30fb05921",
+			"name": "Cancel: no token (401)",
+			"url": "http://localhost:8900/leave-requests/4d6e547f-52af-4d9e-82d4-2348d13776ec/cancel",
+			"time": 7,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"401 Unauthorized": true
+			},
+			"testPassFailCounts": {
+				"401 Unauthorized": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				7
+			],
+			"allTests": [
+				{
+					"401 Unauthorized": true
+				}
+			]
+		},
+		{
+			"id": "d416aa4f-6972-47d3-9d13-4f4d19605bbe",
+			"name": "GET /leave-requests/my: Staff1 (200)",
+			"url": "http://localhost:8900/leave-requests/my",
+			"time": 14,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"is array": true,
+				"has requests": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"is array": {
+					"pass": 1,
+					"fail": 0
+				},
+				"has requests": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				14
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"is array": true,
+					"has requests": true
+				}
+			]
+		},
+		{
+			"id": "301d664f-485c-4b3f-bad3-780f300cf160",
+			"name": "GET /leave-requests/team: Manager1 (200)",
+			"url": "http://localhost:8900/leave-requests/team",
+			"time": 15,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"is array": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"is array": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				15
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"is array": true
+				}
+			]
+		},
+		{
+			"id": "ec21caf2-8311-44eb-a676-7fefc107e2ac",
+			"name": "GET /leave-requests/all: Admin (200)",
+			"url": "http://localhost:8900/leave-requests/all",
+			"time": 11,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"is array": true,
+				"has requests": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"is array": {
+					"pass": 1,
+					"fail": 0
+				},
+				"has requests": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				11
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"is array": true,
+					"has requests": true
+				}
+			]
+		},
+		{
+			"id": "09fa199c-cc12-4225-a654-7b445af3f6a1",
+			"name": "GET /leave-requests/{id}: by ID (200)",
+			"url": "http://localhost:8900/leave-requests/e9e97a3c-1d72-4ab3-9cf1-c7e0c602f553",
+			"time": 13,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"correct id": true,
+				"has all fields": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"correct id": {
+					"pass": 1,
+					"fail": 0
+				},
+				"has all fields": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				13
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"correct id": true,
+					"has all fields": true
+				}
+			]
+		},
+		{
+			"id": "2e3491da-d8b3-43c2-926d-acbaf7b41802",
+			"name": "POST /leave-requests/my/search: by status PENDING (200)",
+			"url": "http://localhost:8900/leave-requests/my/search",
+			"time": 15,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"all PENDING": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"all PENDING": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				15
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"all PENDING": true
+				}
+			]
+		},
+		{
+			"id": "27867aee-7b64-435d-9ded-fd0086abeeea",
+			"name": "POST /leave-requests/team/search: by status (200)",
+			"url": "http://localhost:8900/leave-requests/team/search",
+			"time": 16,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				16
+			],
+			"allTests": [
+				{
+					"200 OK": true
+				}
+			]
+		},
+		{
+			"id": "b443e4b0-3354-4ea2-9038-135e5e4f30ec",
+			"name": "POST /leave-requests/team/search: by date range (200)",
+			"url": "http://localhost:8900/leave-requests/team/search",
+			"time": 19,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				19
+			],
+			"allTests": [
+				{
+					"200 OK": true
+				}
+			]
+		},
+		{
+			"id": "d5afb5c9-3f95-4435-881c-a7ac3a6be0de",
+			"name": "POST /leave-requests/all/search: by staffMemberId (200)",
+			"url": "http://localhost:8900/leave-requests/all/search",
+			"time": 11,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"all for staff1": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"all for staff1": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				11
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"all for staff1": true
+				}
+			]
+		},
+		{
+			"id": "627df708-4de8-427b-971d-8e94c696da79",
+			"name": "POST /leave-requests/all/search: by managerId (200)",
+			"url": "http://localhost:8900/leave-requests/all/search",
+			"time": 10,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				10
+			],
+			"allTests": [
+				{
+					"200 OK": true
+				}
+			]
+		},
+		{
+			"id": "70c376b9-e20d-4995-b82e-6e075f94388b",
+			"name": "POST /leave-requests/all/search: combined filters (200)",
+			"url": "http://localhost:8900/leave-requests/all/search",
+			"time": 14,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				14
+			],
+			"allTests": [
+				{
+					"200 OK": true
+				}
+			]
+		},
+		{
+			"id": "475d4103-e5fe-464a-a700-85d5ecb7cc70",
+			"name": "GET /leave-requests/my: no token (401)",
+			"url": "http://localhost:8900/leave-requests/my",
+			"time": 5,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"401 Unauthorized": true
+			},
+			"testPassFailCounts": {
+				"401 Unauthorized": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				5
+			],
+			"allTests": [
+				{
+					"401 Unauthorized": true
+				}
+			]
+		},
+		{
+			"id": "a3b9856d-45de-4fec-8f12-b35bd634b7fe",
+			"name": "GET /leave-requests/team: Staff role (403)",
+			"url": "http://localhost:8900/leave-requests/team",
+			"time": 16,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"403 Forbidden": true
+			},
+			"testPassFailCounts": {
+				"403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				16
+			],
+			"allTests": [
+				{
+					"403 Forbidden": true
+				}
+			]
+		},
+		{
+			"id": "04cd7ec4-df18-49b6-a4e7-717290720a3f",
+			"name": "GET /leave-requests/all: Staff role (403)",
+			"url": "http://localhost:8900/leave-requests/all",
+			"time": 11,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"403 Forbidden": true
+			},
+			"testPassFailCounts": {
+				"403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				11
+			],
+			"allTests": [
+				{
+					"403 Forbidden": true
+				}
+			]
+		},
+		{
+			"id": "9ef75698-de87-44b7-a5f8-5963798e470c",
+			"name": "GET /leave-requests/all: Manager role (403)",
+			"url": "http://localhost:8900/leave-requests/all",
+			"time": 8,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"403 Forbidden": true
+			},
+			"testPassFailCounts": {
+				"403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				8
+			],
+			"allTests": [
+				{
+					"403 Forbidden": true
+				}
+			]
+		},
+		{
+			"id": "03e16bae-e9f7-4d08-a3ce-08a48e3bc6fc",
+			"name": "GET /leave-requests/{id}: not found (404)",
+			"url": "http://localhost:8900/leave-requests/00000000-0000-0000-0000-000000000000",
+			"time": 11,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found"
+			},
+			"tests": {
+				"404 Not Found": true
+			},
+			"testPassFailCounts": {
+				"404 Not Found": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				11
+			],
+			"allTests": [
+				{
+					"404 Not Found": true
+				}
+			]
+		},
+		{
+			"id": "7ade6b06-9bc7-4c67-95bf-c3f5b7e03ae1",
+			"name": "POST /my/search: no filters (400)",
+			"url": "http://localhost:8900/leave-requests/my/search",
+			"time": 14,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true,
+				"filter required": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				},
+				"filter required": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				14
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true,
+					"filter required": true
+				}
+			]
+		},
+		{
+			"id": "ee97af53-7641-4740-98c8-027bfda74e7e",
+			"name": "POST /my/search: invalid status BANANA (400)",
+			"url": "http://localhost:8900/leave-requests/my/search",
+			"time": 13,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true,
+				"invalid status": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				},
+				"invalid status": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				13
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true,
+					"invalid status": true
+				}
+			]
+		},
+		{
+			"id": "126624ae-e90f-4182-80a4-5b3e7b902ebd",
+			"name": "POST /my/search: staffMemberId filter rejected (400)",
+			"url": "http://localhost:8900/leave-requests/my/search",
+			"time": 10,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true,
+				"not accepted msg": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				},
+				"not accepted msg": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				10
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true,
+					"not accepted msg": true
+				}
+			]
+		},
+		{
+			"id": "ed21754a-bd68-4de5-b5ce-73cd44946c5d",
+			"name": "POST /team/search: Staff role (403)",
+			"url": "http://localhost:8900/leave-requests/team/search",
+			"time": 15,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"403 Forbidden": true
+			},
+			"testPassFailCounts": {
+				"403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				15
+			],
+			"allTests": [
+				{
+					"403 Forbidden": true
+				}
+			]
+		},
+		{
+			"id": "d76a18c4-131b-472d-95d4-c62d33d7575e",
+			"name": "POST /team/search: managerId filter rejected (400)",
+			"url": "http://localhost:8900/leave-requests/team/search",
+			"time": 12,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true,
+				"not accepted msg": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				},
+				"not accepted msg": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				12
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true,
+					"not accepted msg": true
+				}
+			]
+		},
+		{
+			"id": "45a5bf40-977b-4b94-96b8-f907d16a17a8",
+			"name": "POST /team/search: only 'from' no 'to' (400)",
+			"url": "http://localhost:8900/leave-requests/team/search",
+			"time": 10,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true,
+				"both dates": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				},
+				"both dates": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				10
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true,
+					"both dates": true
+				}
+			]
+		},
+		{
+			"id": "bc0910a0-c893-479e-827e-23d97676221b",
+			"name": "POST /team/search: from after to (400)",
+			"url": "http://localhost:8900/leave-requests/team/search",
+			"time": 42,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true,
+				"on or before": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				},
+				"on or before": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				42
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true,
+					"on or before": true
+				}
+			]
+		},
+		{
+			"id": "5d61a545-621f-4749-b4fc-860e6785b324",
+			"name": "POST /all/search: Staff role (403)",
+			"url": "http://localhost:8900/leave-requests/all/search",
+			"time": 35,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"403 Forbidden": true
+			},
+			"testPassFailCounts": {
+				"403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				35
+			],
+			"allTests": [
+				{
+					"403 Forbidden": true
+				}
+			]
+		},
+		{
+			"id": "48870f81-b7c7-4042-b71a-3d3e7ea896b6",
+			"name": "POST /all/search: no filters (400)",
+			"url": "http://localhost:8900/leave-requests/all/search",
+			"time": 8,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				8
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true
+				}
+			]
+		},
+		{
+			"id": "020c5934-4ba6-4759-abbb-4a6fbbb5c392",
+			"name": "POST /all/search: both staffMemberId + managerId (400)",
+			"url": "http://localhost:8900/leave-requests/all/search",
+			"time": 12,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true,
+				"mutually exclusive msg": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				},
+				"mutually exclusive msg": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				12
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true,
+					"mutually exclusive msg": true
+				}
+			]
+		},
+		{
+			"id": "196ce50c-7bbc-41cb-9f79-4fb7ec2667fc",
+			"name": "GET /leave-allowances/my: Staff1 (200)",
+			"url": "http://localhost:8900/leave-allowances/my",
+			"time": 31,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"has entitlement": true,
+				"has remainingDays": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"has entitlement": {
+					"pass": 1,
+					"fail": 0
+				},
+				"has remainingDays": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				31
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"has entitlement": true,
+					"has remainingDays": true
+				}
+			]
+		},
+		{
+			"id": "cdefd4db-2733-4bac-969c-4fe8056ab0e4",
+			"name": "GET /leave-allowances/staff/{id}: Manager (200)",
+			"url": "http://localhost:8900/leave-allowances/staff/3BQM8GemjlQNCi9k1R6zD9da0DV2",
+			"time": 16,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				16
+			],
+			"allTests": [
+				{
+					"200 OK": true
+				}
+			]
+		},
+		{
+			"id": "676712ae-eaa1-46b7-aa5e-0601f0fb394c",
+			"name": "GET /leave-allowances/team: Manager1 (200)",
+			"url": "http://localhost:8900/leave-allowances/team",
+			"time": 13,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"is array": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"is array": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				13
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"is array": true
+				}
+			]
+		},
+		{
+			"id": "60ed232a-6317-4ec9-895a-86d0b47d674d",
+			"name": "GET /leave-allowances/all: Admin (200)",
+			"url": "http://localhost:8900/leave-allowances/all",
+			"time": 12,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"is array": true,
+				"has allowances": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"is array": {
+					"pass": 1,
+					"fail": 0
+				},
+				"has allowances": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				12
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"is array": true,
+					"has allowances": true
+				}
+			]
+		},
+		{
+			"id": "f13a513d-c5ec-4aa4-814b-2d54356978ac",
+			"name": "GET /leave-allowances/all?department=Networks (200)",
+			"url": "http://localhost:8900/leave-allowances/all?department=Networks",
+			"time": 12,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"is array": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"is array": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				12
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"is array": true
+				}
+			]
+		},
+		{
+			"id": "8e73f320-2f3e-422f-a574-f97360a951d4",
+			"name": "PATCH /leave-allowances/{id}: Admin amends to 30 (200)",
+			"url": "http://localhost:8900/leave-allowances/318be506-9eb1-4dc3-a66a-b2a2dcfc32a4",
+			"time": 23,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"entitlement updated": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"entitlement updated": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				23
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"entitlement updated": true
+				}
+			]
+		},
+		{
+			"id": "8256f6c6-92e3-441c-af42-c227bdad2c58",
+			"name": "PATCH /leave-allowances/{id}: revert to 25 (200)",
+			"url": "http://localhost:8900/leave-allowances/318be506-9eb1-4dc3-a66a-b2a2dcfc32a4",
+			"time": 12,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"200 OK": true,
+				"back to 25": true
+			},
+			"testPassFailCounts": {
+				"200 OK": {
+					"pass": 1,
+					"fail": 0
+				},
+				"back to 25": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				12
+			],
+			"allTests": [
+				{
+					"200 OK": true,
+					"back to 25": true
+				}
+			]
+		},
+		{
+			"id": "0fec052b-9a52-48a8-8f92-dba4ef9a046f",
+			"name": "GET /leave-allowances/my: no token (401)",
+			"url": "http://localhost:8900/leave-allowances/my",
+			"time": 4,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"401 Unauthorized": true
+			},
+			"testPassFailCounts": {
+				"401 Unauthorized": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				4
+			],
+			"allTests": [
+				{
+					"401 Unauthorized": true
+				}
+			]
+		},
+		{
+			"id": "09e9dfb1-81bf-49d1-9a0a-6b0c946e748c",
+			"name": "GET /leave-allowances/staff/{id}: Staff role (403)",
+			"url": "http://localhost:8900/leave-allowances/staff/9P1v3XvilGUtl5CkbtQcl9Rq7wj1",
+			"time": 14,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"403 Forbidden": true
+			},
+			"testPassFailCounts": {
+				"403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				14
+			],
+			"allTests": [
+				{
+					"403 Forbidden": true
+				}
+			]
+		},
+		{
+			"id": "fe9a942b-bd70-4edf-84e7-54e7eb2afe28",
+			"name": "GET /leave-allowances/staff/{id}: not found (404)",
+			"url": "http://localhost:8900/leave-allowances/staff/non-existent-id",
+			"time": 12,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found"
+			},
+			"tests": {
+				"404 Not Found": true
+			},
+			"testPassFailCounts": {
+				"404 Not Found": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				12
+			],
+			"allTests": [
+				{
+					"404 Not Found": true
+				}
+			]
+		},
+		{
+			"id": "fc0c1ba9-5ac2-4239-9e60-ea5ed46523cf",
+			"name": "GET /leave-allowances/team: Staff role (403)",
+			"url": "http://localhost:8900/leave-allowances/team",
+			"time": 10,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"403 Forbidden": true
+			},
+			"testPassFailCounts": {
+				"403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				10
+			],
+			"allTests": [
+				{
+					"403 Forbidden": true
+				}
+			]
+		},
+		{
+			"id": "faeb6aec-7427-4c5a-bf6b-70187baa9d5d",
+			"name": "GET /leave-allowances/all: Staff role (403)",
+			"url": "http://localhost:8900/leave-allowances/all",
+			"time": 10,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"403 Forbidden": true
+			},
+			"testPassFailCounts": {
+				"403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				10
+			],
+			"allTests": [
+				{
+					"403 Forbidden": true
+				}
+			]
+		},
+		{
+			"id": "8f5d0e64-b599-4585-898e-ef43f106bbdc",
+			"name": "GET /leave-allowances/all: no token (401)",
+			"url": "http://localhost:8900/leave-allowances/all",
+			"time": 4,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"401 Unauthorized": true
+			},
+			"testPassFailCounts": {
+				"401 Unauthorized": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				4
+			],
+			"allTests": [
+				{
+					"401 Unauthorized": true
+				}
+			]
+		},
+		{
+			"id": "8a20126f-2bcb-4b16-91de-ddc6c5a36ffc",
+			"name": "PATCH entitlement: 0 (400 @Min)",
+			"url": "http://localhost:8900/leave-allowances/318be506-9eb1-4dc3-a66a-b2a2dcfc32a4",
+			"time": 17,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				17
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true
+				}
+			]
+		},
+		{
+			"id": "b0597f9d-3655-41ec-9f86-d3bc7d5d6414",
+			"name": "PATCH entitlement: negative (400)",
+			"url": "http://localhost:8900/leave-allowances/318be506-9eb1-4dc3-a66a-b2a2dcfc32a4",
+			"time": 17,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"400 Bad Request": true
+			},
+			"testPassFailCounts": {
+				"400 Bad Request": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				17
+			],
+			"allTests": [
+				{
+					"400 Bad Request": true
+				}
+			]
+		},
+		{
+			"id": "93f20563-0fb8-4817-9370-8bff3e154077",
+			"name": "PATCH entitlement: Staff role (403)",
+			"url": "http://localhost:8900/leave-allowances/318be506-9eb1-4dc3-a66a-b2a2dcfc32a4",
+			"time": 15,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"403 Forbidden": true
+			},
+			"testPassFailCounts": {
+				"403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				15
+			],
+			"allTests": [
+				{
+					"403 Forbidden": true
+				}
+			]
+		},
+		{
+			"id": "a3f66da4-c661-4665-b006-8c2119f17fcc",
+			"name": "PATCH entitlement: Manager role (403)",
+			"url": "http://localhost:8900/leave-allowances/318be506-9eb1-4dc3-a66a-b2a2dcfc32a4",
+			"time": 18,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"403 Forbidden": true
+			},
+			"testPassFailCounts": {
+				"403 Forbidden": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				18
+			],
+			"allTests": [
+				{
+					"403 Forbidden": true
+				}
+			]
+		},
+		{
+			"id": "5979d7f3-e6a4-4d46-aad6-e33e38671d82",
+			"name": "PATCH entitlement: not found (404)",
+			"url": "http://localhost:8900/leave-allowances/00000000-0000-0000-0000-000000000000",
+			"time": 14,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found"
+			},
+			"tests": {
+				"404 Not Found": true
+			},
+			"testPassFailCounts": {
+				"404 Not Found": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				14
+			],
+			"allTests": [
+				{
+					"404 Not Found": true
+				}
+			]
+		},
+		{
+			"id": "ac415974-c80f-44cf-8d69-27972ac0e47b",
+			"name": "PATCH entitlement: no token (401)",
+			"url": "http://localhost:8900/leave-allowances/318be506-9eb1-4dc3-a66a-b2a2dcfc32a4",
+			"time": 4,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"401 Unauthorized": true
+			},
+			"testPassFailCounts": {
+				"401 Unauthorized": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				4
+			],
+			"allTests": [
+				{
+					"401 Unauthorized": true
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 15373,
+	"collection": {
+		"requests": [
+			{
+				"id": "f0632489-3d89-47f7-b8ad-bbcd52b71414",
+				"method": "POST"
+			},
+			{
+				"id": "48839667-d6c2-412d-beb5-1831198b856f",
+				"method": "POST"
+			},
+			{
+				"id": "fdd5e12a-7e1a-4bbd-b417-aa8b9d7dd3f8",
+				"method": "POST"
+			},
+			{
+				"id": "fb3684f6-1b9c-4080-9e69-01ceade4ccac",
+				"method": "POST"
+			},
+			{
+				"id": "36e13016-a256-4d22-972e-6751ce3d48ae",
+				"method": "POST"
+			},
+			{
+				"id": "1d867061-b0cb-47f7-a2de-af1a7672db2a",
+				"method": "POST"
+			},
+			{
+				"id": "d74fbd95-dbe6-4514-a92a-db6c25be4e46",
+				"method": "POST"
+			},
+			{
+				"id": "5fba8b42-3c45-4519-8364-822039d23229",
+				"method": "POST"
+			},
+			{
+				"id": "e2f94c3e-41dc-48bd-8e3d-a1a681611201",
+				"method": "POST"
+			},
+			{
+				"id": "2cf3d56a-5cfe-4942-b41c-9cad6081d098",
+				"method": "POST"
+			},
+			{
+				"id": "734541d3-6ac4-47c7-88a9-f833462d01c3",
+				"method": "POST"
+			},
+			{
+				"id": "3254499b-72b8-48a9-85f4-239ad4dc344d",
+				"method": "POST"
+			},
+			{
+				"id": "2b2d9880-574f-45ea-b45a-e5c44d05136f",
+				"method": "POST"
+			},
+			{
+				"id": "1c6a5d59-1fdf-4b8c-b73c-ffebd67970fc",
+				"method": "POST"
+			},
+			{
+				"id": "35b50ca2-bd3b-4ccb-96d5-93e82441361e",
+				"method": "POST"
+			},
+			{
+				"id": "005b52ef-10fd-4e94-98c7-3f18042bee92",
+				"method": "POST"
+			},
+			{
+				"id": "68b9fb32-f8dc-4e03-a68d-baa34c3d5724",
+				"method": "POST"
+			},
+			{
+				"id": "8096eebd-2d7a-47bd-aa74-9e5d93d2a2af",
+				"method": "POST"
+			},
+			{
+				"id": "8ff3cfba-6bb9-49a0-be5d-d904d0bb3cfc",
+				"method": "POST"
+			},
+			{
+				"id": "ef75ff9f-5d77-42e4-88a1-b7f5f573c8a1",
+				"method": "POST"
+			},
+			{
+				"id": "6c1042ef-cf43-41fa-b4f1-ccc6aae15a5b",
+				"method": "GET"
+			},
+			{
+				"id": "d6e0b6ba-85de-4933-b4a9-765b3189bf0f",
+				"method": "GET"
+			},
+			{
+				"id": "305ae51f-45d1-48e4-869e-9a58c70c8ff0",
+				"method": "GET"
+			},
+			{
+				"id": "df259e68-5e98-4743-a4cc-d74b21fa3b3d",
+				"method": "PATCH"
+			},
+			{
+				"id": "5957f1f4-e482-4111-b031-0ad6920df617",
+				"method": "PATCH"
+			},
+			{
+				"id": "cf85715d-db78-4e50-9701-14296901109d",
+				"method": "GET"
+			},
+			{
+				"id": "f273417d-b896-480d-9930-ed37781cc869",
+				"method": "GET"
+			},
+			{
+				"id": "ca0416b9-c8fe-4079-8316-e73e1c9f865f",
+				"method": "GET"
+			},
+			{
+				"id": "c70310df-580c-4744-be66-ca6f08b8f201",
+				"method": "GET"
+			},
+			{
+				"id": "86f8f907-8888-4f72-b18f-1239ba436bbd",
+				"method": "GET"
+			},
+			{
+				"id": "21e97109-9577-4e17-88ee-2a5538862088",
+				"method": "PATCH"
+			},
+			{
+				"id": "21383fab-1f4c-4de9-8e8d-9e3d56326174",
+				"method": "PATCH"
+			},
+			{
+				"id": "1fe257ae-12a5-4b96-a4b3-1828dc968236",
+				"method": "PATCH"
+			},
+			{
+				"id": "f81a48e5-cc0d-430a-bf93-b8d8eda99cc5",
+				"method": "PATCH"
+			},
+			{
+				"id": "a73abdbd-092d-4123-9e1c-84b3892f2325",
+				"method": "PATCH"
+			},
+			{
+				"id": "42e6153b-60b5-4879-938c-95a6e48e450b",
+				"method": "PATCH"
+			},
+			{
+				"id": "58a15d27-94cc-4f6b-b81b-41e821b8f98d",
+				"method": "PATCH"
+			},
+			{
+				"id": "d54444f1-ac72-4915-8d65-c516e8c4aca3",
+				"method": "PATCH"
+			},
+			{
+				"id": "c7d31755-9eff-486a-a26a-c6eed2bedd10",
+				"method": "GET"
+			},
+			{
+				"id": "08bfbc6e-3872-4cb6-bfcc-10e57f8a4838",
+				"method": "GET"
+			},
+			{
+				"id": "10548d2c-2467-451e-9819-5c982c696721",
+				"method": "GET"
+			},
+			{
+				"id": "70930d9f-38b6-495b-807d-e3526dbe25b9",
+				"method": "POST"
+			},
+			{
+				"id": "af7c6e68-e76e-4a9c-a54d-7b168a7b2a69",
+				"method": "POST"
+			},
+			{
+				"id": "7a4736b8-65a8-43d4-aff3-5546e96bb229",
+				"method": "POST"
+			},
+			{
+				"id": "22a6a691-aafa-46f4-9507-3746f4856074",
+				"method": "GET"
+			},
+			{
+				"id": "0a84e7f4-6db4-4956-bf77-2f8ec1da6480",
+				"method": "GET"
+			},
+			{
+				"id": "9469e77c-8869-499a-babd-3b2f9e73b9f6",
+				"method": "GET"
+			},
+			{
+				"id": "e69c80cf-a717-4b30-bed2-aa75e3a8b81d",
+				"method": "GET"
+			},
+			{
+				"id": "460fa5c1-b26c-42fc-880e-3bb25e7a49aa",
+				"method": "POST"
+			},
+			{
+				"id": "dfab945d-eacb-4ca9-b33f-f5b2c8f7eab3",
+				"method": "POST"
+			},
+			{
+				"id": "a5f21d50-b919-4a91-90c1-2daeb8089164",
+				"method": "POST"
+			},
+			{
+				"id": "f260564a-bc7f-4e79-9ce4-fb2c4e2f6867",
+				"method": "POST"
+			},
+			{
+				"id": "754c1ba2-4b02-4be2-b6e3-fd12ae5198ed",
+				"method": "POST"
+			},
+			{
+				"id": "4f9f71c8-f342-4660-907d-5aaad1af8367",
+				"method": "POST"
+			},
+			{
+				"id": "687005a6-e878-4476-86de-8c81d5f762da",
+				"method": "POST"
+			},
+			{
+				"id": "a7dbdbbc-b06c-4f7d-9e17-702c5bfd7dfa",
+				"method": "POST"
+			},
+			{
+				"id": "a60fa4a5-e375-4272-ac78-9f89ee2adf8a",
+				"method": "POST"
+			},
+			{
+				"id": "3b03c094-a81c-4190-a38a-555d2d731bd6",
+				"method": "POST"
+			},
+			{
+				"id": "981caf08-180c-4d71-a767-9b6ff319deb6",
+				"method": "POST"
+			},
+			{
+				"id": "2e7c2653-6b37-4201-84e2-4d62e5b825e3",
+				"method": "PATCH"
+			},
+			{
+				"id": "cef07bba-3018-4d7b-9bde-28b8318bf1ad",
+				"method": "PATCH"
+			},
+			{
+				"id": "8b27ccad-e951-4ecb-b063-77cd4028d709",
+				"method": "PATCH"
+			},
+			{
+				"id": "3d7c68fd-d712-4b1b-bd67-9c9f85a2dd53",
+				"method": "POST"
+			},
+			{
+				"id": "b632be8b-d9d6-4d03-b90c-64c5bfce2f8e",
+				"method": "PATCH"
+			},
+			{
+				"id": "1e9ef75f-09e0-485b-a650-7591ae616381",
+				"method": "PATCH"
+			},
+			{
+				"id": "8ac10f8d-89fe-4c15-8f51-16cf849aae82",
+				"method": "POST"
+			},
+			{
+				"id": "c3a84db2-191c-457d-a9f2-913c18be45f1",
+				"method": "POST"
+			},
+			{
+				"id": "6b5e642c-7461-42a7-b502-d0bf595e9c5b",
+				"method": "POST"
+			},
+			{
+				"id": "424f2ee1-aeb9-4260-beea-fb47694aa057",
+				"method": "POST"
+			},
+			{
+				"id": "67b2dc86-609a-4e15-a49d-3648de6293fa",
+				"method": "POST"
+			},
+			{
+				"id": "3416890b-becd-4820-b97c-c33a772378aa",
+				"method": "POST"
+			},
+			{
+				"id": "3f04b3b4-31d5-4b26-8e6e-c7829351a1ec",
+				"method": "POST"
+			},
+			{
+				"id": "d62e16dc-1696-4b8d-ab1e-f6035496ebeb",
+				"method": "POST"
+			},
+			{
+				"id": "87e2b964-491c-4273-a842-36897423a73e",
+				"method": "POST"
+			},
+			{
+				"id": "9b171ff0-94de-4819-9571-b982365f6d77",
+				"method": "POST"
+			},
+			{
+				"id": "fc8094f5-fbe6-44fb-b633-5f18d5200167",
+				"method": "POST"
+			},
+			{
+				"id": "0b1ccbc8-0c99-4ac1-b785-a5942117afaf",
+				"method": "POST"
+			},
+			{
+				"id": "35a9c9a8-509f-47ac-8754-87f04023d446",
+				"method": "POST"
+			},
+			{
+				"id": "2b2d7a8f-3f52-4f2f-9335-5c4b38553b0b",
+				"method": "PATCH"
+			},
+			{
+				"id": "eaf60f02-e8c0-4005-9f73-9ed7c16c21c7",
+				"method": "PATCH"
+			},
+			{
+				"id": "0cd0591f-4489-4e7b-a925-5c5c0dd5a3ef",
+				"method": "PATCH"
+			},
+			{
+				"id": "462af612-587d-435e-8855-fcf5ef2dc965",
+				"method": "PATCH"
+			},
+			{
+				"id": "3a3918ce-d1a7-4598-985b-446d6a97c738",
+				"method": "PATCH"
+			},
+			{
+				"id": "7d5f823e-89d5-4899-b780-bb5c08851718",
+				"method": "PATCH"
+			},
+			{
+				"id": "ae2daf1c-3b94-420e-b890-17ca8f4418cc",
+				"method": "PATCH"
+			},
+			{
+				"id": "347f1f3d-3eb4-4b38-b886-133508a58eba",
+				"method": "PATCH"
+			},
+			{
+				"id": "c2865393-da13-452e-8fc5-976be255c980",
+				"method": "PATCH"
+			},
+			{
+				"id": "330e3988-9d68-41c5-aef6-a7520c14b43d",
+				"method": "PATCH"
+			},
+			{
+				"id": "379e982f-1b3d-4493-86bc-84bfa093e7d9",
+				"method": "PATCH"
+			},
+			{
+				"id": "73119030-fd5d-413f-81ee-f4e372d5d525",
+				"method": "PATCH"
+			},
+			{
+				"id": "47d6bd04-4b70-4772-9d98-e40fc514f3bd",
+				"method": "PATCH"
+			},
+			{
+				"id": "8e1c2dc5-283c-4194-b404-6514ea2db141",
+				"method": "PATCH"
+			},
+			{
+				"id": "613f6de1-c783-4d9e-baba-c669b77c8231",
+				"method": "PATCH"
+			},
+			{
+				"id": "fe1318d0-d583-4f5a-9895-d896a0767846",
+				"method": "PATCH"
+			},
+			{
+				"id": "e66dc5bd-cab7-4f2b-b24d-ded30fb05921",
+				"method": "PATCH"
+			},
+			{
+				"id": "d416aa4f-6972-47d3-9d13-4f4d19605bbe",
+				"method": "GET"
+			},
+			{
+				"id": "301d664f-485c-4b3f-bad3-780f300cf160",
+				"method": "GET"
+			},
+			{
+				"id": "ec21caf2-8311-44eb-a676-7fefc107e2ac",
+				"method": "GET"
+			},
+			{
+				"id": "09fa199c-cc12-4225-a654-7b445af3f6a1",
+				"method": "GET"
+			},
+			{
+				"id": "2e3491da-d8b3-43c2-926d-acbaf7b41802",
+				"method": "POST"
+			},
+			{
+				"id": "27867aee-7b64-435d-9ded-fd0086abeeea",
+				"method": "POST"
+			},
+			{
+				"id": "b443e4b0-3354-4ea2-9038-135e5e4f30ec",
+				"method": "POST"
+			},
+			{
+				"id": "d5afb5c9-3f95-4435-881c-a7ac3a6be0de",
+				"method": "POST"
+			},
+			{
+				"id": "627df708-4de8-427b-971d-8e94c696da79",
+				"method": "POST"
+			},
+			{
+				"id": "70c376b9-e20d-4995-b82e-6e075f94388b",
+				"method": "POST"
+			},
+			{
+				"id": "475d4103-e5fe-464a-a700-85d5ecb7cc70",
+				"method": "GET"
+			},
+			{
+				"id": "a3b9856d-45de-4fec-8f12-b35bd634b7fe",
+				"method": "GET"
+			},
+			{
+				"id": "04cd7ec4-df18-49b6-a4e7-717290720a3f",
+				"method": "GET"
+			},
+			{
+				"id": "9ef75698-de87-44b7-a5f8-5963798e470c",
+				"method": "GET"
+			},
+			{
+				"id": "03e16bae-e9f7-4d08-a3ce-08a48e3bc6fc",
+				"method": "GET"
+			},
+			{
+				"id": "7ade6b06-9bc7-4c67-95bf-c3f5b7e03ae1",
+				"method": "POST"
+			},
+			{
+				"id": "ee97af53-7641-4740-98c8-027bfda74e7e",
+				"method": "POST"
+			},
+			{
+				"id": "126624ae-e90f-4182-80a4-5b3e7b902ebd",
+				"method": "POST"
+			},
+			{
+				"id": "ed21754a-bd68-4de5-b5ce-73cd44946c5d",
+				"method": "POST"
+			},
+			{
+				"id": "d76a18c4-131b-472d-95d4-c62d33d7575e",
+				"method": "POST"
+			},
+			{
+				"id": "45a5bf40-977b-4b94-96b8-f907d16a17a8",
+				"method": "POST"
+			},
+			{
+				"id": "bc0910a0-c893-479e-827e-23d97676221b",
+				"method": "POST"
+			},
+			{
+				"id": "5d61a545-621f-4749-b4fc-860e6785b324",
+				"method": "POST"
+			},
+			{
+				"id": "48870f81-b7c7-4042-b71a-3d3e7ea896b6",
+				"method": "POST"
+			},
+			{
+				"id": "020c5934-4ba6-4759-abbb-4a6fbbb5c392",
+				"method": "POST"
+			},
+			{
+				"id": "196ce50c-7bbc-41cb-9f79-4fb7ec2667fc",
+				"method": "GET"
+			},
+			{
+				"id": "cdefd4db-2733-4bac-969c-4fe8056ab0e4",
+				"method": "GET"
+			},
+			{
+				"id": "676712ae-eaa1-46b7-aa5e-0601f0fb394c",
+				"method": "GET"
+			},
+			{
+				"id": "60ed232a-6317-4ec9-895a-86d0b47d674d",
+				"method": "GET"
+			},
+			{
+				"id": "f13a513d-c5ec-4aa4-814b-2d54356978ac",
+				"method": "GET"
+			},
+			{
+				"id": "8e73f320-2f3e-422f-a574-f97360a951d4",
+				"method": "PATCH"
+			},
+			{
+				"id": "8256f6c6-92e3-441c-af42-c227bdad2c58",
+				"method": "PATCH"
+			},
+			{
+				"id": "0fec052b-9a52-48a8-8f92-dba4ef9a046f",
+				"method": "GET"
+			},
+			{
+				"id": "09e9dfb1-81bf-49d1-9a0a-6b0c946e748c",
+				"method": "GET"
+			},
+			{
+				"id": "fe9a942b-bd70-4edf-84e7-54e7eb2afe28",
+				"method": "GET"
+			},
+			{
+				"id": "fc0c1ba9-5ac2-4239-9e60-ea5ed46523cf",
+				"method": "GET"
+			},
+			{
+				"id": "faeb6aec-7427-4c5a-bf6b-70187baa9d5d",
+				"method": "GET"
+			},
+			{
+				"id": "8f5d0e64-b599-4585-898e-ef43f106bbdc",
+				"method": "GET"
+			},
+			{
+				"id": "8a20126f-2bcb-4b16-91de-ddc6c5a36ffc",
+				"method": "PATCH"
+			},
+			{
+				"id": "b0597f9d-3655-41ec-9f86-d3bc7d5d6414",
+				"method": "PATCH"
+			},
+			{
+				"id": "93f20563-0fb8-4817-9370-8bff3e154077",
+				"method": "PATCH"
+			},
+			{
+				"id": "a3f66da4-c661-4665-b006-8c2119f17fcc",
+				"method": "PATCH"
+			},
+			{
+				"id": "5979d7f3-e6a4-4d46-aad6-e33e38671d82",
+				"method": "PATCH"
+			},
+			{
+				"id": "ac415974-c80f-44cf-8d69-27972ac0e47b",
+				"method": "PATCH"
+			}
+		]
+	}
+}

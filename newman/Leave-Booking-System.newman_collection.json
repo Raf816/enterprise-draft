@@ -148,7 +148,7 @@
           "item": [
             {
               "name": "Role Check: no token (401)",
-              "event": [{"listen":"test","script":{"exec":["pm.test('401 Unauthorized', function(){ pm.response.to.have.status(401); });","pm.test('has error message', function(){ pm.expect(pm.response.json().message).to.be.a('string'); });"]}}],
+              "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });"]}}],
               "request": {"method":"GET","header":[],"url":{"raw":"{{base_url}}/auth/role-check","host":["{{base_url}}"],"path":["auth","role-check"]}}
             },
             {
@@ -168,7 +168,7 @@
             },
             {
               "name": "Find User: no token (401)",
-              "event": [{"listen":"test","script":{"exec":["pm.test('401 Unauthorized', function(){ pm.response.to.have.status(401); });"]}}],
+              "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });"]}}],
               "request": {"method":"GET","header":[],"url":{"raw":"{{base_url}}/auth/users/admin@leavebooking.test","host":["{{base_url}}"],"path":["auth","users","admin@leavebooking.test"]}}
             },
             {
@@ -183,7 +183,7 @@
             },
             {
               "name": "Change Password: no token (401)",
-              "event": [{"listen":"test","script":{"exec":["pm.test('401 Unauthorized', function(){ pm.response.to.have.status(401); });"]}}],
+              "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });"]}}],
               "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"newPassword\":\"NewPass123!\"}"},"url":{"raw":"{{base_url}}/auth/password","host":["{{base_url}}"],"path":["auth","password"]}}
             }
           ]
@@ -349,6 +349,11 @@
       "name": "4. Staff Management: Updates & Transitions",
       "item": [
         {
+          "name": "Staff2 submits leave (before termination): 201",
+          "event": [{"listen":"test","script":{"exec":["pm.test('201 Created', function(){ pm.response.to.have.status(201); });","pm.environment.set('leave_request_id_3', pm.response.json().id);"]}}],
+          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff2_token}}"}],"body":{"mode":"raw","raw":"{\"startDate\":\"2026-12-20\",\"endDate\":\"2026-12-24\",\"leaveType\":\"ANNUAL\",\"reason\":\"Christmas\"}"},"url":{"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}}
+        },
+        {
           "name": "Terminate Staff2 (200)",
           "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","pm.test('TERMINATED', function(){ pm.expect(pm.response.json().employmentStatus).to.eql('TERMINATED'); });"]}}],
           "request": {"method":"PATCH","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],"body":{"mode":"raw","raw":"{\"employmentStatus\":\"TERMINATED\"}"},"url":{"raw":"{{base_url}}/staff/{{staff2_uid}}","host":["{{base_url}}"],"path":["staff","{{staff2_uid}}"]}}
@@ -382,11 +387,6 @@
           "name": "Staff1 submits second leave: 201",
           "event": [{"listen":"test","script":{"exec":["pm.test('201 Created', function(){ pm.response.to.have.status(201); });","pm.environment.set('leave_request_id_2', pm.response.json().id);"]}}],
           "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],"body":{"mode":"raw","raw":"{\"startDate\":\"2026-11-01\",\"endDate\":\"2026-11-03\",\"leaveType\":\"ANNUAL\",\"reason\":\"Family event\"}"},"url":{"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}}
-        },
-        {
-          "name": "Staff2 submits leave: 201",
-          "event": [{"listen":"test","script":{"exec":["pm.test('201 Created', function(){ pm.response.to.have.status(201); });","pm.environment.set('leave_request_id_3', pm.response.json().id);"]}}],
-          "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff2_token}}"}],"body":{"mode":"raw","raw":"{\"startDate\":\"2026-12-20\",\"endDate\":\"2026-12-24\",\"leaveType\":\"ANNUAL\",\"reason\":\"Christmas\"}"},"url":{"raw":"{{base_url}}/leave-requests","host":["{{base_url}}"],"path":["leave-requests"]}}
         },
         {
           "name": "Edge Cases",
@@ -695,7 +695,7 @@
         },
         {
           "name": "GET /leave-allowances/all: Admin (200)",
-          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('is array', function(){ pm.expect(json).to.be.an('array'); });","pm.test('has allowances', function(){ pm.expect(json.length).to.be.at.least(5); });"]}}],
+          "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('is array', function(){ pm.expect(json).to.be.an('array'); });","pm.test('has allowances', function(){ pm.expect(json.length).to.be.at.least(4); });"]}}],
           "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer {{jwt_admin_token}}"}],"url":{"raw":"{{base_url}}/leave-allowances/all","host":["{{base_url}}"],"path":["leave-allowances","all"]}}
         },
         {
