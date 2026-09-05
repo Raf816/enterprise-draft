@@ -465,6 +465,14 @@
           "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-requests/PASTE_LEAVE_REQUEST_ID","host":["http://localhost:8900"],"path":["leave-requests","PASTE_LEAVE_REQUEST_ID"]}}
         },
         {
+          "name": "GET /leave-requests/{id}: other staff (403)",
+          "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_STAFF2_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-requests/PASTE_STAFF1_LEAVE_REQUEST_ID","host":["http://localhost:8900"],"path":["leave-requests","PASTE_STAFF1_LEAVE_REQUEST_ID"]}}
+        },
+        {
+          "name": "GET /leave-requests/{id}: non-assigned manager (403)",
+          "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer PASTE_MANAGER2_TOKEN"}],"url":{"raw":"http://localhost:8900/leave-requests/PASTE_STAFF1_LEAVE_REQUEST_ID","host":["http://localhost:8900"],"path":["leave-requests","PASTE_STAFF1_LEAVE_REQUEST_ID"]}}
+        },
+        {
           "name": "POST /leave-requests/my/search: by status PENDING (200)",
           "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer PASTE_STAFF1_TOKEN"}],"body":{"mode":"raw","raw":"{\"status\":\"PENDING\"}"},"url":{"raw":"http://localhost:8900/leave-requests/my/search","host":["http://localhost:8900"],"path":["leave-requests","my","search"]}}
         },

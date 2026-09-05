@@ -130,20 +130,36 @@ public class LeaveRequestController {
     /**
      * GET /leave-requests/{id} — View a specific leave request by its UUID.
      *
-     * <p>Any authenticated user can look up a request by ID. The data returned
-     * is used by the frontend to display request details and determine which
-     * actions (approve/reject/cancel) are available for the current user.
+     * <p><strong>Access control:</strong> Only the following users can view a request:
+     * <ul>
+     *   <li>The staff member who submitted the request (owner)</li>
+     *   <li>The manager assigned to the request</li>
+     *   <li>An admin</li>
+     * </ul>
+     * All other authenticated users receive 403 Forbidden.
      *
-     * @param id the UUID of the leave request to retrieve
+     * @param id             the UUID of the leave request to retrieve
+     * @param authentication the authenticated user's security context
      * @return the leave request data as a DTO
      * @throws com.staffs.leavebooking.leavemanagement.ui.exceptions.LeaveRequestNotFoundException if not found
      * @see LeaveManagementFacade#findRequestById(String)
      */
     @GetMapping("/{id}")                // Maps HTTP GET /leave-requests/{id} with path variable
     @ResponseStatus(HttpStatus.OK)      // Returns 200 OK on success
-    public LeaveRequestDTO getRequestById(@PathVariable String id) {
-        // Delegate directly to facade — no ownership check for read-by-ID
-        return facade.findRequestById(id);
+    public LeaveRequestDTO getRequestById(@PathVariable String id, Authentication authentication) {
+        LeaveRequestDTO request = facade.findRequestById(id);
+
+        // Admins can view any request
+        if (!isAdmin(authentication)) {
+            String userId = authentication.getName();
+            // Only the owner or the assigned manager can view the request
+            if (!request.staffMemberId().equals(userId) && !request.managerId().equals(userId)) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "You can only view your own leave requests or those assigned to you as a manager.");
+            }
+        }
+
+        return request;
     }
 
     // ─────────────────────────────────────────────────────────────────

@@ -474,11 +474,11 @@ The query handler never loads or creates domain aggregates — it maps JPA direc
 
 ---
 
-## 5. Module Visibility (Spring Modulith Enforcement)
+## 5. Module Structure and Visibility
 
 ### 5.1 How It Works
 
-Spring Modulith uses **Java package visibility** to enforce bounded context isolation:
+Spring Modulith is used to **identify the application's logical modules** and support the modular package structure. The `@ApplicationModule` annotation declares module boundaries and visibility:
 
 ```java
 // common/package-info.java
@@ -487,19 +487,21 @@ package com.staffs.leavebooking.common;
 ```
 
 - **OPEN** modules: all sub-packages are visible to other modules
-- **Default** modules: only the root package is visible; sub-packages are **hidden**
+- **Default** modules: only the root package is visible; sub-packages are **hidden** by convention
 
 For `leavemanagement`:
-- `LeaveManagementFacade.java` (at module root) = **PUBLIC** — other modules can import it
-- `ui/`, `application/`, `domain/`, `infrastructure/` = **HIDDEN** — Spring Modulith prevents imports from other modules
+- `LeaveManagementFacade.java` (at module root) = **PUBLIC** — the module's API for inter-module communication
+- `ui/`, `application/`, `domain/`, `infrastructure/` = **HIDDEN** — internal to the module by convention
 
-### 5.2 Visibility Matrix
+**Important:** The project does not call `ApplicationModules.verify()` because several controlled cross-context dependencies are deliberately retained for the prototype (e.g., Identity accessing StaffManagementFacade for skeleton staff record creation). Module boundaries are maintained primarily through **package organisation**, **context facades**, and **development conventions** rather than strict automated dependency verification. The `ModularityTest` confirms that Spring Modulith correctly detects the expected module structure.
 
-| Source Module | Can See | Cannot See |
-|---|---|---|
-| `leavemanagement` | `common/*` (OPEN), own packages | `staffmanagement/*`, `identity/*` |
-| `staffmanagement` | `common/*` (OPEN), own packages | `leavemanagement/*`, `identity/*` |
-| `identity` | `common/*` (OPEN), own packages | `leavemanagement/*`, `staffmanagement/*` |
+### 5.2 Visibility Matrix (by convention)
+
+| Source Module | Can See | Cannot See | Notes |
+|---|---|---|---|
+| `leavemanagement` | `common/*` (OPEN), own packages | `staffmanagement/*`, `identity/*` | Clean — no cross-context imports |
+| `staffmanagement` | `common/*` (OPEN), own packages | `leavemanagement/*`, `identity/*` | Clean — no cross-context imports |
+| `identity` | `common/*` (OPEN), `staffmanagement` facade | `leavemanagement/*` | Controlled dependency: AuthController calls StaffManagementFacade for skeleton staff record creation on registration |
 
 ### 5.3 Inter-Module Communication Paths
 

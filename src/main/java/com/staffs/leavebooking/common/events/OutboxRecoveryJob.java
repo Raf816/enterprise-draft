@@ -125,8 +125,11 @@ public class OutboxRecoveryJob {
                         event.getId(), event.getEventType(), event.getRetryCount() + 1, e);
 
             } catch (ClassNotFoundException e) {
-                // Event type class no longer exists — permanent failure
-                log.error("Outbox recovery: unknown event type '{}' for event {}. Skipping.",
+                // Event type class no longer exists — permanent failure, mark as FAILED
+                // to prevent infinite polling (the event will never be deserialised)
+                eventStoreService.updateStatus(event.getId(),
+                        EventStoreService.StatusOfMessageDelivery.FAILED, true);
+                log.error("Outbox recovery: unknown event type '{}' for event {}. Marked as FAILED.",
                         event.getEventType(), event.getId(), e);
                 skipped++;
 

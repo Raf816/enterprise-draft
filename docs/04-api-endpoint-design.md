@@ -693,7 +693,7 @@ public class LeaveManagementFacade {
 | POST `/leave-requests/team/search` | ✗ | ✓ (own team) | ✓ (all) | Status + date range. Rejects staffMemberId/managerId (scope from JWT) |
 | GET `/leave-requests/all` | ✗ | ✗ | ✓ | Company-wide |
 | POST `/leave-requests/all/search` | ✗ | ✗ | ✓ | Status, staffMemberId OR managerId (mutually exclusive), date range |
-| GET `/leave-requests/{id}` | ✓ | ✓ | ✓ | Any authenticated user (write ops enforce ownership) |
+| GET `/leave-requests/{id}` | ✓ (own) | ✓ (assigned) | ✓ | Owner, assigned manager, or admin only |
 | POST `/leave-requests` | ✓ | ✓ | ✓ | staffMemberId from JWT |
 | PATCH `.../approve` | ✗ | ✓ (assigned) | ✓ | Only assigned manager or admin |
 | PATCH `.../reject` | ✗ | ✓ (assigned) | ✓ | Only assigned manager or admin |

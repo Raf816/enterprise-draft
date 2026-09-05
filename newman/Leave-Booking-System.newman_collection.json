@@ -564,6 +564,16 @@
           "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],"url":{"raw":"{{base_url}}/leave-requests/{{leave_request_id}}","host":["{{base_url}}"],"path":["leave-requests","{{leave_request_id}}"]}}
         },
         {
+          "name": "GET /leave-requests/{id}: other staff (403)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });","pm.test('ownership msg', function(){ pm.expect(pm.response.json().message).to.include('your own'); });"]}}],
+          "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer {{jwt_staff2_token}}"}],"url":{"raw":"{{base_url}}/leave-requests/{{leave_request_id}}","host":["{{base_url}}"],"path":["leave-requests","{{leave_request_id}}"]}}
+        },
+        {
+          "name": "GET /leave-requests/{id}: non-assigned manager (403)",
+          "event": [{"listen":"test","script":{"exec":["pm.test('403 Forbidden', function(){ pm.response.to.have.status(403); });"]}}],
+          "request": {"method":"GET","header":[{"key":"Authorization","value":"Bearer {{jwt_manager2_token}}"}],"url":{"raw":"{{base_url}}/leave-requests/{{leave_request_id}}","host":["{{base_url}}"],"path":["leave-requests","{{leave_request_id}}"]}}
+        },
+        {
           "name": "POST /leave-requests/my/search: by status PENDING (200)",
           "event": [{"listen":"test","script":{"exec":["pm.test('200 OK', function(){ pm.response.to.have.status(200); });","var json = pm.response.json();","pm.test('all PENDING', function(){ json.forEach(r => pm.expect(r.status).to.eql('PENDING')); });"]}}],
           "request": {"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{jwt_staff1_token}}"}],"body":{"mode":"raw","raw":"{\"status\":\"PENDING\"}"},"url":{"raw":"{{base_url}}/leave-requests/my/search","host":["{{base_url}}"],"path":["leave-requests","my","search"]}}

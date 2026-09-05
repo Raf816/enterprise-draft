@@ -184,7 +184,7 @@ public class LeaveManagementFacade {
      * @throws com.staffs.leavebooking.leavemanagement.ui.exceptions.LeaveRequestNotFoundException if not found
      * @see LeaveRequestQueryHandler#findRequestById(String)
      */
-    @PreAuthorize("hasAnyRole('STAFF', 'MANAGER', 'ADMIN')") // Any authenticated user can look up a request by ID
+    @PreAuthorize("hasAnyRole('STAFF', 'MANAGER', 'ADMIN')") // Authenticated users — controller enforces owner/manager/admin check
     public LeaveRequestDTO findRequestById(String leaveRequestId) {
         // Delegate to the query handler — throws LeaveRequestNotFoundException if not found
         return leaveRequestQueryHandler.findRequestById(leaveRequestId);

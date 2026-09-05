@@ -143,7 +143,7 @@ class OutboxRecoveryJobTest {
         }
 
         @Test
-        @DisplayName("Should handle unknown event type gracefully")
+        @DisplayName("Should mark unknown event type as FAILED")
         void shouldHandleUnknownEventType() {
             // Arrange — event type class does not exist
             var strandedEvent = createStrandedEvent(4L, "NonExistentEvent", "PENDING", 0);
@@ -152,7 +152,9 @@ class OutboxRecoveryJobTest {
             // Act
             recoveryJob.recoverStrandedEvents();
 
-            // Assert — no publish attempted (ClassNotFoundException caught)
+            // Assert — marked as FAILED so it stops being polled
+            verify(eventStoreService).updateStatus(4L,
+                    EventStoreService.StatusOfMessageDelivery.FAILED, true);
             verifyNoInteractions(rabbitTemplate);
         }
     }

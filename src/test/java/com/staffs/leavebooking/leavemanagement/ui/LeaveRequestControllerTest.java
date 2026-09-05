@@ -58,10 +58,10 @@ class LeaveRequestControllerTest {
     class GetById {
 
         @Test
-        @DisplayName("Should return 200 with leave request DTO")
+        @DisplayName("Should return 200 when owner views their own request")
         @WithMockUser(username = "staff-1")
-        void shouldReturnRequest() throws Exception {
-            // Arrange
+        void shouldReturnRequestForOwner() throws Exception {
+            // Arrange — staffMemberId matches authenticated user
             var dto = createTestDTO("req-1", "staff-1", "PENDING");
             when(facade.findRequestById("req-1")).thenReturn(dto);
 
@@ -70,6 +70,60 @@ class LeaveRequestControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.id").value("req-1"))
                     .andExpect(jsonPath("$.status").value("PENDING"));
+        }
+
+        @Test
+        @DisplayName("Should return 200 when assigned manager views request")
+        @WithMockUser(username = "mgr-1", roles = "MANAGER")
+        void shouldReturnRequestForAssignedManager() throws Exception {
+            // Arrange — managerId is "mgr-1" which matches authenticated user
+            var dto = createTestDTO("req-1", "staff-1", "PENDING");
+            when(facade.findRequestById("req-1")).thenReturn(dto);
+
+            // Act & Assert
+            mockMvc.perform(get("/leave-requests/req-1"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id").value("req-1"));
+        }
+
+        @Test
+        @DisplayName("Should return 200 when admin views any request")
+        @WithMockUser(username = "admin-1", roles = "ADMIN")
+        void shouldReturnRequestForAdmin() throws Exception {
+            // Arrange — admin is not owner or manager but has ADMIN role
+            var dto = createTestDTO("req-1", "staff-1", "PENDING");
+            when(facade.findRequestById("req-1")).thenReturn(dto);
+
+            // Act & Assert
+            mockMvc.perform(get("/leave-requests/req-1"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id").value("req-1"));
+        }
+
+        @Test
+        @DisplayName("Should return 403 when unrelated staff views another's request")
+        @WithMockUser(username = "other-staff")
+        void shouldReturn403ForUnrelatedStaff() throws Exception {
+            // Arrange — authenticated user is "other-staff", not the owner or manager
+            var dto = createTestDTO("req-1", "staff-1", "PENDING");
+            when(facade.findRequestById("req-1")).thenReturn(dto);
+
+            // Act & Assert
+            mockMvc.perform(get("/leave-requests/req-1"))
+                    .andExpect(status().isForbidden());
+        }
+
+        @Test
+        @DisplayName("Should return 403 when non-assigned manager views request")
+        @WithMockUser(username = "mgr-2", roles = "MANAGER")
+        void shouldReturn403ForNonAssignedManager() throws Exception {
+            // Arrange — managerId is "mgr-1", authenticated user is "mgr-2"
+            var dto = createTestDTO("req-1", "staff-1", "PENDING");
+            when(facade.findRequestById("req-1")).thenReturn(dto);
+
+            // Act & Assert
+            mockMvc.perform(get("/leave-requests/req-1"))
+                    .andExpect(status().isForbidden());
         }
     }
 
