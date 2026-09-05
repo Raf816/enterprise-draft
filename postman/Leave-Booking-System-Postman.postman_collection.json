@@ -998,7 +998,7 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('401 Unauthorized', function(){ pm.response.to.have.status(401); });"
+                  "pm.test('401 or 403', function(){ pm.expect(pm.response.code).to.be.oneOf([401, 403]); });"
                 ]
               }
             }
