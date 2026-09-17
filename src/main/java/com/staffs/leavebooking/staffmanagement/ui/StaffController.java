@@ -13,6 +13,7 @@ import com.staffs.leavebooking.staffmanagement.application.dto.StaffSearchCriter
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -110,6 +111,7 @@ public class StaffController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')") // Authorise before any Firebase operations to prevent partial account creation
     public StaffMemberCreatedResponse addStaffMember(@jakarta.validation.Valid @RequestBody AddStaffMemberCommand command) {
         String firebaseUid;
 
@@ -158,6 +160,7 @@ public class StaffController {
      */
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ADMIN')") // Authorise before any Firebase operations to prevent unauthorised role changes
     public StaffMemberDTO updateStaff(
             @PathVariable String id,
             @RequestBody UpdateStaffBody body) {
