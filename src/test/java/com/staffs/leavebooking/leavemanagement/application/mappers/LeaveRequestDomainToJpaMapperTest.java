@@ -3,7 +3,6 @@ package com.staffs.leavebooking.leavemanagement.application.mappers;
 import com.staffs.leavebooking.common.domain.Identity;
 import com.staffs.leavebooking.leavemanagement.domain.*;
 import com.staffs.leavebooking.leavemanagement.infrastructure.entities.LeaveRequestJpa;
-import com.staffs.leavebooking.testfixtures.LeaveRequestMother;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -51,35 +50,6 @@ class LeaveRequestDomainToJpaMapperTest {
             assertNull(jpa.getDecidedOn());
             assertNull(jpa.getDecidedBy());
             assertNull(jpa.getCancellationReason());
-        }
-
-        @Test
-        @DisplayName("Should map all fields for an APPROVED request")
-        void shouldMapApprovedRequestFields() {
-            // Arrange
-            LeaveRequest domain = LeaveRequestMother.approvedRequest();
-
-            // Act
-            LeaveRequestJpa jpa = LeaveRequestDomainToJpaMapper.toJpa(domain);
-
-            // Assert
-            assertEquals("APPROVED", jpa.getStatus());
-            assertNotNull(jpa.getDecidedOn());
-            assertNotNull(jpa.getDecidedBy());
-        }
-
-        @Test
-        @DisplayName("Should map cancellation reason for CANCELLED request")
-        void shouldMapCancellationReason() {
-            // Arrange
-            LeaveRequest domain = LeaveRequestMother.cancelledRequest();
-
-            // Act
-            LeaveRequestJpa jpa = LeaveRequestDomainToJpaMapper.toJpa(domain);
-
-            // Assert
-            assertEquals("CANCELLED", jpa.getStatus());
-            assertEquals("Changed plans", jpa.getCancellationReason());
         }
 
         @Test

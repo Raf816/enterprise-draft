@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Package Structure: com.staffs.leavebooking</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; padding: 30px; }
+  
+  .figure-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 36px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  
+  .figure-title {
+    text-align: center;
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 24px;
+  }
+  
+  /* Tree structure */
+  .tree { font-size: 13px; line-height: 1.7; color: #333; }
+  .tree ul { list-style: none; padding-left: 24px; }
+  .tree > ul { padding-left: 0; }
+  
+  .tree li { position: relative; }
+  .tree li::before {
+    content: '';
+    position: absolute;
+    left: -16px;
+    top: 0;
+    border-left: 1.5px solid #aaa;
+    height: 100%;
+  }
+  .tree li::after {
+    content: '';
+    position: absolute;
+    left: -16px;
+    top: 12px;
+    border-bottom: 1.5px solid #aaa;
+    width: 12px;
+  }
+  .tree li:last-child::before { height: 12px; }
+  .tree > ul > li::before, .tree > ul > li::after { display: none; }
+  
+  /* Folder and file styling */
+  .folder { font-weight: 600; }
+  .file { font-weight: 400; color: #555; }
+  .stereotype { font-size: 11px; color: #888; font-style: italic; }
+  
+  /* Colour tags */
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 7px;
+    border-radius: 3px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .tag-core     { background: #E8F5E9; color: #2E7D32; border: 1px solid #A5D6A7; }
+  .tag-support  { background: #E3F2FD; color: #1565C0; border: 1px solid #90CAF9; }
+  .tag-generic  { background: #FFFDE7; color: #F57F17; border: 1px solid #FFF176; }
+  .tag-shared   { background: #F3E5F5; color: #7B1FA2; border: 1px solid #CE93D8; }
+  .tag-ui       { background: #FFF8E1; color: #E65100; border: 1px solid #FFE082; }
+  .tag-app      { background: #E3F2FD; color: #0D47A1; border: 1px solid #90CAF9; }
+  .tag-domain   { background: #E8F5E9; color: #1B5E20; border: 1px solid #A5D6A7; }
+  .tag-infra    { background: #FFEBEE; color: #B71C1C; border: 1px solid #EF9A9A; }
+  .tag-facade   { background: #FFF3E0; color: #BF360C; border: 1px solid #FFCC80; }
+  
+  /* Section separators */
+  .context-section {
+    margin: 16px 0 8px 0;
+    padding: 12px 16px;
+    border-radius: 6px;
+    border-left: 4px solid;
+  }
+  .ctx-leave   { background: #F1F8E9; border-color: #43A047; }
+  .ctx-staff   { background: #F1F8E9; border-color: #66BB6A; }
+  .ctx-common  { background: #F3E5F5; border-color: #8E24AA; }
+  .ctx-identity{ background: #FFFDE7; border-color: #FBC02D; }
+  .ctx-root    { background: #ECEFF1; border-color: #78909C; }
+  
+  .ctx-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 4px;
+  }
+  
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+    padding: 14px;
+    background: #fafafa;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    justify-content: center;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #555;
+  }
+  .legend-swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+  }
+  
+  .caption {
+    text-align: center;
+    font-size: 12px;
+    color: #666;
+    margin-top: 16px;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<div class="figure-container">
+  <div class="figure-title">Package Structure: com.staffs.leavebooking</div>
+  
+  <div class="tree">
+    <ul>
+      <li>
+        <span class="folder">com.staffs.leavebooking</span>
+        
+        <!-- Root-level files -->
+        <div class="context-section ctx-root">
+          <div class="ctx-label">Root-level</div>
+          <ul>
+            <li><span class="file">LeavebookingApplication.java</span> <span class="stereotype">@SpringBootApplication</span></li>
+            <li><span class="file">GlobalExceptionHandler.java</span> <span class="stereotype">@ControllerAdvice</span></li>
+          </ul>
+        </div>
+        
+        <!-- LEAVE MANAGEMENT -->
+        <div class="context-section ctx-leave">
+          <div class="ctx-label">leavemanagement <span class="tag tag-core">Core Context</span></div>
+          <ul>
+            <li><span class="file">LeaveManagementFacade.java</span> <span class="tag tag-facade">Façade</span></li>
+            <li>
+              <span class="folder">ui</span> <span class="tag tag-ui">Interface / API</span>
+              <ul>
+                <li><span class="file">LeaveRequestController.java</span></li>
+                <li><span class="file">LeaveAllowanceController.java</span></li>
+                <li><span class="file">SubmitLeaveRequestBody.java</span></li>
+                <li>
+                  <span class="folder">exceptions</span>
+                  <ul>
+                    <li><span class="file">LeaveRequestNotFoundException.java</span></li>
+                    <li><span class="file">LeaveAllowanceNotFoundException.java</span></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <span class="folder">application</span> <span class="tag tag-app">Application</span>
+              <ul>
+                <li>
+                  <span class="folder">handlers</span>
+                  <ul>
+                    <li><span class="file">LeaveRequestApplicationService.java</span></li>
+                    <li><span class="file">LeaveRequestQueryHandler.java</span></li>
+                    <li><span class="file">LeaveAllowanceApplicationService.java</span></li>
+                    <li><span class="file">LeaveAllowanceQueryHandler.java</span></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="folder">listeners</span>
+                  <ul>
+                    <li><span class="file">LeaveRequestSubmittedListener.java</span></li>
+                    <li><span class="file">LeaveRequestApprovedListener.java</span></li>
+                    <li><span class="file">LeaveRequestRejectedListener.java</span></li>
+                    <li><span class="file">LeaveRequestCancelledListener.java</span></li>
+                    <li><span class="file">StaffMemberAddedListener.java</span></li>
+                    <li><span class="file">StaffMemberUpdatedListener.java</span></li>
+                    <li><span class="file">ManagerNotificationPublisher.java</span></li>
+                    <li><span class="file">ManagerNotificationConsumer.java</span></li>
+                    <li><span class="file">StaffNotificationPublisher.java</span></li>
+                    <li><span class="file">StaffNotificationConsumer.java</span></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="folder">commands</span>
+                  <ul>
+                    <li><span class="file">SubmitLeaveRequestCommand.java</span></li>
+                    <li><span class="file">CancelLeaveRequestCommand.java</span></li>
+                    <li><span class="file">AmendEntitlementCommand.java</span></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="folder">dto</span>
+                  <ul>
+                    <li><span class="file">LeaveRequestDTO.java</span></li>
+                    <li><span class="file">LeaveAllowanceDTO.java</span></li>
+                    <li><span class="file">LeaveRequestSearchCriteria.java</span></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="folder">mappers</span>
+                  <ul>
+                    <li><span class="file">LeaveRequestDomainToJpaMapper.java</span></li>
+                    <li><span class="file">LeaveRequestJpaToDomainMapper.java</span></li>
+                    <li><span class="file">LeaveRequestJpaToDTOMapper.java</span></li>
+                    <li><span class="file">LeaveAllowanceDomainToJpaMapper.java</span></li>
+                    <li><span class="file">LeaveAllowanceJpaToDomainMapper.java</span></li>
+                    <li><span class="file">LeaveAllowanceJpaToDTOMapper.java</span></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <span class="folder">domain</span> <span class="tag tag-domain">Domain</span>
+              <ul>
+                <li><span class="file">LeaveRequest.java</span> <span class="stereotype">Aggregate Root</span></li>
+                <li><span class="file">LeaveAllowance.java</span> <span class="stereotype">Aggregate Root</span></li>
+                <li><span class="file">BusinessYear.java</span> <span class="stereotype">Value Object</span></li>
+                <li><span class="file">DateRange.java</span> <span class="stereotype">Value Object</span></li>
+                <li><span class="file">LeaveReason.java</span> <span class="stereotype">Value Object</span></li>
+                <li><span class="file">LeaveRequestStatus.java</span> <span class="stereotype">Enum</span></li>
+                <li><span class="file">LeaveType.java</span> <span class="stereotype">Enum</span></li>
+                <li>
+                  <span class="folder">events</span>
+                  <ul>
+                    <li><span class="file">LeaveRequestSubmittedEvent.java</span></li>
+                    <li><span class="file">LeaveRequestApprovedEvent.java</span></li>
+                    <li><span class="file">LeaveRequestRejectedEvent.java</span></li>
+                    <li><span class="file">LeaveRequestCancelledEvent.java</span></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <span class="folder">infrastructure</span> <span class="tag tag-infra">Infrastructure</span>
+              <ul>
+                <li>
+                  <span class="folder">entities</span>
+                  <ul>
+                    <li><span class="file">LeaveRequestJpa.java</span></li>
+                    <li><span class="file">LeaveAllowanceJpa.java</span></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="folder">repositories</span>
+                  <ul>
+                    <li><span class="file">LeaveRequestRepository.java</span></li>
+                    <li><span class="file">LeaveAllowanceRepository.java</span></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        
+        <!-- STAFF MANAGEMENT -->
+        <div class="context-section ctx-staff">
+          <div class="ctx-label">staffmanagement <span class="tag tag-support">Supporting Context</span></div>
+          <ul>
+            <li><span class="file">StaffManagementFacade.java</span> <span class="tag tag-facade">Façade</span></li>
+            <li>
+              <span class="folder">ui</span> <span class="tag tag-ui">Interface / API</span>
+              <ul>
+                <li><span class="file">StaffController.java</span></li>
+                <li><span class="file">StaffMemberCreatedResponse.java</span></li>
+                <li>
+                  <span class="folder">exceptions</span>
+                  <ul>
+                    <li><span class="file">StaffMemberNotFoundException.java</span></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <span class="folder">application</span> <span class="tag tag-app">Application</span>
+              <ul>
+                <li>
+                  <span class="folder">handlers</span>
+                  <ul>
+                    <li><span class="file">StaffApplicationService.java</span></li>
+                    <li><span class="file">StaffQueryHandler.java</span></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="folder">commands</span>
+                  <ul>
+                    <li><span class="file">AddStaffMemberCommand.java</span></li>
+                    <li><span class="file">UpdateDepartmentCommand.java</span></li>
+                    <li><span class="file">UpdatePlacementCommand.java</span></li>
+                    <li><span class="file">UpdateStatusCommand.java</span></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="folder">dto</span>
+                  <ul>
+                    <li><span class="file">StaffMemberDTO.java</span></li>
+                    <li><span class="file">StaffSearchCriteria.java</span></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="folder">mappers</span>
+                  <ul>
+                    <li><span class="file">StaffMemberDomainToJpaMapper.java</span></li>
+                    <li><span class="file">StaffMemberJpaToDomainMapper.java</span></li>
+                    <li><span class="file">StaffMemberJpaToDTOMapper.java</span></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <span class="folder">domain</span> <span class="tag tag-domain">Domain</span>
+              <ul>
+                <li><span class="file">StaffMember.java</span> <span class="stereotype">Aggregate Root</span></li>
+                <li><span class="file">EmploymentStatus.java</span> <span class="stereotype">Enum</span></li>
+                <li><span class="file">EmploymentType.java</span> <span class="stereotype">Enum</span></li>
+              </ul>
+            </li>
+            <li>
+              <span class="folder">infrastructure</span> <span class="tag tag-infra">Infrastructure</span>
+              <ul>
+                <li>
+                  <span class="folder">entities</span>
+                  <ul>
+                    <li><span class="file">StaffMemberJpa.java</span></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="folder">repositories</span>
+                  <ul>
+                    <li><span class="file">StaffMemberRepository.java</span></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        
+        <!-- COMMON -->
+        <div class="context-section ctx-common">
+          <div class="ctx-label">common <span class="tag tag-shared">Shared Kernel</span></div>
+          <ul>
+            <li><span class="file">package-info.java</span> <span class="stereotype">@ApplicationModule(type = OPEN)</span></li>
+            <li>
+              <span class="folder">domain</span>
+              <ul>
+                <li><span class="file">AggregateRoot.java</span></li>
+                <li><span class="file">Entity.java</span></li>
+                <li><span class="file">ValueObject.java</span></li>
+                <li><span class="file">IdentifiedValueObject.java</span></li>
+                <li><span class="file">Identity.java</span> <span class="stereotype">Value Object</span></li>
+                <li><span class="file">Email.java</span> <span class="stereotype">Value Object</span></li>
+                <li><span class="file">FullName.java</span> <span class="stereotype">Value Object</span></li>
+                <li><span class="file">DomainAssertions.java</span></li>
+              </ul>
+            </li>
+            <li>
+              <span class="folder">events</span>
+              <ul>
+                <li><span class="file">Event.java</span> <span class="stereotype">Interface</span></li>
+                <li><span class="file">LocalEvent.java</span> <span class="stereotype">Interface</span></li>
+                <li><span class="file">RemoteEvent.java</span> <span class="stereotype">Interface</span></li>
+                <li><span class="file">DomainEventManager.java</span></li>
+                <li><span class="file">EventStoreService.java</span></li>
+                <li><span class="file">EventStoreJpa.java</span></li>
+                <li><span class="file">EventStoreRepository.java</span></li>
+                <li><span class="file">RemoteOutboxListener.java</span></li>
+                <li><span class="file">RabbitOutboxRouter.java</span></li>
+                <li><span class="file">RabbitInfrastructureConfig.java</span></li>
+                <li><span class="file">CustomMessageConverter.java</span></li>
+                <li><span class="file">EventStoreCleanupJob.java</span></li>
+                <li><span class="file">OutboxRecoveryJob.java</span></li>
+                <li><span class="file">StaffMemberAddedEvent.java</span> <span class="stereotype">RemoteEvent</span></li>
+                <li><span class="file">StaffMemberUpdatedEvent.java</span> <span class="stereotype">RemoteEvent</span></li>
+                <li><span class="file">ManagerNotificationEvent.java</span> <span class="stereotype">RemoteEvent</span></li>
+                <li><span class="file">StaffNotificationEvent.java</span> <span class="stereotype">RemoteEvent</span></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        
+        <!-- IDENTITY -->
+        <div class="context-section ctx-identity">
+          <div class="ctx-label">identity <span class="tag tag-generic">Generic Context</span></div>
+          <ul>
+            <li><span class="file">AuthController.java</span></li>
+            <li>
+              <span class="folder">authService</span>
+              <ul>
+                <li><span class="file">FirebaseAuthService.java</span></li>
+                <li><span class="file">FirebaseConfig.java</span></li>
+                <li><span class="file">FirebaseTokenFilter.java</span></li>
+              </ul>
+            </li>
+            <li>
+              <span class="folder">dto</span>
+              <ul>
+                <li><span class="file">RegisterRequest.java</span></li>
+                <li><span class="file">RegisterResponse.java</span></li>
+                <li><span class="file">LoginRequest.java</span></li>
+                <li><span class="file">LoginResponse.java</span></li>
+                <li><span class="file">ChangePasswordRequest.java</span></li>
+                <li><span class="file">ErrorResponse.java</span></li>
+              </ul>
+            </li>
+            <li>
+              <span class="folder">security</span>
+              <ul>
+                <li><span class="file">SecurityConfig.java</span></li>
+                <li><span class="file">Role.java</span></li>
+                <li><span class="file">FirebaseJwtAuthenticationConverter.java</span></li>
+                <li><span class="file">RateLimitFilter.java</span></li>
+                <li><span class="file">SecurityHeadersFilter.java</span></li>
+                <li><span class="file">UnauthorisedAccessLogger.java</span></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        
+      </li>
+    </ul>
+  </div>
+  
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-swatch" style="background:#E8F5E9;border-color:#A5D6A7;"></div> Core Context</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#E3F2FD;border-color:#90CAF9;"></div> Supporting Context</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#FFFDE7;border-color:#FFF176;"></div> Generic Context</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#F3E5F5;border-color:#CE93D8;"></div> Shared Kernel</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#FFF8E1;border-color:#FFE082;"></div> Interface / API</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#E3F2FD;border-color:#90CAF9;"></div> Application</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#E8F5E9;border-color:#A5D6A7;"></div> Domain</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#FFEBEE;border-color:#EF9A9A;"></div> Infrastructure</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#FFF3E0;border-color:#FFCC80;"></div> Façade</div>
+  </div>
+  
+  <div class="caption">
+    Every file in the source tree is shown. Contexts are organised first by bounded context, then by technical responsibility. 
+    Leave Management and Staff Management follow the same layered structure. 
+    Identity uses a simpler, non-DDD structure. Common is kept deliberately small.
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,120 @@
+@startuml
+
+skinparam backgroundColor white
+skinparam defaultFontSize 12
+skinparam packageFontSize 13
+skinparam packageBorderThickness 1.5
+skinparam ArrowThickness 1.5
+skinparam ArrowColor #555555
+
+skinparam rectangle {
+    RoundCorner 10
+    FontSize 12
+}
+
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor #666666
+    FontSize 11
+}
+
+title Figure 2: Logical Layer and Responsibility Structure of the Leave Booking System
+
+' ==========================================
+' LEAVE MANAGEMENT CONTEXT
+' ==========================================
+package "Leave Management (Core Context)" as LM #FAFAFA {
+
+    rectangle "**Interface / API**\nHTTP requests, transport validation,\nauthenticated-user context" as LM_UI #FFF8E1
+
+    rectangle "**Context Façade**\nControlled entry point, role-based\naccess control, hides internal structure" as LM_FACADE #FFF3E0
+
+    rectangle "**Application**\nUse-case coordination, commands,\nqueries, mapping, event dispatch" as LM_APP #E3F2FD
+
+    rectangle "**Domain**\nAggregates, value objects,\nrules, lifecycle, events" as LM_DOMAIN #E8F5E9
+
+    rectangle "**Infrastructure**\nJPA entities, repositories,\npersistence mapping" as LM_INFRA #FFEBEE
+
+    LM_UI -down-> LM_FACADE : delegates to
+    LM_FACADE -down-> LM_APP : coordinates via
+    LM_APP -down-> LM_DOMAIN : validates with
+    LM_APP -down-> LM_INFRA : persists through
+}
+
+' ==========================================
+' STAFF MANAGEMENT CONTEXT
+' ==========================================
+package "Staff Management (Supporting Context)" as SM #FAFAFA {
+
+    rectangle "**Interface / API**\nHTTP requests, transport validation,\nauthenticated-user context" as SM_UI #FFF8E1
+
+    rectangle "**Context Façade**\nControlled entry point, role-based\naccess control, hides internal structure" as SM_FACADE #FFF3E0
+
+    rectangle "**Application**\nUse-case coordination, commands,\nqueries, mapping, event dispatch" as SM_APP #E3F2FD
+
+    rectangle "**Domain**\nAggregates, value objects,\nrules, lifecycle, events" as SM_DOMAIN #E8F5E9
+
+    rectangle "**Infrastructure**\nJPA entities, repositories,\npersistence mapping" as SM_INFRA #FFEBEE
+
+    SM_UI -down-> SM_FACADE : delegates to
+    SM_FACADE -down-> SM_APP : coordinates via
+    SM_APP -down-> SM_DOMAIN : validates with
+    SM_APP -down-> SM_INFRA : persists through
+}
+
+' ==========================================
+' CROSS-CONTEXT FACADE INTERACTION
+' ==========================================
+LM_FACADE <.right.> SM_FACADE : cross-context\nfaçade calls
+
+' ==========================================
+' IDENTITY AND COMMON
+' ==========================================
+package "Identity & Access Control (Generic Context)" as ID #FFFDE7 {
+    rectangle "**Simpler structure**\nAuthController, FirebaseAuthService,\nSecurityConfig, JWT filters" as ID_INNER #FFF8E1
+}
+
+package "Common (Shared Kernel)" as COMMON #F3E5F5 {
+    rectangle "**Shared domain concepts**\nIdentity, Email, FullName\n**Shared event contracts and infrastructure**\nRemoteEvent, LocalEvent,\nDomainEventManager, EventStore" as COMMON_INNER #EDE7F6
+}
+
+' ==========================================
+' EXTERNAL CLIENT
+' ==========================================
+actor "External\nClient" as CLIENT
+
+CLIENT -down-> LM_UI
+CLIENT -down-> SM_UI
+CLIENT -down-> ID_INNER
+
+' ==========================================
+' DEPENDENCY NOTES
+' ==========================================
+note bottom of LM_DOMAIN
+  Domain has zero framework
+  dependencies. Pure Java.
+  Can be unit-tested without
+  Spring context.
+end note
+
+note bottom of LM_INFRA
+  Infrastructure mirrors Domain
+  via Data Mapper pattern
+  (separate JPA entity classes).
+end note
+
+note right of ID
+  Identity uses a lighter structure.
+  DDD layering is applied selectively
+  according to each context's
+  responsibility and complexity.
+end note
+
+note bottom of COMMON
+  Kept deliberately small.
+  Shared Kernel for domain concepts.
+  Event contracts for cross-context
+  messaging.
+end note
+
+@enduml

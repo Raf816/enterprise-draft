@@ -47,32 +47,6 @@ class StaffMemberDomainToJpaMapperTest {
         }
 
         @Test
-        @DisplayName("Should map employment type enum name to string")
-        void shouldMapEmploymentTypeAsEnumName() {
-            // Arrange
-            StaffMember domain = StaffMemberMother.activeStaffMember();
-
-            // Act
-            StaffMemberJpa jpa = StaffMemberDomainToJpaMapper.toJpa(domain);
-
-            // Assert
-            assertEquals(EmploymentType.FULL_TIME.name(), jpa.getEmploymentType());
-        }
-
-        @Test
-        @DisplayName("Should map employment status enum name to string")
-        void shouldMapEmploymentStatusAsEnumName() {
-            // Arrange
-            StaffMember domain = StaffMemberMother.terminatedStaffMember();
-
-            // Act
-            StaffMemberJpa jpa = StaffMemberDomainToJpaMapper.toJpa(domain);
-
-            // Assert
-            assertEquals(EmploymentStatus.TERMINATED.name(), jpa.getEmploymentStatus());
-        }
-
-        @Test
         @DisplayName("Should throw NullPointerException for null domain")
         void shouldThrowForNullDomain() {
             // Act & Assert

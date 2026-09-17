@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Figure 3: LeaveRequest Aggregate Class Diagram</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; padding: 30px; }
+  
+  .figure-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  
+  .figure-title {
+    text-align: center;
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 28px;
+  }
+  
+  .diagram-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  /* === Class boxes === */
+  .class-box {
+    border: 2px solid;
+    border-radius: 6px;
+    min-width: 320px;
+    background: white;
+    font-size: 12px;
+  }
+  
+  .class-header {
+    padding: 10px 14px;
+    text-align: center;
+    border-bottom: 1px solid;
+    font-weight: 700;
+    font-size: 14px;
+  }
+  
+  .class-stereotype {
+    font-size: 11px;
+    font-weight: 400;
+    font-style: italic;
+    color: #666;
+    display: block;
+    margin-bottom: 2px;
+  }
+  
+  .class-fields {
+    padding: 8px 14px;
+    border-bottom: 1px solid;
+    line-height: 1.6;
+  }
+  
+  .class-methods {
+    padding: 8px 14px;
+    line-height: 1.6;
+  }
+  
+  .field, .method { font-family: 'Consolas', 'Courier New', monospace; font-size: 11.5px; }
+  .field-private::before { content: '− '; color: #C62828; }
+  .method-public::before { content: '+ '; color: #2E7D32; }
+  .method-static { font-style: italic; }
+  .field-final { color: #555; }
+  
+  /* Colours */
+  .aggregate-root { border-color: #1565C0; }
+  .aggregate-root .class-header { background: #C8E6FF; border-color: #1565C0; color: #0D47A1; }
+  .aggregate-root .class-fields { border-color: #E3F2FD; }
+  
+  .value-object { border-color: #2E7D32; }
+  .value-object .class-header { background: #C8FFC8; border-color: #2E7D32; color: #1B5E20; }
+  .value-object .class-fields { border-color: #E8F5E9; }
+  
+  .enumeration { border-color: #E65100; }
+  .enumeration .class-header { background: #FFEEBB; border-color: #E65100; color: #BF360C; }
+  .enumeration .class-fields { border-color: #FFF3E0; }
+  
+  .identity-box { border-color: #888; }
+  .identity-box .class-header { background: #E8E8E8; border-color: #888; color: #333; }
+  .identity-box .class-fields { border-color: #EEE; }
+  
+  .event-box { border-color: #C62828; border-style: dashed; }
+  .event-box .class-header { background: #FFEBEE; border-color: #C62828; color: #B71C1C; }
+  .event-box .class-fields { border-color: #FFCDD2; }
+  
+  /* Layout rows */
+  .row {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  
+  /* Arrows */
+  .arrow-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 6px 0;
+  }
+  
+  .arrow-line-v { width: 2px; height: 16px; background: #555; }
+  .arrow-head-down { width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 7px solid #555; }
+  .arrow-label { font-size: 10px; color: #777; font-style: italic; }
+  
+  /* Relationship lines */
+  .relationships {
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: #FAFAFA;
+    border: 1px solid #E0E0E0;
+    border-radius: 6px;
+    font-size: 11.5px;
+    line-height: 1.8;
+    color: #444;
+  }
+  
+  .rel-label { font-weight: 600; color: #333; }
+  .rel-solid { border-bottom: 2px solid #555; display: inline-block; width: 30px; margin: 0 4px; vertical-align: middle; }
+  .rel-dashed { border-bottom: 2px dashed #999; display: inline-block; width: 30px; margin: 0 4px; vertical-align: middle; }
+  .rel-diamond { display: inline-block; margin: 0 4px; vertical-align: middle; }
+  
+  /* Notes */
+  .note {
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 11px;
+    line-height: 1.5;
+    color: #555;
+    max-width: 260px;
+    border: 1px solid;
+  }
+  
+  .note-blue { background: #E3F2FD; border-color: #90CAF9; }
+  .note-green { background: #E8F5E9; border-color: #A5D6A7; }
+  
+  .caption {
+    text-align: center;
+    font-size: 11px;
+    color: #888;
+    margin-top: 16px;
+    font-style: italic;
+  }
+  
+  .section-label {
+    font-size: 11px;
+    color: #999;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="figure-container">
+  <div class="figure-title">Figure 3: LeaveRequest Aggregate Class Diagram</div>
+  
+  <div class="diagram-area">
+    
+    <!-- Main aggregate -->
+    <div class="row">
+      <div class="class-box aggregate-root" style="min-width: 460px;">
+        <div class="class-header">
+          <span class="class-stereotype">«Aggregate Root»</span>
+          LeaveRequest
+        </div>
+        <div class="class-fields">
+          <div class="field field-private">staffMemberId : String</div>
+          <div class="field field-private">managerId : String</div>
+          <div class="field field-private">leaveType : LeaveType</div>
+          <div class="field field-private">dateRange : DateRange</div>
+          <div class="field field-private">numberOfDays : int</div>
+          <div class="field field-private">reason : String</div>
+          <div class="field field-private">status : LeaveRequestStatus</div>
+          <div class="field field-private">submittedOn : LocalDate</div>
+          <div class="field field-private">decidedOn : LocalDate</div>
+          <div class="field field-private">decidedBy : String</div>
+          <div class="field field-private">decisionReason : String</div>
+          <div class="field field-private">cancellationReason : String</div>
+        </div>
+        <div class="class-methods">
+          <div class="method method-public method-static">submitNew(id, staffMemberId, managerId, leaveType, dateRange, reason) : LeaveRequest</div>
+          <div class="method method-public method-static">reconstitute(...) : LeaveRequest</div>
+          <div class="method method-public">approve(decidedBy, reason) : void</div>
+          <div class="method method-public">reject(decidedBy, reason) : void</div>
+          <div class="method method-public">cancel(cancelledBy, reason) : void</div>
+        </div>
+      </div>
+      
+      <div class="note note-blue">
+        <strong>staffMemberId</strong> and <strong>managerId</strong> are String identifiers, not object references. Staff Management owns the actual staff and manager records. This keeps staff information outside the Leave Management aggregate boundary.
+      </div>
+    </div>
+    
+    <!-- Arrow -->
+    <div class="arrow-section">
+      <div class="arrow-label">contains / uses</div>
+      <div class="arrow-line-v"></div>
+      <div class="arrow-head-down"></div>
+    </div>
+    
+    <!-- Value objects and enums row -->
+    <div class="row">
+      
+      <!-- DateRange -->
+      <div class="class-box value-object">
+        <div class="class-header">
+          <span class="class-stereotype">«Value Object»</span>
+          DateRange
+        </div>
+        <div class="class-fields">
+          <div class="field field-private">startDate : LocalDate</div>
+          <div class="field field-private">endDate : LocalDate</div>
+        </div>
+        <div class="class-methods">
+          <div class="method method-public">workingDays() : int</div>
+          <div class="method method-public">validateFutureStart() : void</div>
+        </div>
+      </div>
+      
+      <!-- LeaveRequestStatus -->
+      <div class="class-box enumeration">
+        <div class="class-header">
+          <span class="class-stereotype">«Enumeration»</span>
+          LeaveRequestStatus
+        </div>
+        <div class="class-fields">
+          <div class="field">PENDING</div>
+          <div class="field">APPROVED</div>
+          <div class="field">REJECTED</div>
+          <div class="field">CANCELLED</div>
+        </div>
+      </div>
+      
+      <!-- LeaveType -->
+      <div class="class-box enumeration">
+        <div class="class-header">
+          <span class="class-stereotype">«Enumeration»</span>
+          LeaveType
+        </div>
+        <div class="class-fields">
+          <div class="field">ANNUAL</div>
+        </div>
+      </div>
+      
+      <!-- Identity -->
+      <div class="class-box identity-box">
+        <div class="class-header">
+          <span class="class-stereotype">«Value Object · Shared»</span>
+          Identity&lt;LeaveRequest&gt;
+        </div>
+        <div class="class-fields">
+          <div class="field field-private">id : String</div>
+        </div>
+        <div class="class-methods">
+          <div class="method method-public method-static">generateId() : Identity</div>
+          <div class="method method-public method-static">of(id) : Identity</div>
+          <div class="method method-public">id() : String</div>
+        </div>
+      </div>
+      
+    </div>
+    
+    <!-- Notes for value objects -->
+    <div class="row">
+      <div class="note note-green">
+        <strong>DateRange</strong> encapsulates start and end dates as one concept. Calculates working days excluding weekends. Validates that the start date is in the future at submission time.
+      </div>
+    </div>
+    
+    <!-- Events section -->
+    <div style="margin-top: 12px;">
+      <div class="section-label">Domain Events Raised by LeaveRequest</div>
+    </div>
+    
+    <div class="row">
+      
+      <div class="class-box event-box" style="min-width: 220px;">
+        <div class="class-header">
+          <span class="class-stereotype">«Local Event»</span>
+          LeaveRequestSubmittedEvent
+        </div>
+        <div class="class-fields">
+          <div class="field" style="font-size: 10.5px;">id : Long</div>
+          <div class="field" style="font-size: 10.5px;">occurredOn : LocalDate</div>
+          <div class="field" style="font-size: 10.5px;">leaveRequestId : String</div>
+          <div class="field" style="font-size: 10.5px;">staffMemberId : String</div>
+          <div class="field" style="font-size: 10.5px;">numberOfDays : int</div>
+        </div>
+      </div>
+      
+      <div class="class-box event-box" style="min-width: 220px;">
+        <div class="class-header">
+          <span class="class-stereotype">«Local Event»</span>
+          LeaveRequestApprovedEvent
+        </div>
+        <div class="class-fields">
+          <div class="field" style="font-size: 10.5px;">id : Long</div>
+          <div class="field" style="font-size: 10.5px;">occurredOn : LocalDate</div>
+          <div class="field" style="font-size: 10.5px;">leaveRequestId : String</div>
+          <div class="field" style="font-size: 10.5px;">staffMemberId : String</div>
+          <div class="field" style="font-size: 10.5px;">managerId : String</div>
+          <div class="field" style="font-size: 10.5px;">numberOfDays : int</div>
+        </div>
+      </div>
+      
+      <div class="class-box event-box" style="min-width: 220px;">
+        <div class="class-header">
+          <span class="class-stereotype">«Local Event»</span>
+          LeaveRequestRejectedEvent
+        </div>
+        <div class="class-fields">
+          <div class="field" style="font-size: 10.5px;">id : Long</div>
+          <div class="field" style="font-size: 10.5px;">occurredOn : LocalDate</div>
+          <div class="field" style="font-size: 10.5px;">leaveRequestId : String</div>
+          <div class="field" style="font-size: 10.5px;">staffMemberId : String</div>
+          <div class="field" style="font-size: 10.5px;">managerId : String</div>
+          <div class="field" style="font-size: 10.5px;">numberOfDays : int</div>
+        </div>
+      </div>
+      
+      <div class="class-box event-box" style="min-width: 240px;">
+        <div class="class-header">
+          <span class="class-stereotype">«Local Event»</span>
+          LeaveRequestCancelledEvent
+        </div>
+        <div class="class-fields">
+          <div class="field" style="font-size: 10.5px;">id : Long</div>
+          <div class="field" style="font-size: 10.5px;">occurredOn : LocalDate</div>
+          <div class="field" style="font-size: 10.5px;">leaveRequestId : String</div>
+          <div class="field" style="font-size: 10.5px;">staffMemberId : String</div>
+          <div class="field" style="font-size: 10.5px;">cancelledBy : String</div>
+          <div class="field" style="font-size: 10.5px;">numberOfDays : int</div>
+          <div class="field" style="font-size: 10.5px;">wasPreviouslyApproved : boolean</div>
+        </div>
+      </div>
+      
+    </div>
+    
+    <!-- Relationship key -->
+    <div class="relationships">
+      <div><span class="rel-label">Relationships:</span></div>
+      <div>LeaveRequest <span class="rel-diamond">◆</span><span class="rel-solid"></span> DateRange — <em>composition (value object owned by aggregate, no independent lifecycle)</em></div>
+      <div>LeaveRequest <span class="rel-solid"></span> LeaveRequestStatus — <em>current lifecycle state</em></div>
+      <div>LeaveRequest <span class="rel-solid"></span> LeaveType — <em>categorisation (currently ANNUAL only)</em></div>
+      <div>LeaveRequest <span class="rel-solid"></span> Identity&lt;LeaveRequest&gt; — <em>stable typed identity from common.domain</em></div>
+      <div>LeaveRequest <span class="rel-dashed"></span> Events — <em>raises on each lifecycle transition (submit, approve, reject, cancel)</em></div>
+    </div>
+    
+    <div class="caption">
+      All fields, methods and events verified against leavemanagement/domain/LeaveRequest.java.
+      String identifiers (staffMemberId, managerId) reference Staff Management records without creating cross-aggregate object dependencies.
+    </div>
+    
+  </div>
+</div>
+
+</body>
+</html>

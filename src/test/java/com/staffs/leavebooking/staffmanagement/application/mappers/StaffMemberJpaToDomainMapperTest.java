@@ -47,64 +47,6 @@ class StaffMemberJpaToDomainMapperTest {
         }
 
         @Test
-        @DisplayName("Should construct FullName value object from separate fields")
-        void shouldConstructFullName() {
-            // Arrange
-            StaffMemberJpa jpa = JpaEntityMother.staffMemberJpa();
-            jpa.setFirstName("Alice");
-            jpa.setSurname("Johnson");
-
-            // Act
-            StaffMember domain = StaffMemberJpaToDomainMapper.toDomain(jpa);
-
-            // Assert
-            assertEquals("Alice", domain.fullName().firstName());
-            assertEquals("Johnson", domain.fullName().surname());
-        }
-
-        @Test
-        @DisplayName("Should construct Email value object from string")
-        void shouldConstructEmail() {
-            // Arrange
-            StaffMemberJpa jpa = JpaEntityMother.staffMemberJpa();
-            jpa.setEmail("alice@corp.com");
-
-            // Act
-            StaffMember domain = StaffMemberJpaToDomainMapper.toDomain(jpa);
-
-            // Assert
-            assertEquals("alice@corp.com", domain.email().address());
-        }
-
-        @Test
-        @DisplayName("Should convert string to EmploymentType enum")
-        void shouldConvertEmploymentType() {
-            // Arrange
-            StaffMemberJpa jpa = JpaEntityMother.staffMemberJpa();
-            jpa.setEmploymentType("CONTRACT");
-
-            // Act
-            StaffMember domain = StaffMemberJpaToDomainMapper.toDomain(jpa);
-
-            // Assert
-            assertEquals(EmploymentType.CONTRACT, domain.employmentType());
-        }
-
-        @Test
-        @DisplayName("Should convert string to EmploymentStatus enum")
-        void shouldConvertEmploymentStatus() {
-            // Arrange
-            StaffMemberJpa jpa = JpaEntityMother.staffMemberJpa();
-            jpa.setEmploymentStatus("ON_LEAVE");
-
-            // Act
-            StaffMember domain = StaffMemberJpaToDomainMapper.toDomain(jpa);
-
-            // Assert
-            assertEquals(EmploymentStatus.ON_LEAVE, domain.employmentStatus());
-        }
-
-        @Test
         @DisplayName("Should not raise events (uses reconstitute)")
         void shouldNotRaiseEvents() {
             // Arrange

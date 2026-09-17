@@ -95,6 +95,13 @@ public class FirebaseAuthService {
      */
     public UserRecord registerUser(String username, String email,
                                     String password, String role) throws FirebaseAuthException {
+        // Validate and normalise the role BEFORE creating the Firebase account.
+        // This prevents a partial registration where the account exists but has no valid role claims.
+        // If role is null, default to STAFF.
+        String confirmedRole = (role != null)
+                ? Role.fromString(role).name()  // Validates and converts to uppercase
+                : Role.STAFF.name();            // Default: "STAFF"
+
         // Build the Firebase user creation request
         CreateRequest createRequest = new CreateRequest()
                 .setEmail(email)             // Must be unique across all Firebase users
@@ -104,12 +111,6 @@ public class FirebaseAuthService {
 
         // Create the user in Firebase — returns a UserRecord with the assigned UID
         UserRecord userRecord = firebaseAuth.createUser(createRequest);
-
-        // Validate and normalise the role using the Role enum
-        // If role is null, default to STAFF
-        String confirmedRole = (role != null)
-                ? Role.fromString(role).name()  // Validates and converts to uppercase
-                : Role.STAFF.name();            // Default: "STAFF"
 
         // Set custom claims on the Firebase user record
         // These claims will be embedded in every JWT the user receives on login

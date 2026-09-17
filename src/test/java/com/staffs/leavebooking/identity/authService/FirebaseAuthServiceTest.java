@@ -71,16 +71,16 @@ class FirebaseAuthServiceTest {
         }
 
         @Test
-        @DisplayName("Should throw on invalid role string")
+        @DisplayName("Should throw on invalid role string without creating Firebase account")
         void shouldThrowOnInvalidRole() throws FirebaseAuthException {
-            // Arrange — createUser is called first, then Role.fromString throws
-            UserRecord mockRecord = mock(UserRecord.class);
-            lenient().when(mockRecord.getUid()).thenReturn("uid-789");
-            when(firebaseAuth.createUser(any())).thenReturn(mockRecord);
+            // Arrange — role validation now runs BEFORE createUser, so no Firebase call should occur
 
             // Act & Assert
             assertThrows(IllegalArgumentException.class,
                     () -> firebaseAuthService.registerUser("testuser", "test@email.com", "pass123", "INVALID_ROLE"));
+
+            // Verify that Firebase was never called — prevents partial registration
+            verify(firebaseAuth, never()).createUser(any());
         }
 
         @Test

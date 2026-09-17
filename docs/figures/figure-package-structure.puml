@@ -1,0 +1,248 @@
+@startuml
+
+skinparam backgroundColor white
+skinparam defaultFontSize 12
+skinparam packageFontSize 13
+skinparam packageBorderThickness 1.5
+skinparam packageStyle rectangle
+
+skinparam note {
+    BackgroundColor LightYellow
+    BorderColor #666666
+    FontSize 11
+}
+
+title Package Structure: com.staffs.leavebooking
+
+' ==========================================
+' ROOT PACKAGE
+' ==========================================
+package "com.staffs.leavebooking" as root {
+
+    class "LeavebookingApplication" as App <<@SpringBootApplication>> #ECEFF1
+    class "GlobalExceptionHandler" as GEH <<@ControllerAdvice>> #ECEFF1
+
+    ' ==========================================
+    ' LEAVE MANAGEMENT (Core Context)
+    ' ==========================================
+    package "leavemanagement" as lm #E8F5E9 {
+
+        class "LeaveManagementFacade" as LMF <<Façade>> #C8E6C9
+
+        package "ui" as lm_ui #FFF8E1 {
+            class "LeaveRequestController" #FFF8E1
+            class "LeaveAllowanceController" #FFF8E1
+            class "SubmitLeaveRequestBody" #FFF8E1
+            package "exceptions" as lm_ui_ex #FFF8E1 {
+                class "LeaveRequestNotFoundException" #FFF8E1
+                class "LeaveAllowanceNotFoundException" #FFF8E1
+            }
+        }
+
+        package "application" as lm_app #E3F2FD {
+            package "handlers" as lm_handlers #E3F2FD {
+                class "LeaveRequestApplicationService" #E3F2FD
+                class "LeaveRequestQueryHandler" #E3F2FD
+                class "LeaveAllowanceApplicationService" #E3F2FD
+                class "LeaveAllowanceQueryHandler" #E3F2FD
+            }
+            package "listeners" as lm_listeners #E3F2FD {
+                class "LeaveRequestSubmittedListener" #E3F2FD
+                class "LeaveRequestApprovedListener" #E3F2FD
+                class "LeaveRequestRejectedListener" #E3F2FD
+                class "LeaveRequestCancelledListener" #E3F2FD
+                class "StaffMemberAddedListener" #E3F2FD
+                class "StaffMemberUpdatedListener" #E3F2FD
+                class "ManagerNotificationPublisher" #E3F2FD
+                class "ManagerNotificationConsumer" #E3F2FD
+                class "StaffNotificationPublisher" #E3F2FD
+                class "StaffNotificationConsumer" #E3F2FD
+            }
+            package "commands" as lm_cmds #E3F2FD {
+                class "SubmitLeaveRequestCommand" #E3F2FD
+                class "CancelLeaveRequestCommand" #E3F2FD
+                class "AmendEntitlementCommand" #E3F2FD
+            }
+            package "dto" as lm_dto #E3F2FD {
+                class "LeaveRequestDTO" #E3F2FD
+                class "LeaveAllowanceDTO" #E3F2FD
+                class "LeaveRequestSearchCriteria" #E3F2FD
+            }
+            package "mappers" as lm_mappers #E3F2FD {
+                class "LeaveRequestDomainToJpaMapper" #E3F2FD
+                class "LeaveRequestJpaToDomainMapper" #E3F2FD
+                class "LeaveRequestJpaToDTOMapper" #E3F2FD
+                class "LeaveAllowanceDomainToJpaMapper" #E3F2FD
+                class "LeaveAllowanceJpaToDomainMapper" #E3F2FD
+                class "LeaveAllowanceJpaToDTOMapper" #E3F2FD
+            }
+        }
+
+        package "domain" as lm_domain #E8F5E9 {
+            class "LeaveRequest" <<Aggregate Root>> #E8F5E9
+            class "LeaveAllowance" <<Aggregate Root>> #E8F5E9
+            class "BusinessYear" <<Value Object>> #E8F5E9
+            class "DateRange" <<Value Object>> #E8F5E9
+            class "LeaveReason" <<Value Object>> #E8F5E9
+            class "LeaveRequestStatus" <<Enum>> #E8F5E9
+            class "LeaveType" <<Enum>> #E8F5E9
+            package "events" as lm_events #E8F5E9 {
+                class "LeaveRequestSubmittedEvent" #E8F5E9
+                class "LeaveRequestApprovedEvent" #E8F5E9
+                class "LeaveRequestRejectedEvent" #E8F5E9
+                class "LeaveRequestCancelledEvent" #E8F5E9
+            }
+        }
+
+        package "infrastructure" as lm_infra #FFEBEE {
+            package "entities" as lm_entities #FFEBEE {
+                class "LeaveRequestJpa" #FFEBEE
+                class "LeaveAllowanceJpa" #FFEBEE
+            }
+            package "repositories" as lm_repos #FFEBEE {
+                class "LeaveRequestRepository" #FFEBEE
+                class "LeaveAllowanceRepository" #FFEBEE
+            }
+        }
+    }
+
+    ' ==========================================
+    ' STAFF MANAGEMENT (Supporting Context)
+    ' ==========================================
+    package "staffmanagement" as sm #E8F5E9 {
+
+        class "StaffManagementFacade" as SMF <<Façade>> #C8E6C9
+
+        package "ui" as sm_ui #FFF8E1 {
+            class "StaffController" #FFF8E1
+            class "StaffMemberCreatedResponse" #FFF8E1
+            package "exceptions" as sm_ui_ex #FFF8E1 {
+                class "StaffMemberNotFoundException" #FFF8E1
+            }
+        }
+
+        package "application" as sm_app #E3F2FD {
+            package "handlers" as sm_handlers #E3F2FD {
+                class "StaffApplicationService" #E3F2FD
+                class "StaffQueryHandler" #E3F2FD
+            }
+            package "commands" as sm_cmds #E3F2FD {
+                class "AddStaffMemberCommand" #E3F2FD
+                class "UpdateDepartmentCommand" #E3F2FD
+                class "UpdatePlacementCommand" #E3F2FD
+                class "UpdateStatusCommand" #E3F2FD
+            }
+            package "dto" as sm_dto #E3F2FD {
+                class "StaffMemberDTO" #E3F2FD
+                class "StaffSearchCriteria" #E3F2FD
+            }
+            package "mappers" as sm_mappers #E3F2FD {
+                class "StaffMemberDomainToJpaMapper" #E3F2FD
+                class "StaffMemberJpaToDomainMapper" #E3F2FD
+                class "StaffMemberJpaToDTOMapper" #E3F2FD
+            }
+        }
+
+        package "domain" as sm_domain #E8F5E9 {
+            class "StaffMember" <<Aggregate Root>> #E8F5E9
+            class "EmploymentStatus" <<Enum>> #E8F5E9
+            class "EmploymentType" <<Enum>> #E8F5E9
+        }
+
+        package "infrastructure" as sm_infra #FFEBEE {
+            package "entities" as sm_entities #FFEBEE {
+                class "StaffMemberJpa" #FFEBEE
+            }
+            package "repositories" as sm_repos #FFEBEE {
+                class "StaffMemberRepository" #FFEBEE
+            }
+        }
+    }
+
+    ' ==========================================
+    ' COMMON (Shared Kernel)
+    ' ==========================================
+    package "common" as common #F3E5F5 {
+
+        class "package-info" <<@ApplicationModule(type = OPEN)>> #EDE7F6
+
+        package "domain" as c_domain #EDE7F6 {
+            class "AggregateRoot" #EDE7F6
+            class "Entity" #EDE7F6
+            class "ValueObject" #EDE7F6
+            class "IdentifiedValueObject" #EDE7F6
+            class "Identity" #EDE7F6
+            class "Email" #EDE7F6
+            class "FullName" #EDE7F6
+            class "DomainAssertions" #EDE7F6
+        }
+
+        package "events" as c_events #EDE7F6 {
+            class "Event" <<Interface>> #EDE7F6
+            class "LocalEvent" <<Interface>> #EDE7F6
+            class "RemoteEvent" <<Interface>> #EDE7F6
+            class "DomainEventManager" #EDE7F6
+            class "EventStoreService" #EDE7F6
+            class "EventStoreJpa" #EDE7F6
+            class "EventStoreRepository" #EDE7F6
+            class "RemoteOutboxListener" #EDE7F6
+            class "RabbitOutboxRouter" #EDE7F6
+            class "RabbitInfrastructureConfig" #EDE7F6
+            class "CustomMessageConverter" #EDE7F6
+            class "EventStoreCleanupJob" #EDE7F6
+            class "OutboxRecoveryJob" #EDE7F6
+            class "StaffMemberAddedEvent" #EDE7F6
+            class "StaffMemberUpdatedEvent" #EDE7F6
+            class "ManagerNotificationEvent" #EDE7F6
+            class "StaffNotificationEvent" #EDE7F6
+        }
+    }
+
+    ' ==========================================
+    ' IDENTITY (Generic Context)
+    ' ==========================================
+    package "identity" as id #FFFDE7 {
+
+        class "AuthController" #FFF8E1
+
+        package "authService" as id_auth #FFF8E1 {
+            class "FirebaseAuthService" #FFF8E1
+            class "FirebaseConfig" #FFF8E1
+            class "FirebaseTokenFilter" #FFF8E1
+        }
+
+        package "dto" as id_dto #FFF8E1 {
+            class "RegisterRequest" #FFF8E1
+            class "RegisterResponse" #FFF8E1
+            class "LoginRequest" #FFF8E1
+            class "LoginResponse" #FFF8E1
+            class "ChangePasswordRequest" #FFF8E1
+            class "ErrorResponse" #FFF8E1
+        }
+
+        package "security" as id_sec #FFF8E1 {
+            class "SecurityConfig" #FFF8E1
+            class "Role" #FFF8E1
+            class "FirebaseJwtAuthenticationConverter" #FFF8E1
+            class "RateLimitFilter" #FFF8E1
+            class "SecurityHeadersFilter" #FFF8E1
+            class "UnauthorisedAccessLogger" #FFF8E1
+        }
+    }
+}
+
+' ==========================================
+' LEGEND
+' ==========================================
+legend right
+  |= Colour |= Responsibility |
+  | <#FFF8E1> | Interface / API (ui) |
+  | <#E3F2FD> | Application |
+  | <#E8F5E9> | Domain |
+  | <#FFEBEE> | Infrastructure |
+  | <#EDE7F6> | Common (Shared Kernel) |
+  | <#FFF8E1> | Identity (Generic Context) |
+  | <#ECEFF1> | Root-level application classes |
+endlegend
+
+@enduml

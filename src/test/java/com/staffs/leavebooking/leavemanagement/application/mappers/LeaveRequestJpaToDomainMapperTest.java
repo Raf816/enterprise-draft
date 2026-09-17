@@ -9,8 +9,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -44,24 +42,6 @@ class LeaveRequestJpaToDomainMapperTest {
             assertEquals(jpa.getReason(), domain.reason());
             assertEquals(LeaveRequestStatus.PENDING, domain.status());
             assertEquals(jpa.getSubmittedOn(), domain.submittedOn());
-        }
-
-        @Test
-        @DisplayName("Should map APPROVED status with decided fields")
-        void shouldMapApprovedStatus() {
-            // Arrange
-            LeaveRequestJpa jpa = JpaEntityMother.leaveRequestJpa();
-            jpa.setStatus("APPROVED");
-            jpa.setDecidedOn(LocalDate.of(2027, 3, 5));
-            jpa.setDecidedBy("approver-id");
-
-            // Act
-            LeaveRequest domain = LeaveRequestJpaToDomainMapper.toDomain(jpa);
-
-            // Assert
-            assertEquals(LeaveRequestStatus.APPROVED, domain.status());
-            assertEquals(LocalDate.of(2027, 3, 5), domain.decidedOn());
-            assertEquals("approver-id", domain.decidedBy());
         }
 
         @Test

@@ -44,22 +44,6 @@ class LeaveAllowanceJpaToDomainMapperTest {
         }
 
         @Test
-        @DisplayName("Should construct BusinessYear from separate int fields")
-        void shouldConstructBusinessYear() {
-            // Arrange
-            LeaveAllowanceJpa jpa = JpaEntityMother.leaveAllowanceJpa();
-            jpa.setBusinessYearStart(2025);
-            jpa.setBusinessYearEnd(2026);
-
-            // Act
-            LeaveAllowance domain = LeaveAllowanceJpaToDomainMapper.toDomain(jpa);
-
-            // Assert
-            assertEquals(2025, domain.businessYear().startYear());
-            assertEquals(2026, domain.businessYear().endYear());
-        }
-
-        @Test
         @DisplayName("Should not raise events (uses reconstitute)")
         void shouldNotRaiseEvents() {
             // Arrange

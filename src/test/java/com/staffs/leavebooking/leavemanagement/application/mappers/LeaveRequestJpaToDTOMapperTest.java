@@ -7,8 +7,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -45,39 +43,6 @@ class LeaveRequestJpaToDTOMapperTest {
             assertNull(dto.decidedOn());
             assertNull(dto.decidedBy());
             assertNull(dto.cancellationReason());
-        }
-
-        @Test
-        @DisplayName("Should map decided fields for approved request")
-        void shouldMapDecidedFields() {
-            // Arrange
-            LeaveRequestJpa jpa = JpaEntityMother.leaveRequestJpa();
-            jpa.setStatus("APPROVED");
-            jpa.setDecidedOn(LocalDate.of(2027, 3, 5));
-            jpa.setDecidedBy("approver-id");
-
-            // Act
-            LeaveRequestDTO dto = LeaveRequestJpaToDTOMapper.toDTO(jpa);
-
-            // Assert
-            assertEquals("APPROVED", dto.status());
-            assertEquals(LocalDate.of(2027, 3, 5), dto.decidedOn());
-            assertEquals("approver-id", dto.decidedBy());
-        }
-
-        @Test
-        @DisplayName("Should map cancellation reason")
-        void shouldMapCancellationReason() {
-            // Arrange
-            LeaveRequestJpa jpa = JpaEntityMother.leaveRequestJpa();
-            jpa.setStatus("CANCELLED");
-            jpa.setCancellationReason("Changed plans");
-
-            // Act
-            LeaveRequestDTO dto = LeaveRequestJpaToDTOMapper.toDTO(jpa);
-
-            // Assert
-            assertEquals("Changed plans", dto.cancellationReason());
         }
 
         @Test

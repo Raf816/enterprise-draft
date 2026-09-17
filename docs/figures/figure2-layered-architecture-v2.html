@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Figure 2: Logical Layer and Responsibility Structure</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; padding: 30px; }
+  
+  .figure-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 36px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  
+  .figure-title {
+    text-align: center;
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 28px;
+  }
+  
+  /* === External client === */
+  .client-bar {
+    text-align: center;
+    margin-bottom: 18px;
+  }
+  .client-label {
+    display: inline-block;
+    background: #ECEFF1;
+    border: 1.5px solid #90A4AE;
+    border-radius: 6px;
+    padding: 8px 28px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #37474F;
+  }
+  
+  /* === Arrow between client and contexts === */
+  .arrow-down-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 28px;
+  }
+  .arrow-down-center .line { width: 2px; height: 12px; background: #555; }
+  .arrow-down-center .head { width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid #555; }
+  .arrow-stem { display: flex; flex-direction: column; align-items: center; }
+  
+  /* === Context columns === */
+  .contexts-row {
+    display: flex;
+    gap: 20px;
+    align-items: stretch;
+  }
+  
+  .context-col {
+    flex: 1;
+    border: 2px solid #888;
+    border-radius: 10px;
+    padding: 18px 16px 16px 16px;
+    background: #fafafa;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .context-label {
+    position: absolute;
+    top: -12px;
+    left: 18px;
+    background: white;
+    padding: 0 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+    white-space: nowrap;
+  }
+  
+  /* === Layer boxes === */
+  .layer {
+    border-radius: 7px;
+    padding: 11px 14px;
+    border: 1.5px solid;
+  }
+  
+  .layer-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #222;
+  }
+  
+  .layer-desc {
+    font-size: 11px;
+    color: #444;
+    margin-top: 3px;
+    line-height: 1.45;
+  }
+  
+  .layer-ui      { background: #FFF8E1; border-color: #F9A825; }
+  .layer-facade  { background: #FFF3E0; border-color: #EF6C00; }
+  .layer-app     { background: #E3F2FD; border-color: #1565C0; }
+  .layer-domain  { background: #E8F5E9; border-color: #2E7D32; }
+  .layer-infra   { background: #FFEBEE; border-color: #C62828; }
+  
+  /* === Arrows inside contexts === */
+  .arrow-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 26px;
+  }
+  .arrow-row .line { width: 2px; height: 10px; background: #555; }
+  .arrow-row .head { width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 7px solid #555; }
+  .arrow-row .lbl  { font-size: 10px; color: #777; font-style: italic; margin-left: 8px; }
+  
+  /* === Domain + Infra side by side === */
+  .bottom-pair {
+    display: flex;
+    gap: 10px;
+  }
+  .bottom-pair .layer { flex: 1; }
+  
+  .mirror-note {
+    text-align: center;
+    font-size: 10px;
+    color: #888;
+    font-style: italic;
+    margin-top: 6px;
+  }
+  
+  /* === Cross-context arrow === */
+  .cross-context-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .cross-context-arrow .dashed-line {
+    position: absolute;
+    top: 38%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 24px;
+    border-left: 2px dashed #EF6C00;
+  }
+  .cross-context-arrow .cross-label {
+    position: absolute;
+    top: calc(38% + 28px);
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px;
+    color: #EF6C00;
+    font-style: italic;
+    writing-mode: vertical-rl;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+  }
+  
+  /* === Bottom panels: Identity and Common === */
+  .bottom-row {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+  }
+  
+  .bottom-panel {
+    flex: 1;
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #444;
+  }
+  
+  .panel-identity {
+    background: #FFFDE7;
+    border: 1.5px dashed #F9A825;
+  }
+  
+  .panel-common {
+    background: #F3E5F5;
+    border: 1.5px dashed #8E24AA;
+  }
+  
+  .bottom-panel strong {
+    font-size: 12px;
+    color: #333;
+    display: block;
+    margin-bottom: 4px;
+  }
+  
+  /* === Dependency note === */
+  .dep-note {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 11px;
+    color: #888;
+    font-style: italic;
+    line-height: 1.5;
+  }
+  
+  .caption {
+    text-align: center;
+    font-size: 12px;
+    color: #666;
+    margin-top: 16px;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<div class="figure-container">
+  <div class="figure-title">Figure 2: Logical Layer and Responsibility Structure of the Leave Booking System</div>
+  
+  <!-- External Client -->
+  <div class="client-bar">
+    <span class="client-label">External Client</span>
+  </div>
+  
+  <div class="arrow-down-center">
+    <div class="arrow-stem">
+      <div class="line"></div>
+      <div class="head"></div>
+    </div>
+  </div>
+  
+  <!-- Two contexts side by side -->
+  <div class="contexts-row">
+    
+    <!-- LEAVE MANAGEMENT -->
+    <div class="context-col">
+      <span class="context-label">Leave Management (Core Context)</span>
+      
+      <div class="layer layer-ui">
+        <div class="layer-name">Interface / API</div>
+        <div class="layer-desc">HTTP requests, transport validation, authenticated-user context.</div>
+      </div>
+      
+      <div class="arrow-row"><div class="arrow-stem"><div class="line"></div><div class="head"></div></div><span class="lbl">delegates to</span></div>
+      
+      <div class="layer layer-facade">
+        <div class="layer-name">Context Façade</div>
+        <div class="layer-desc">Controlled entry point, role-based access control, hides internal structure.</div>
+      </div>
+      
+      <div class="arrow-row"><div class="arrow-stem"><div class="line"></div><div class="head"></div></div><span class="lbl">coordinates via</span></div>
+      
+      <div class="layer layer-app">
+        <div class="layer-name">Application</div>
+        <div class="layer-desc">Use-case coordination, CQRS command/query separation, mapping, event dispatch.</div>
+      </div>
+      
+      <div class="arrow-row"><div class="arrow-stem"><div class="line"></div><div class="head"></div></div><span class="lbl">validates with · persists through</span></div>
+      
+      <div class="bottom-pair">
+        <div class="layer layer-domain">
+          <div class="layer-name">Domain</div>
+          <div class="layer-desc">Aggregates, value objects, business rules, lifecycle transitions, domain events.</div>
+        </div>
+        <div class="layer layer-infra">
+          <div class="layer-name">Infrastructure</div>
+          <div class="layer-desc">JPA entities, repositories, persistence mapping.</div>
+        </div>
+      </div>
+      
+      <div class="mirror-note">◄ Data Mapper pattern — separate domain and persistence classes ►</div>
+    </div>
+    
+    <!-- Cross-context arrow -->
+    <div class="cross-context-arrow">
+      <div class="dashed-line"></div>
+      <span class="cross-label">façade calls</span>
+    </div>
+    
+    <!-- STAFF MANAGEMENT -->
+    <div class="context-col">
+      <span class="context-label">Staff Management (Supporting Context)</span>
+      
+      <div class="layer layer-ui">
+        <div class="layer-name">Interface / API</div>
+        <div class="layer-desc">HTTP requests, transport validation, authenticated-user context.</div>
+      </div>
+      
+      <div class="arrow-row"><div class="arrow-stem"><div class="line"></div><div class="head"></div></div><span class="lbl">delegates to</span></div>
+      
+      <div class="layer layer-facade">
+        <div class="layer-name">Context Façade</div>
+        <div class="layer-desc">Controlled entry point, role-based access control, hides internal structure.</div>
+      </div>
+      
+      <div class="arrow-row"><div class="arrow-stem"><div class="line"></div><div class="head"></div></div><span class="lbl">coordinates via</span></div>
+      
+      <div class="layer layer-app">
+        <div class="layer-name">Application</div>
+        <div class="layer-desc">Use-case coordination, CQRS command/query separation, mapping, event dispatch.</div>
+      </div>
+      
+      <div class="arrow-row"><div class="arrow-stem"><div class="line"></div><div class="head"></div></div><span class="lbl">validates with · persists through</span></div>
+      
+      <div class="bottom-pair">
+        <div class="layer layer-domain">
+          <div class="layer-name">Domain</div>
+          <div class="layer-desc">Aggregates, value objects, business rules, lifecycle transitions, domain events.</div>
+        </div>
+        <div class="layer layer-infra">
+          <div class="layer-name">Infrastructure</div>
+          <div class="layer-desc">JPA entities, repositories, persistence mapping.</div>
+        </div>
+      </div>
+      
+      <div class="mirror-note">◄ Data Mapper pattern — separate domain and persistence classes ►</div>
+    </div>
+    
+  </div>
+  
+  <!-- Bottom: Identity and Common -->
+  <div class="bottom-row">
+    
+    <div class="bottom-panel panel-identity">
+      <strong>Identity and Access Control (Generic Context)</strong>
+      Uses a simpler structure (AuthController → FirebaseAuthService → SecurityConfig) because it handles authentication, identity and roles without requiring domain-oriented modelling. DDD layering is applied selectively according to each context's responsibility and complexity.
+    </div>
+    
+    <div class="bottom-panel panel-common">
+      <strong>Common (Shared Kernel)</strong>
+      Kept deliberately small. Shared domain concepts (Identity, Email, FullName) provide consistent meaning across contexts. Shared event contracts and infrastructure (RemoteEvent, LocalEvent, DomainEventManager, EventStore) support cross-context messaging without coupling context-specific behaviour.
+    </div>
+    
+  </div>
+  
+  <!-- Dependency direction -->
+  <div class="dep-note">
+    ▲ Dependency direction: each layer depends only on the layers below it. Domain depends on nothing.<br>
+    Infrastructure mirrors Domain via the Data Mapper pattern but Domain does not import Infrastructure.
+  </div>
+  
+</div>
+
+</body>
+</html>
