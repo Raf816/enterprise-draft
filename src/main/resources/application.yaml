@@ -28,14 +28,6 @@ spring:
     virtual-host: /
     ssl:
       enabled: false
-  # CloudAMQP (use on unrestricted network - blocked on BT/Zscaler corporate network)
-  # rabbitmq:
-  #   host: seal-01.lmq.cloudamqp.com
-  #   username: fxactgkp
-  #   password: IowcBN82CH2TltRueLtaPpoMsPIDJp_J
-  #   virtual-host: fxactgkp
-  #   ssl:
-  #     enabled: true
 
 # Firebase web API key
 firebase:
